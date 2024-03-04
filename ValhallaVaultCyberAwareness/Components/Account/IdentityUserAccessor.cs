@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Identity;
+using Shared.DbModels;
 using ValhallaVaultCyberAwareness.Data;
 
 namespace ValhallaVaultCyberAwareness.Components.Account

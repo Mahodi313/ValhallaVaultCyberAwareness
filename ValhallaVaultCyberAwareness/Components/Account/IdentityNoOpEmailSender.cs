@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using Shared.DbModels;
 using ValhallaVaultCyberAwareness.Data;
 
 namespace ValhallaVaultCyberAwareness.Components.Account
