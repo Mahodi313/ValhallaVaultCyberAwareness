@@ -53,11 +53,11 @@ h1:focus {
 }
 
 .valhalla-row {
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    margin:50px;
-    margin-top:5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 50px;
+    margin-top: 5px;
 }
 .valhalla-div {
     text-align: center;
@@ -82,6 +82,29 @@ h1:focus {
     color: #FEFFFF;
     font-family: Arial, sans-serif;
     font-style: italic;
+}
+
+.valhalla-description-subcategory {
+    margin: 5px 0;
+    color: #FEFFFF;
+    font-family: Arial, sans-serif;
+    font-style: italic;
+}
+
+.valhalla-description-div {
+    text-align: center;
+    padding: 0 20% 0 20%;
+}
+
+.margin-top {
+    margin: 15px 0 0 0;
+}
+
+.valhalla-btn {
+    max-height: 100%;
+    width: 80%;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
 /*sign in page and register page */
