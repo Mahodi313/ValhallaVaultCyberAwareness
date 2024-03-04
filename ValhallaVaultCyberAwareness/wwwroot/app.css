@@ -1,9 +1,11 @@
 html, body {
     font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    background-color: #208CCC;
+    color: #FEFFFF;
 }
 
 a, .btn-link {
-    color: #006bb7;
+    color: #FEFFFF;
 }
 
 .btn-primary {
@@ -48,4 +50,36 @@ h1:focus {
 
 .darker-border-checkbox.form-check-input {
     border-color: #929292;
+}
+
+.valhalla-row {
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    margin:50px;
+    margin-top:5px;
+}
+.valhalla-div {
+    text-align: center;
+    border: 2px solid #156AA3;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: #156AA3;
+}
+.valhalla-title {
+    color: #FEFFFF;
+    font-family: Arial, sans-serif;
+    text-shadow: 2px 2px 4px #7f8c8d;
+}
+.valhalla-logo {
+    max-width:100%;
+    height:250px;
+    border-radius:10px;
+    box-shadow:0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+.valhalla-description {
+    margin: 20px 0;
+    color: #FEFFFF;
+    font-family: Arial, sans-serif;
+    font-style: italic;
 }
