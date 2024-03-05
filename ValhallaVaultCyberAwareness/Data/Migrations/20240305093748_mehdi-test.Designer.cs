@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ValhallaVaultCyberAwareness.Data;
 
@@ -11,9 +12,11 @@ using ValhallaVaultCyberAwareness.Data;
 namespace ValhallaVaultCyberAwareness.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240305093748_mehdi-test")]
+    partial class mehditest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace ValhallaVaultCyberAwareness.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("CategoryModelSegmentModel", b =>
-                {
-                    b.Property<int>("CategoriesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SegmentsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CategoriesId", "SegmentsId");
-
-                    b.HasIndex("SegmentsId");
-
-                    b.ToTable("CategoryModelSegmentModel");
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -182,10 +170,6 @@ namespace ValhallaVaultCyberAwareness.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Explanation")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<bool>("IsCorrectAnswer")
                         .HasColumnType("bit");
 
@@ -196,7 +180,7 @@ namespace ValhallaVaultCyberAwareness.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("Answers");
+                    b.ToTable("AnswerModel");
                 });
 
             modelBuilder.Entity("Shared.DbModels.ApplicationUser", b =>
@@ -279,23 +263,6 @@ namespace ValhallaVaultCyberAwareness.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Categories");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Att skydda sig mot bedrägerier"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Cybersäkerhet för företag"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Cyberspionage"
-                        });
                 });
 
             modelBuilder.Entity("Shared.DbModels.QuestionModel", b =>
@@ -317,7 +284,7 @@ namespace ValhallaVaultCyberAwareness.Migrations
 
                     b.HasIndex("SubcategoryId");
 
-                    b.ToTable("Questions");
+                    b.ToTable("QuestionModel");
                 });
 
             modelBuilder.Entity("Shared.DbModels.SegmentModel", b =>
@@ -328,35 +295,18 @@ namespace ValhallaVaultCyberAwareness.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
-                    b.ToTable("Segments");
+                    b.HasIndex("CategoryId");
 
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            Name = "Del 1"
-                        },
-                        new
-                        {
-                            Id = 2,
-                            Name = "Del 2"
-                        },
-                        new
-                        {
-                            Id = 3,
-                            Name = "Del 3"
-                        },
-                        new
-                        {
-                            Id = 4,
-                            Name = "Del 4"
-                        });
+                    b.ToTable("SegmentModel");
                 });
 
             modelBuilder.Entity("Shared.DbModels.SubcategoryModel", b =>
@@ -378,7 +328,7 @@ namespace ValhallaVaultCyberAwareness.Migrations
 
                     b.HasIndex("SegmentId");
 
-                    b.ToTable("Subcategories");
+                    b.ToTable("SubcategoryModel");
                 });
 
             modelBuilder.Entity("Shared.DbModels.UserResponseModel", b =>
@@ -405,22 +355,7 @@ namespace ValhallaVaultCyberAwareness.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserResponses");
-                });
-
-            modelBuilder.Entity("CategoryModelSegmentModel", b =>
-                {
-                    b.HasOne("Shared.DbModels.CategoryModel", null)
-                        .WithMany()
-                        .HasForeignKey("CategoriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Shared.DbModels.SegmentModel", null)
-                        .WithMany()
-                        .HasForeignKey("SegmentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.ToTable("UserResponseModel");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
@@ -496,6 +431,17 @@ namespace ValhallaVaultCyberAwareness.Migrations
                     b.Navigation("Subcategory");
                 });
 
+            modelBuilder.Entity("Shared.DbModels.SegmentModel", b =>
+                {
+                    b.HasOne("Shared.DbModels.CategoryModel", "Category")
+                        .WithMany("Segments")
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+                });
+
             modelBuilder.Entity("Shared.DbModels.SubcategoryModel", b =>
                 {
                     b.HasOne("Shared.DbModels.SegmentModel", "Segment")
@@ -529,6 +475,11 @@ namespace ValhallaVaultCyberAwareness.Migrations
             modelBuilder.Entity("Shared.DbModels.ApplicationUser", b =>
                 {
                     b.Navigation("Responses");
+                });
+
+            modelBuilder.Entity("Shared.DbModels.CategoryModel", b =>
+                {
+                    b.Navigation("Segments");
                 });
 
             modelBuilder.Entity("Shared.DbModels.QuestionModel", b =>

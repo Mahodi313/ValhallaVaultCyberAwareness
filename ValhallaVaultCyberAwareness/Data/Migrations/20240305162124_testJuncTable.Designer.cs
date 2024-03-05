@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using ValhallaVaultCyberAwareness.Data;
 
@@ -11,9 +12,11 @@ using ValhallaVaultCyberAwareness.Data;
 namespace ValhallaVaultCyberAwareness.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240305162124_testJuncTable")]
+    partial class testJuncTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -21,21 +24,6 @@ namespace ValhallaVaultCyberAwareness.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
-
-            modelBuilder.Entity("CategoryModelSegmentModel", b =>
-                {
-                    b.Property<int>("CategoriesId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("SegmentsId")
-                        .HasColumnType("int");
-
-                    b.HasKey("CategoriesId", "SegmentsId");
-
-                    b.HasIndex("SegmentsId");
-
-                    b.ToTable("CategoryModelSegmentModel");
-                });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
                 {
@@ -328,11 +316,16 @@ namespace ValhallaVaultCyberAwareness.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<int?>("CategoryModelId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryModelId");
 
                     b.ToTable("Segments");
 
@@ -408,21 +401,6 @@ namespace ValhallaVaultCyberAwareness.Migrations
                     b.ToTable("UserResponses");
                 });
 
-            modelBuilder.Entity("CategoryModelSegmentModel", b =>
-                {
-                    b.HasOne("Shared.DbModels.CategoryModel", null)
-                        .WithMany()
-                        .HasForeignKey("CategoriesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Shared.DbModels.SegmentModel", null)
-                        .WithMany()
-                        .HasForeignKey("SegmentsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -496,6 +474,13 @@ namespace ValhallaVaultCyberAwareness.Migrations
                     b.Navigation("Subcategory");
                 });
 
+            modelBuilder.Entity("Shared.DbModels.SegmentModel", b =>
+                {
+                    b.HasOne("Shared.DbModels.CategoryModel", null)
+                        .WithMany("Segments")
+                        .HasForeignKey("CategoryModelId");
+                });
+
             modelBuilder.Entity("Shared.DbModels.SubcategoryModel", b =>
                 {
                     b.HasOne("Shared.DbModels.SegmentModel", "Segment")
@@ -529,6 +514,11 @@ namespace ValhallaVaultCyberAwareness.Migrations
             modelBuilder.Entity("Shared.DbModels.ApplicationUser", b =>
                 {
                     b.Navigation("Responses");
+                });
+
+            modelBuilder.Entity("Shared.DbModels.CategoryModel", b =>
+                {
+                    b.Navigation("Segments");
                 });
 
             modelBuilder.Entity("Shared.DbModels.QuestionModel", b =>
