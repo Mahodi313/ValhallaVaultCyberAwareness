@@ -1,0 +1,38 @@
+﻿@page "/admin"
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
+@using ValhallaVaultCyberAwareness.Components.Pages
+@using ValhallaVaultCyberAwareness.Data
+@using global::Shared.DbModels
+@inject IDbContextFactory<ApplicationDbContext> AppDbContext
+@attribute [Authorize(Roles = "Admin")]
+
+<h3>Admin</h3>
+
+<!-- Section for adding new category -->
+<h4>Add New Category</h4>
+<!-- Form for adding a new category -->
+
+<h4>Existing Categories</h4>
+
+@if (categories == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <!-- Display categories in a table or list with options to edit or delete -->
+}
+
+@code {
+    private List<CategoryModel> categories;
+
+    protected override async Task OnInitializedAsync()
+    {
+        using var context = AppDbContext.CreateDbContext();
+        categories = await context.Categories.ToListAsync();
+    }
+
+    // Methods for add, edit, delete operations
+}
+
