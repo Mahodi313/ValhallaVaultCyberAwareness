@@ -5,7 +5,7 @@ namespace Shared.DbModels
     public class QuestionModel
     {
         [Key]
-        int Id { get; set; }
+        public int Id { get; set; }
         public string Title { get; set; } = null!;
         public int SubcategoryId { get; set; }
         public SubcategoryModel Subcategory { get; set; } = null!;
