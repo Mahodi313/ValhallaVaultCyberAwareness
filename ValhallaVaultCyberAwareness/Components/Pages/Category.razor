@@ -1,4 +1,11 @@
-﻿<h3>Category</h3>
+﻿@page "/category"
+@using Microsoft.AspNetCore.Mvc
+@using Shared.ApiModel
+@using Shared.DbModels
+@using ValhallaVaultCyberAwareness.API
+@inject UserController userCont;
+
+<h3>Category</h3>
 
 <!-- Infomation about a specific Category -->
 
@@ -10,10 +17,25 @@
 
 
 <div>
-
+    @if(Users.Any())
+    {
+        @foreach (UserApiModel user in Users)
+        {
+            <h1>@user.Username</h1>
+        }
+    }
     
+
 </div>
 
 @code {
+    
 
+    List<UserApiModel>? Users { get; set; } = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        Users = await userCont.GetAllUsersAsync();
+
+    }
 }
