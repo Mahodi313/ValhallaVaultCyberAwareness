@@ -20,6 +20,7 @@ namespace ValhallaVaultCyberAwareness.API
         [HttpGet]
         public async Task<List<UserApiModel>> GetAllUsersAsync()
         {
+
             List<UserApiModel> ApiUsers = new List<UserApiModel>();
 
             foreach (var user in await userManager.Users.ToListAsync())
