@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Shared.DbModels;
+using ValhallaVaultCyberAwareness.API;
 using ValhallaVaultCyberAwareness.Components;
 using ValhallaVaultCyberAwareness.Components.Account;
 using ValhallaVaultCyberAwareness.Data;
@@ -92,7 +93,7 @@ async Task CreateRolesAndUsersAsync(IServiceProvider serviceProvider)
 
 
 
-
+builder.Services.AddScoped<UserController>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
