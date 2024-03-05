@@ -115,3 +115,43 @@ h1:focus {
 .AccountRememberMe-box {
     color: #FFFFFF;
 }
+
+.categories {
+    height: 100%;
+    width: 100%;
+}
+
+.cat-information {
+    max-width:80vw;
+}
+
+.category {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 40px;
+    
+}
+
+.cat-row {
+   
+    margin-top: 5px;
+}
+
+.cat-card {
+    border: 2px solid #156AA3;
+    padding: 20px;
+    border-radius: 15px;
+    background-color: #156AA3;
+    max-width:40vw;
+    margin: 10 auto;
+}
+
+.img-check {
+    width: 30px;
+    height: 30px;
+}
+
+.mar {
+    margin:20px;
+}
