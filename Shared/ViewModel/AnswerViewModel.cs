@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Shared.ViewModel
+namespace ValhallaVaultCyberAwareness.DAL.ViewModel
 {
     public class AnswerViewModel
     {

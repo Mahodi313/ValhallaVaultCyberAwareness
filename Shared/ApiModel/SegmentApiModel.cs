@@ -1,4 +1,4 @@
-﻿namespace Shared.ApiModels
+﻿namespace ValhallaVaultCyberAwareness.DAL.ApiModels
 {
     public class SegmentApiModel
     {

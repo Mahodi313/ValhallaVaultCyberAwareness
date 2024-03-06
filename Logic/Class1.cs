@@ -1,4 +1,4 @@
-﻿namespace Logic
+﻿namespace ValhallaVaultCyberAwareness.App
 {
     public class Class1
     {

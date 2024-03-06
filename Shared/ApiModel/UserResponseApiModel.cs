@@ -1,7 +1,6 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Shared.DbModels;
+﻿using ValhallaVaultCyberAwareness.DAL.DbModels;
 
-namespace Shared.ApiModels
+namespace ValhallaVaultCyberAwareness.DAL.ApiModels
 {
     public class UserResponseApiModel
     {

@@ -4,12 +4,11 @@ using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Primitives;
-using Shared.DbModels;
 using System.Security.Claims;
 using System.Text.Json;
 using ValhallaVaultCyberAwareness.Components.Account.Pages;
 using ValhallaVaultCyberAwareness.Components.Account.Pages.Manage;
-using ValhallaVaultCyberAwareness.Data;
+using ValhallaVaultCyberAwareness.DAL.DbModels;
 
 namespace Microsoft.AspNetCore.Routing
 {

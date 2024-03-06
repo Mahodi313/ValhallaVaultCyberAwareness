@@ -1,5 +1,5 @@
-﻿using Shared.ApiModels;
-namespace Shared.ApiModel
+﻿using ValhallaVaultCyberAwareness.DAL.ApiModels;
+namespace ValhallaVaultCyberAwareness.DAL.ApiModel
 {
     public class UserApiModel
     {
