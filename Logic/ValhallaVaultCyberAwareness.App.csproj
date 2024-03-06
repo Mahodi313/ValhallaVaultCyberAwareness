@@ -7,7 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Shared\Shared.csproj" />
+    <ProjectReference Include="..\Shared\ValhallaVaultCyberAwareness.DAL.csproj" />
   </ItemGroup>
 
 </Project>
