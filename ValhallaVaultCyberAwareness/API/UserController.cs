@@ -1,59 +1,110 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ValhallaVaultCyberAwareness.DAL.ApiModel;
 using ValhallaVaultCyberAwareness.DAL.ApiModels;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
+using ValhallaVaultCyberAwareness.DAL.Uow;
 
 namespace ValhallaVaultCyberAwareness.API
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class GenericUserController<T> : ControllerBase
+    public class UserController : ControllerBase
     {
         private readonly UserManager<ApplicationUser> userManager;
+        private readonly IUow uow;
 
-        public GenericUserController(UserManager<ApplicationUser> userManager)
+        public UserController(UserManager<ApplicationUser> userManager, IUow uow)
         {
             this.userManager = userManager;
+            this.uow = uow;
         }
 
 
         #region //[HttpGetAll]
 
         [HttpGet]
-        public async Task<List<AnswerApiModel>> GetAllAnswersAsync()
+        public IActionResult GetAllQuestionsAsync()
         {
+            //Get all questions
+            List<QuestionModel> Qs = new List<QuestionModel>();
+            Qs = uow.QuestionRepo.GetAllQuestions();
 
-            List<AnswerApiModel> ApiAnswers = new List<AnswerApiModel>();
+            List<QuestionApiModel> ApiQuestionsToReturn = new List<QuestionApiModel>();
 
-            foreach (var user in await userManager.Users.ToListAsync())
+
+            if (Qs.Any())
             {
-                UserApiModel ApiUser = new UserApiModel
+                //Turn Dbmodel to Apimodel
+                foreach (QuestionModel q in Qs)
                 {
-                    Id = user.Id,
-                    Username = user.UserName,
-                    Email = user.Email
+                    List<AnswerApiModel> As = new List<AnswerApiModel>();
+                    List<UserResponseApiModel> URs = new List<UserResponseApiModel>();
 
-                };
-                //user.Add(ApiUser);
+                    //Get all answers to question
+                    foreach (AnswerModel a in q.Answers)
+                    {
+                        AnswerApiModel answer = new AnswerApiModel()
+                        {
+                            Id = a.Id,
+                            Answer = a.Answer,
+                            IsCorrectAnswer = a.IsCorrectAnswer,
+                            QuestionId = a.QuestionId
 
+                        };
+
+                        As.Add(answer);
+
+                    }
+
+                    //get all user responses to question
+                    foreach (UserResponseModel ur in q.UserResponse)
+                    {
+                        UserResponseApiModel userResp = new UserResponseApiModel()
+                        {
+                            Id = ur.Id,
+                            UserId = ur.UserId,
+                            QuestionId = ur.QuestionId
+
+                        };
+
+                        URs.Add(userResp);
+
+                    }
+
+                    //new apimodel 
+                    QuestionApiModel ApiQuestion = new()
+                    {
+                        Title = q.Title,
+                        SubcategoryId = q.SubcategoryId,
+                        Answers = As,
+                        UserResponse = URs
+                    };
+
+                    ApiQuestionsToReturn.Add(ApiQuestion);
+
+                }
+
+                return Ok(ApiQuestionsToReturn);
 
             }
 
-            return ApiAnswers;
+            return NotFound("No questions awailable");
+
         }
+
+
+
 
         #endregion
 
 
         #region //[HttpGetById]
 
-        [HttpGet("{id}")]
-        public async Task<List<UserApiModel>> GetAnswerByIdAsync(int id)
+        /*[HttpGet("{id}")]
+        public async Task<List<UserApiModel>> GetAnswerByAsync(int id)
         {
             return new List<UserApiModel>();
-        }
+        }*/
 
 
         #endregion
@@ -61,11 +112,11 @@ namespace ValhallaVaultCyberAwareness.API
 
         #region //[HttpPost]
 
-        [HttpPost]
-        public async Task<List<UserApiModel>> GetUserByIdAsync(int id)
+        //[HttpPost]
+        /*public async Task<List<UserApiModel>> GetUserByIdAsync(int id)
         {
             return new List<UserApiModel>();
-        }
+        }*/
 
 
         #endregion
@@ -73,11 +124,11 @@ namespace ValhallaVaultCyberAwareness.API
 
         #region //[HttpPutById]
 
-        [HttpPut("id")]
-        public async Task<List<UserApiModel>> GetUsByIdAsync(int id)
+        //[HttpPut("id")]
+        /*public async Task<List<UserApiModel>> GetUsByIdAsync(int id)
         {
             return new List<UserApiModel>();
-        }
+        }*/
 
 
         #endregion
@@ -85,15 +136,17 @@ namespace ValhallaVaultCyberAwareness.API
 
         #region //[HttpDeleteById]
 
-        [HttpDelete("id")]
-        public async Task<List<UserApiModel>> GetUByIdAsync(int id)
+        //[HttpDelete]
+        /*public async Task<List<UserApiModel>> GetUByIdAsync(int id)
         {
             return new List<UserApiModel>();
 
         }
-
+    */
 
         #endregion
 
+
     }
+
 }

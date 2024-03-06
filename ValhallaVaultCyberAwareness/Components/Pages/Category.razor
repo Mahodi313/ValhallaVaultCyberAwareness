@@ -3,7 +3,7 @@
 @using ValhallaVaultCyberAwareness.DAL.ApiModel
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.API
-@inject UserController userCont;
+
 
 @if(category != null)
 {
@@ -203,7 +203,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        Users = await userCont.GetAllUsersAsync();
+        //Users = await userCont.GetAllUsersAsync();
 
         category = Categories[Id];
 

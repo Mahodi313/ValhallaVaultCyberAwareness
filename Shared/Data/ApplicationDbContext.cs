@@ -14,6 +14,8 @@ namespace ValhallaVaultCyberAwareness.Data
         public DbSet<AnswerModel> Answers { get; set; }
         public DbSet<UserResponseModel> UserResponses { get; set; }
 
+
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
 
