@@ -4,7 +4,7 @@
 // Microsoft.AspNetCore.Identity.EntityFrameworkCore (8.0.0)
 using System.ComponentModel.DataAnnotations;
 
-namespace Shared.DbModels
+namespace ValhallaVaultCyberAwareness.DAL.DbModels
 {
     public class UserResponseModel
     {

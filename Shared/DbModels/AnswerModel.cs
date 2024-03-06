@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace Shared.DbModels
+namespace ValhallaVaultCyberAwareness.DAL.DbModels
 {
     public class AnswerModel
     {

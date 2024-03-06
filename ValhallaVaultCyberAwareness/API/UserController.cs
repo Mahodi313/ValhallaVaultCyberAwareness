@@ -1,8 +1,8 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Shared.ApiModel;
-using Shared.DbModels;
+using ValhallaVaultCyberAwareness.DAL.ApiModel;
+using ValhallaVaultCyberAwareness.DAL.DbModels;
 
 namespace ValhallaVaultCyberAwareness.API
 {

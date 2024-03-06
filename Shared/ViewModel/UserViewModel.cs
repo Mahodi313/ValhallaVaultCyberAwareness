@@ -1,4 +1,4 @@
-﻿namespace Shared.ViewModel
+﻿namespace ValhallaVaultCyberAwareness.DAL.ViewModel
 {
     public class UserViewModel
     {

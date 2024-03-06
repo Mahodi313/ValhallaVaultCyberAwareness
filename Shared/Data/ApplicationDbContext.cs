@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
-using Shared.DbModels;
+using ValhallaVaultCyberAwareness.DAL.DbModels;
 
 namespace ValhallaVaultCyberAwareness.Data
 {
@@ -41,9 +41,9 @@ namespace ValhallaVaultCyberAwareness.Data
             // Segments for category 1
                 new SegmentModel
                 {
-                Id = 1,
-                Name = "Del 1",
-                CategoryId = 1
+                    Id = 1,
+                    Name = "Del 1",
+                    CategoryId = 1
                 },
 
                 new SegmentModel
@@ -268,7 +268,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new SubcategoryModel
                 {
-                    Id= 19,
+                    Id = 19,
                     Name = "Nätfiske och skräppost",
                     SegmentId = 5
                 },
@@ -284,7 +284,7 @@ namespace ValhallaVaultCyberAwareness.Data
                     Name = "Varning för vishing",
                     SegmentId = 5
                 },
-                new SubcategoryModel 
+                new SubcategoryModel
                 {
                     Id = 22,
                     Name = "Identifiera VD-mejl",
@@ -308,7 +308,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 {
                     Id = 25,
                     Name = "Så kan det gå till",
-                    SegmentId = 6                  
+                    SegmentId = 6
                 },
                 new SubcategoryModel
                 {
@@ -338,7 +338,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 // subcategories for segment 4
                 new SubcategoryModel
                 {
-                    Id= 30,
+                    Id = 30,
                     Name = "Utpressningsvirus",
                     SegmentId = 7
                 },
@@ -402,7 +402,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 // subcategories for segment 2
                 new SubcategoryModel
                 {
-                    Id= 40,
+                    Id = 40,
                     Name = "Värvningsförsök",
                     SegmentId = 9
                 },
@@ -471,7 +471,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 // Questions 
                 new QuestionModel
                 {
-                    Id= 5,
+                    Id = 5,
                     Title = "Inom företaget märker man att konfidentiella dokument regelbundet läcker ut till konkurrenter. Efter en intern granskning upptäcks det att en anställd omedvetet har installerat skadlig programvara genom att klicka på en länk i ett phishing-e-postmeddelande. Vilken åtgärd bör prioriteras för att förhindra framtida incidenter?",
                     SubcategoryId = 12,
                 },
@@ -534,7 +534,7 @@ namespace ValhallaVaultCyberAwareness.Data
 
             // Answers for questions
             builder.Entity<AnswerModel>().HasData(
-                new AnswerModel 
+                new AnswerModel
                 {
                     Id = 1,
                     Answer = "Ett legitimt försök från banken att skydda ditt konto",
@@ -560,10 +560,10 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id= 4,
+                    Id = 4,
                     Answer = "En legitim begäran om hjälp från en person i nöd",
                     IsCorrectAnswer = false,
-                    Explanation= null,
+                    Explanation = null,
                     QuestionId = 2
                 },
                 new AnswerModel
@@ -572,7 +572,7 @@ namespace ValhallaVaultCyberAwareness.Data
                     Answer = "Ett romansbedrägeri",
                     IsCorrectAnswer = true,
                     Explanation = "Begäran om pengar, särskilt under omständigheter där två personer aldrig har träffats fysiskt, är ett vanligt tecken på romansbedrägeri.",
-                    QuestionId = 2,                 
+                    QuestionId = 2,
                 },
                 new AnswerModel
                 {
@@ -608,7 +608,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 9,
+                    Id = 10,
                     Answer = "Ett misstag av kreditkortsföretaget",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -616,7 +616,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 10,
+                    Id = 11,
                     Answer = "Kreditkortsbedrägeri",
                     IsCorrectAnswer = true,
                     Explanation = "Oidentifierade transaktioner på ditt kreditkortsutdrag är en stark indikation på att ditt kortnummer har komprometterats och använts för obehöriga köp, vilket är typiskt för kreditkortsbedrägeri.",
@@ -624,7 +624,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 11,
+                    Id = 12,
                     Answer = "Obehöriga köp av en familjemedlem",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -632,7 +632,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 12,
+                    Id = 13,
                     Answer = "Utbildning i digital säkerhet för alla anställda",
                     IsCorrectAnswer = true,
                     Explanation = "Utbildning i digital säkerhet är avgörande för att hjälpa anställda att känna igen och undvika säkerhetshot som phishing, vilket är en vanlig attackvektor.",
@@ -640,7 +640,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 13,
+                    Id = 14,
                     Answer = "Installera en starkare brandvägg",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -648,7 +648,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 14,
+                    Id = 15,
                     Answer = "Byta ut all IT-utrustning",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -656,15 +656,15 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 15,
+                    Id = 16,
                     Answer = "Informera alla användare om sårbarheten och rekommendera temporära skyddsåtgärder",
                     IsCorrectAnswer = true,
-                    Explanation= "Transparent kommunikation och rådgivning om tillfälliga åtgärder är avgörande för att skydda användarna medan en permanent lösning utvecklas.",
+                    Explanation = "Transparent kommunikation och rådgivning om tillfälliga åtgärder är avgörande för att skydda användarna medan en permanent lösning utvecklas.",
                     QuestionId = 6
                 },
                 new AnswerModel
                 {
-                    Id = 16,
+                    Id = 17,
                     Answer = "Ignorera problemet tills en patch kan utvecklas",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -672,7 +672,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 17,
+                    Id = 18,
                     Answer = "Stänga ner tjänsten tillfälligt",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -680,7 +680,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 18,
+                    Id = 19,
                     Answer = "En enskild hackare med ett personligt vendetta",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -688,7 +688,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id= 19,
+                    Id = 20,
                     Answer = "En konkurrerande företagsentitet",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -696,7 +696,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 20,
+                    Id = 21,
                     Answer = "Organiserade cyberbrottsliga grupper",
                     IsCorrectAnswer = true,
                     Explanation = "DDoS-attacker kräver ofta betydande resurser och koordinering, vilket är karakteristiskt för organiserade cyberbrottsliga grupper.",
@@ -704,7 +704,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 21,
+                    Id = 22,
                     Answer = "Återgå till kontorsarbete",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -712,7 +712,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 22,
+                    Id = 23,
                     Answer = "Införa striktare lösenordspolicyer och tvåfaktorsautentisering för fjärråtkomst",
                     IsCorrectAnswer = true,
                     Explanation = "Införa striktare lösenordspolicyer och tvåfaktorsautentisering för fjärråtkomst",
@@ -720,15 +720,15 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 23,
+                    Id = 24,
                     Answer = "Förbjuda användning av personliga enheter för arbete",
                     IsCorrectAnswer = false,
-                    Explanation= null,
+                    Explanation = null,
                     QuestionId = 8,
                 },
                 new AnswerModel
                 {
-                    Id = 24,
+                    Id = 25,
                     Answer = "Phishing",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -736,7 +736,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 25,
+                    Id = 26,
                     Answer = "Ransomware",
                     IsCorrectAnswer = true,
                     Explanation = "Ransomware-angrepp involverar kryptering av offerdata och kräver lösen för dekryptering, vilket är särskilt skadligt för kritiska sektorer som hälsovård.",
@@ -744,7 +744,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 26,
+                    Id = 27,
                     Answer = "Spyware",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -752,7 +752,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 27,
+                    Id = 28,
                     Answer = "Spyware",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -760,7 +760,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 28,
+                    Id = 29,
                     Answer = "Ransomware",
                     IsCorrectAnswer = true,
                     Explanation = "Maersk utsattes för NotPetya ransomware-angreppet, som ledde till omfattande störningar och förluster genom att kryptera företagets globala system. Maersk rapporterade att företaget led ekonomiska förluster på grund av NotPetya ransomware-angreppet som uppskattades till cirka 300 miljoner USD. Denna siffra reflekterar de omfattande kostnaderna för störningar i deras globala verksamheter, återställande av system och data, samt förlust av affärer under tiden systemen var nere. NotPetya-angreppet anses vara ett av de mest kostsamma cyberangreppen mot ett enskilt företag och tjänar som en kraftfull påminnelse om de potentiella konsekvenserna av cyberhot.",
@@ -768,15 +768,15 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 29,
+                    Id = 30,
                     Answer = "Cyberkriminalitet",
                     IsCorrectAnswer = false,
-                    Explanation= null,
+                    Explanation = null,
                     QuestionId = 11,
                 },
                 new AnswerModel
                 {
-                    Id= 30,
+                    Id = 31,
                     Answer = "Cyberspionage",
                     IsCorrectAnswer = true,
                     Explanation = "Cyberspionage avser aktiviteter där aktörer, ofta statliga, engagerar sig i övervakning och datainsamling genom cybermedel för att erhålla hemlig information utan målets medgivande, typiskt för politiska, militära eller ekonomiska fördelar.",
@@ -784,7 +784,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 31,
+                    Id = 32,
                     Answer = "Cyberterrorism",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -792,7 +792,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 32,
+                    Id = 33,
                     Answer = "Social ingenjörskonst",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -800,7 +800,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 33,
+                    Id = 34,
                     Answer = "Massövervakning",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -808,7 +808,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 34,
+                    Id = 35,
                     Answer = "Riktade cyberattacker",
                     IsCorrectAnswer = true,
                     Explanation = "Riktade cyberattacker som utnyttjar noll-dagars Zero-day sårbarheter är en avancerad metod för cyberspionage där angriparen specifikt riktar in sig på ett mål för att komma åt känslig information eller data genom att utnyttja tidigare okända sårbarheter i programvara.",
@@ -816,7 +816,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 35,
+                    Id = 36,
                     Answer = "GDPR",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -824,15 +824,15 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 36,
+                    Id = 37,
                     Answer = "Säkerhetsskyddslagen",
                     IsCorrectAnswer = true,
-                    Explanation= "Säkerhetsskyddslagen är en svensk lagstiftning som syftar till att skydda nationellt känslig information från spioneri, sabotage, terroristbrott och andra säkerhetshot. Lagen ställer krav på säkerhetsskyddsåtgärder för verksamheter av betydelse för Sveriges säkerhet.",
+                    Explanation = "Säkerhetsskyddslagen är en svensk lagstiftning som syftar till att skydda nationellt känslig information från spioneri, sabotage, terroristbrott och andra säkerhetshot. Lagen ställer krav på säkerhetsskyddsåtgärder för verksamheter av betydelse för Sveriges säkerhet.",
                     QuestionId = 13
                 },
                 new AnswerModel
                 {
-                    Id = 37,
+                    Id = 38,
                     Answer = "IT-säkerhetslagen",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -840,7 +840,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 38,
+                    Id = 39,
                     Answer = "Oberoende hackare",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -848,7 +848,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 39,
+                    Id = 40,
                     Answer = "Aktivistgrupper",
                     IsCorrectAnswer = false,
                     Explanation = null,
@@ -856,7 +856,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 },
                 new AnswerModel
                 {
-                    Id = 40,
+                    Id = 41,
                     Answer = "Statssponsrade hackers",
                     IsCorrectAnswer = true,
                     Explanation = "Statssponsrade hackers är aktörer som arbetar på uppdrag av eller med stöd från en regering för att genomföra cyberspionage, ofta riktat mot utländska intressen, organisationer eller regeringar för att få strategiska fördelar.",
