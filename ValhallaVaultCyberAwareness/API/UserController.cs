@@ -40,9 +40,12 @@ namespace ValhallaVaultCyberAwareness.API
             return ApiUsers;
         }
 
+        [HttpGet[/{id}]]
+        public async Task
 
 
 
 
-    }
+
+}
 }

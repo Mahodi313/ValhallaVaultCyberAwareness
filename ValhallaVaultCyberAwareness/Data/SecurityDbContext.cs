@@ -349,7 +349,7 @@ namespace ValhallaVaultCyberAwareness.Data
                     Title = "Du får ett e-postmeddelande/samtal om ett exklusivt erbjudande att investera i ett startup-företag som påstås ha en revolutionerande ny teknologi, med garantier om exceptionellt hög avkastning på mycket kort tid. Hur bör du förhålla dig till erbjudandet?",
                     SubcategoryId = 1
 
-                },
+                }
 
 
             );
