@@ -1,13 +1,84 @@
 ﻿@using Microsoft.AspNetCore.Authorization
+@using ValhallaVaultCyberAwareness.DAL.DbModels
 @attribute [Authorize]
 @page "/Home"
 
-<nav class="navbar">
-	<div>
-		<h1>Valhalla Home</h1>
-	</div>
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <span class = "navbar-brand mb-0 h1">Valhalla Home</span>
+    <div class = "d-flex justify-content-end">
+        <AuthorizeView Roles="Admin">
+            <Authorized>
+                <a class ="btn btn-warning me-2" href = "#">Go To Admin Section</a>
+            </Authorized>
+        </AuthorizeView>
+        <a class ="btn btn-success ms-2" href ="#">Edit Account info</a>
+        <button class ="btn btn-danger ms-2" @onclick="HandleSignOut">Log out</button>
+    </div>
 </nav>
+<br />
+<main>
+    <div class="search-container text-center">
+        <input class="search-input" type="text" placeholder="Search for categories..." @bind="searchTerm" @oninput="SearchCategories" />
+    </div>
+	<br />
+	<div class = "text-center">
+        @foreach(var category in categories)
+        {
+
+            <div class = "card category-card mb-3">
+                <div class="card-header bg-primary text-white">
+                    <a href="#"><h2>@category.Name</h2></a>
+                </div>
+                @if (category.Segments != null && category.Segments.Any())
+                {
+                    <div class = "card-body">
+
+                        @foreach (var segment in category.Segments)
+                        {
+                            int segmentCompletion = CalculateSegmentCompletion(segment);
+                            <div class = "segment-info mb-2">
+                                <p class = "segment-name">@segment.Name</p>
+                                <div class = "progress">
+                                    <div class = "progress-bar" role ="progressbar" style = "width: @segmentCompletion%" aria-valuenow="@segmentCompletion" aria-valuemin="0" aria-valuemax = "100">@segmentCompletion%</div>
+                                </div>
+                            </div>
+                        }                    
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</main>
 
 @code {
+
+    private List<CategoryModel> categories = new();
+    private List<UserResponseModel> userResponses = new();
+
+    private string searchTerm = "";
+
+    private void SearchCategories(ChangeEventArgs e)
+    {
+        // TODO: Implement Logic for search input
+    }
+
+    private int CalculateSegmentCompletion(SegmentModel segment)
+    {
+        // Gets all questions from subcategories in the segment
+        int totalQuestions = segment.Subcategorys.SelectMany(sc => sc.Questions).Count();
+
+        // Counts the number of correct answers in a segment where the user has also responded correctly.
+        int correctAnswers = segment.Subcategorys
+            .SelectMany(sc => sc.Questions)
+            .SelectMany(q => q.Answers)
+            .Count(a => a.IsCorrectAnswer && userResponses.Any(ur => ur.QuestionId == a.Id && ur.IsCorrect));
+
+        return (int)(((double)correctAnswers / totalQuestions) * 100);
+    }
+
+    private void HandleSignOut()
+    {
+        // TODO: Implement sign out function
+    }
 
 }
