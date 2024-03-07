@@ -137,10 +137,11 @@ else
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
+
 app.UseAntiforgery();
 
-// TODO: Döp om App123 till något annat, kanske AppStart eller liknande (Sålänge man kan kalla på den)
-app.MapRazorComponents<App123>()
+//AppStart heter egentligen App ursprungligen i projektutformningen men fick en konflikt pga ValhallaVaultCyberAwareness.App namngivningen av vårt projekt
+app.MapRazorComponents<AppStart>()
     .AddInteractiveServerRenderMode();
 
 // Add additional endpoints required by the Identity /Account Razor components.

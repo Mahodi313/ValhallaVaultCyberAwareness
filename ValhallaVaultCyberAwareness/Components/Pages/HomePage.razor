@@ -1,6 +1,21 @@
-﻿@using Microsoft.AspNetCore.Authorization
+﻿@using System.Net.Http
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@using System.Security.Claims
+@using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.DbModels
+@using ValhallaVaultCyberAwareness.DAL.Repository
+
 @attribute [Authorize]
+@inject NavigationManager navigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IRepository<UserResponseModel> userRepo
+@inject IRepository<CategoryModel> categoryRepo
+@rendermode InteractiveServer
 @page "/Home"
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -12,8 +27,13 @@
             </Authorized>
         </AuthorizeView>
         <a class ="btn btn-success ms-2" href ="#">Edit Account info</a>
-        <button class ="btn btn-danger ms-2" @onclick="HandleSignOut">Log out</button>
-    </div>
+
+        <form action="Account/Logout" method="post">
+             <AntiforgeryToken />
+             <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+            <button type="submit" class="btn btn-danger ms-2">Log out</button>
+        </form>
+    </div>   
 </nav>
 <br />
 <main>
@@ -57,15 +77,69 @@
 
     private string searchTerm = "";
 
-    private void SearchCategories(ChangeEventArgs e)
+    private string? currentUrl;
+    private ClaimsPrincipal? currentUser;
+
+    protected override async Task OnInitializedAsync()
     {
-        // TODO: Implement Logic for search input
+        categories = await LoadCategories();
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        currentUser = authState.User;
+
+        if (currentUser.Identity.IsAuthenticated)
+        {
+            var userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+        }
+    }
+
+    // I took the already implemented logout function and added it here
+    // because there was a problem with Blazor Server Side when accessing httpContext,
+    // while using @rendermode InteractiveServer
+    protected override void OnInitialized()
+    {
+        currentUrl = navigationManager.ToBaseRelativePath(navigationManager.Uri);
+        navigationManager.LocationChanged += OnLocationChanged;
+    }
+
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = navigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    private async Task<List<CategoryModel>> LoadCategories()
+    {
+        var loadedCategories = await categoryRepo.GetCategoryIncludeSegmentAsync();
+        return loadedCategories;
+    }
+
+    private async Task SearchCategories(ChangeEventArgs e)
+    {
+        searchTerm = e.Value.ToString();
+
+        if (!string.IsNullOrWhiteSpace(searchTerm.Trim()))
+        {
+            categories = categories
+            .Where(c => c.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+        }
+        else
+        {
+            categories = await LoadCategories();
+        }
+
     }
 
     private int CalculateSegmentCompletion(SegmentModel segment)
     {
-        // Gets all questions from subcategories in the segment
         int totalQuestions = segment.Subcategorys.SelectMany(sc => sc.Questions).Count();
+
+        if (totalQuestions == 0)
+        {
+            return 0; 
+        }
 
         // Counts the number of correct answers in a segment where the user has also responded correctly.
         int correctAnswers = segment.Subcategorys
@@ -73,12 +147,7 @@
             .SelectMany(q => q.Answers)
             .Count(a => a.IsCorrectAnswer && userResponses.Any(ur => ur.QuestionId == a.Id && ur.IsCorrect));
 
-        return (int)(((double)correctAnswers / totalQuestions) * 100);
+        double percentage = ((double)correctAnswers / totalQuestions) * 100;
+        return (int)Math.Round(percentage); 
     }
-
-    private void HandleSignOut()
-    {
-        // TODO: Implement sign out function
-    }
-
 }
