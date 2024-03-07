@@ -138,8 +138,6 @@ else
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
-app.UseAntiforgery();
-
 app.MapRazorComponents<App123>()
     .AddInteractiveServerRenderMode();
 

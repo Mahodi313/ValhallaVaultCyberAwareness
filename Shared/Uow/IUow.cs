@@ -12,7 +12,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Uow
         public IRepository<SubcategoryModel> SubcategoryRepo { get; }
         public IRepository<UserResponseModel> UserResponseRepo { get; }
         public IRepository<ApplicationUser> UserRepo { get; }
-        void SaveChanges();
+        Task SaveChanges();
     }
 
 }
