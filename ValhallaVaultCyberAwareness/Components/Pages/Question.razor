@@ -1,0 +1,115 @@
+﻿@page "/question"
+@using ValhallaVaultCyberAwareness.DAL.DbModels
+@using ValhallaVaultCyberAwareness.DAL.Repository
+@inject IRepository<QuestionModel> questionRepository
+@inject IRepository<AnswerModel> answerRepository
+
+<PageTitle>Quiz - Subcategory</PageTitle>
+
+<h3>Quiz</h3>
+@* 
+@if (questions == null)
+{
+    <p>Loading questions...</p>
+}
+else if (!showResults)
+{
+    <div>
+        <p>@currentQuestion.Text</p>
+        @foreach (var answer in currentAnswers)
+        {
+            <div>
+                <input type="radio" name="answer" @onchange="@(() => SelectAnswer(answer))" />
+                @answer.Text
+            </div>
+        }
+        <div>
+            @if (currentIndex > 0)
+            {
+                <button class="btn btn-primary" @onclick="PreviousQuestion">Föregående</button>
+            }
+            @if (currentIndex < questions.Count - 1)
+            {
+                <button class="btn btn-primary" @onclick="NextQuestion">Nästa</button>
+            }
+            else
+            {
+                <button class="btn btn-success" @onclick="SubmitAnswers">Skicka in svaren</button>
+            }
+        </div>
+    </div>
+}
+else
+{
+    <div>
+        <h3>Resultat</h3>
+        @foreach (var answer in userAnswers)
+        {
+            <p>@answer.QuestionText - @(answer.IsCorrect ? "Rätt" : "Fel")</p>
+        }
+    </div>
+}
+ *@
+@*
+    Att göra på sidan:
+    - Visa en fråga
+    - Visa alternativen
+    - En knapp för att skicka svaret
+        - Efter svaret är skickat ska det stå rätt eller fel
+        - Visa en förklaring
+    - En knapp för att gå vidare till nästa fråga
+
+    - En tillbaka knapp för att återvända till subkategorierna
+ *@
+@code {
+    private List<QuestionModel>? questions;
+    private List<AnswerModel>? currentAnswers;
+    private int currentIndex = 0;
+    private QuestionModel currentQuestion => questions?[currentIndex] ?? default(QuestionModel);
+    private bool showResults = false;
+    // TODO: Implementera UserResponse
+
+    protected override async Task OnInitializedAsync()
+    {
+        questions = await questionRepository.GetAllAsync();
+        if (questions.Any())
+        {
+            LoadAnswersForCurrentQuestion();
+        }
+    }
+
+    private async void LoadAnswersForCurrentQuestion()
+    {
+        var questionId = questions[currentIndex].Id;
+        currentAnswers = await answerRepository.GetAnswerForQuestionAsync(questionId);
+    }
+
+    private void SelectAnswer(AnswerModel answer)
+    {
+        // Logik för att spara användarens val
+    }
+
+    private void NextQuestion()
+    {
+        if (currentIndex < questions.Count - 1)
+        {
+            currentIndex++;
+            LoadAnswersForCurrentQuestion();
+        }
+    }
+
+    private void PreviousQuestion()
+    {
+        if (currentIndex > 0)
+        {
+            currentIndex--;
+            LoadAnswersForCurrentQuestion();
+        }
+    }
+
+    private void SubmitAnswers()
+    {
+        // Logik för att beräkna och visa resultaten baserat på användarens svar
+        showResults = true;
+    }
+}
