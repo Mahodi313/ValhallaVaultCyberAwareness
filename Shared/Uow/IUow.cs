@@ -12,7 +12,5 @@ namespace ValhallaVaultCyberAwareness.DAL.Uow
         IRepository<UserResponseModel> UserResponseRepo { get; }
         void SaveChanges();
     }
-    {
 
-    }
 }
