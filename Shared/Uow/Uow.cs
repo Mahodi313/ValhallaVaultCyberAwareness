@@ -47,9 +47,9 @@ namespace ValhallaVaultCyberAwareness.DAL.Uow
             _context.Dispose();
         }
 
-        public void SaveChanges()
+        public async Task SaveChanges()
         {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
     }
 }
