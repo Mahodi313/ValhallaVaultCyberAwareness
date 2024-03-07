@@ -48,7 +48,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         /// Asynchronously retrieves all <see cref="T"/> entities from the database.
         /// </summary>
         /// <returns>A list of all <see cref="T"/> objects.</returns>
-        public async Task<IEnumerable<T>> GetAllAsync()
+        public async Task<List<T>> GetAllAsync()
         {
             return await _dbSet.ToListAsync();
         }
@@ -117,7 +117,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         /// <param name="id">The ID of the question to retrieve.</param>
         /// <returns>The question entity corresponding to the specified ID.</returns>
         /// <exception cref="InvalidOperationException">Thrown if the question cannot be found.</exception>
-        public async Task<IEnumerable<AnswerModel>> GetAnswerForQuestionAsync(int questionId)
+        public async Task<List<AnswerModel>> GetAnswerForQuestionAsync(int questionId)
         {
             return await _context.Answers.Where(a => a.QuestionId == questionId).ToListAsync();
         }
@@ -127,7 +127,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         /// </summary>
         /// <param name="subcategoryId">The ID of the subcategory for which questions are to be retrieved.</param>
         /// <returns>A list of <see cref="QuestionModel"/> objects that belong to the specified subcategory.</returns>
-        public async Task<IEnumerable<QuestionModel>> GetQuestionsBySubcategoryAsync(int subcategoryId)
+        public async Task<List<QuestionModel>> GetQuestionsBySubcategoryAsync(int subcategoryId)
         {
             return await _context.Questions.Where(q => q.SubcategoryId == subcategoryId).ToListAsync();
         }
@@ -137,7 +137,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         /// </summary>
         /// <param name="questionId">The ID of the question for which user responses are to be retrieved.</param>
         /// <returns>A list of <see cref="UserResponseModel"/> objects associated with the specified question.</returns>
-        public async Task<IEnumerable<UserResponseModel>> GetUserResponsesForQuestionAsync(int questionId)
+        public async Task<List<UserResponseModel>> GetUserResponsesForQuestionAsync(int questionId)
         {
             return await _context.UserResponses.Where(ur => ur.QuestionId == questionId).ToListAsync();
         }
@@ -150,7 +150,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         /// </summary>
         /// <param name="questionId">The ID of the question.</param>
         /// <returns>A list of answer entities associated with the question ID.</returns>
-        public async Task<IEnumerable<AnswerModel>> GetByQuestionIdAsync(int questionId)
+        public async Task<List<AnswerModel>> GetByQuestionIdAsync(int questionId)
         {
             return await _context.Answers.Where(a => a.QuestionId == questionId).ToListAsync();
         }
@@ -160,7 +160,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         /// </summary>
         /// <param name="questionId">The ID of the question.</param>
         /// <returns>A list of correct answer entities associated with the question ID.</returns>
-        public async Task<IEnumerable<AnswerModel>> GetCorrectAnswersByQuestionIdAsync(int questionId)
+        public async Task<List<AnswerModel>> GetCorrectAnswersByQuestionIdAsync(int questionId)
         {
             return await _context.Answers.Where(a => a.QuestionId == questionId && a.IsCorrectAnswer).ToListAsync();
         }
@@ -169,14 +169,25 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
 
         // TODO: Implementera logik
 
-        public Task<IEnumerable<SubcategoryModel>> GetSubcategoryBySegmentAsync(int segmentId)
+        public Task<List<SubcategoryModel>> GetSubcategoryBySegmentAsync(int segmentId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<QuestionModel>> GetQuestionForSubcategoryAsync(int subcategoryId)
+        public Task<List<QuestionModel>> GetQuestionForSubcategoryAsync(int subcategoryId)
         {
             throw new NotImplementedException();
+        }
+
+        public Task<List<UserResponseModel>> GetResponsesOfUser(string userid)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<List<CategoryModel>> GetCategoryIncludeSegmentAsync()
+        {
+
+            return await _context.Categories.Include(c => c.Segments).ToListAsync();
         }
     }
 }

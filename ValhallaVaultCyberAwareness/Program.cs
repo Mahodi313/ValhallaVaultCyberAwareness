@@ -1,12 +1,11 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using ValhallaVaultCyberAwareness.API;
-using ValhallaVaultCyberAwareness.App.Services;
 using ValhallaVaultCyberAwareness.Components;
 using ValhallaVaultCyberAwareness.Components.Account;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
 using ValhallaVaultCyberAwareness.DAL.Repository;
+using ValhallaVaultCyberAwareness.DAL.Uow;
 using ValhallaVaultCyberAwareness.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -26,6 +25,8 @@ builder.Services.AddScoped<IRepository<QuestionModel>, Repository<QuestionModel>
 builder.Services.AddScoped<IRepository<AnswerModel>, Repository<AnswerModel>>();
 builder.Services.AddScoped<IRepository<ApplicationUser>, Repository<ApplicationUser>>();
 builder.Services.AddScoped<IRepository<UserResponseModel>, Repository<UserResponseModel>>();
+builder.Services.AddScoped<IUow, Uow>();
+
 
 builder.Services.AddAuthentication(options =>
     {
@@ -45,7 +46,6 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-// Oscar 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 async Task CreateRolesAndUsersAsync(IServiceProvider serviceProvider)
@@ -97,12 +97,22 @@ async Task CreateRolesAndUsersAsync(IServiceProvider serviceProvider)
     }
 }
 
+builder.Services.AddControllers();
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll", options =>
+    {
+        options.AllowAnyHeader();
+        options.AllowAnyMethod();
+        options.AllowAnyOrigin();
+    });
+});
 
 
 
-
-
-builder.Services.AddScoped<UserController>();
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
 
 var app = builder.Build();
@@ -110,6 +120,8 @@ var app = builder.Build();
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
+    app.UseSwagger();
+    app.UseSwaggerUI();
     app.UseMigrationsEndPoint();
 }
 else
@@ -127,14 +139,20 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
-app.MapRazorComponents<App>()
+// TODO: Döp om App123 till något annat, kanske AppStart eller liknande (Sålänge man kan kalla på den)
+app.MapRazorComponents<App123>()
     .AddInteractiveServerRenderMode();
 
 // Add additional endpoints required by the Identity /Account Razor components.
 app.MapAdditionalIdentityEndpoints();
 
+app.UseRouting();
+app.UseAuthorization();
+app.UseAntiforgery();
+app.MapControllers();
+app.UseCors("AllowAll");
 
-// Oscar
+
 await CreateRolesAndUsersAsync(app.Services);
 
 app.Run();
