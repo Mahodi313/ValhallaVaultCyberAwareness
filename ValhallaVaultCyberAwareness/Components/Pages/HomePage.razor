@@ -1,6 +1,15 @@
-﻿@using Microsoft.AspNetCore.Authorization
+﻿@using System.Net.Http
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Forms
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+@using Microsoft.JSInterop
+@using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.DbModels
+
 @attribute [Authorize]
+@inject NavigationManager navigationManager
 @page "/Home"
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
@@ -12,8 +21,13 @@
             </Authorized>
         </AuthorizeView>
         <a class ="btn btn-success ms-2" href ="#">Edit Account info</a>
-        <button class ="btn btn-danger ms-2" @onclick="HandleSignOut">Log out</button>
-    </div>
+
+        <form action="Account/Logout" method="post">
+             <AntiforgeryToken />
+             <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+            <button type="submit" class="btn btn-danger ms-2">Log out</button>
+        </form>
+    </div>   
 </nav>
 <br />
 <main>
@@ -57,9 +71,51 @@
 
     private string searchTerm = "";
 
+    private string? currentUrl;
+
+    // I took the already implemented logout function and added it here 
+    // because there was a problem with Blazor Server Side when accessing httpContext,
+    // while using @rendermode InteractiveServer
+    protected override void OnInitialized()
+    {
+        currentUrl = navigationManager.ToBaseRelativePath(navigationManager.Uri);
+        navigationManager.LocationChanged += OnLocationChanged;
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        categories = await LoadCategories();
+    }
+
+    private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
+    {
+        currentUrl = navigationManager.ToBaseRelativePath(e.Location);
+        StateHasChanged();
+    }
+
+    private async Task<List<CategoryModel>> LoadCategories()
+    {
+        // TODO: Implement logic for getting all categories from db.
+        return new List<CategoryModel>();
+    }
+
     private void SearchCategories(ChangeEventArgs e)
     {
         // TODO: Implement Logic for search input
+        searchTerm = e.Value.ToString();
+
+        //Filter and order categories based on the search term
+        if (!string.IsNullOrWhiteSpace(searchTerm.Trim()))
+        {
+            categories = categories.Where(c => c.Name.Contains(searchTerm, StringComparison.OrdinalIgnoreCase))
+            .OrderBy(c => c.Name.StartsWith(searchTerm, StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+            .ThenBy(c => c.Name)
+            .ToList();
+        }
+        else
+        {
+            categories = LoadCategories().Result;
+        }
     }
 
     private int CalculateSegmentCompletion(SegmentModel segment)
@@ -75,10 +131,4 @@
 
         return (int)(((double)correctAnswers / totalQuestions) * 100);
     }
-
-    private void HandleSignOut()
-    {
-        // TODO: Implement sign out function
-    }
-
 }
