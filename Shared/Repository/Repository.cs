@@ -119,7 +119,15 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         /// <exception cref="InvalidOperationException">Thrown if the question cannot be found.</exception>
         public async Task<List<AnswerModel>> GetAnswerForQuestionAsync(int questionId)
         {
-            return await _context.Answers.Where(a => a.QuestionId == questionId).ToListAsync();
+            try
+            {
+                return await _context.Answers.Where(a => a.QuestionId == questionId).Include(a => a.Question).ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine(ex.Message);
+                return new List<AnswerModel>();
+            }
         }
 
         /// <summary>
@@ -188,6 +196,13 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         {
 
             return await _context.Categories.Include(c => c.Segments).ToListAsync();
+        }
+
+        public async Task<List<SubcategoryModel>> GetSubcategoriesBySegmentAsync(int segmentId)
+        {
+            return await _context.Subcategories
+                .Where(sc => sc.SegmentId == segmentId)
+                .ToListAsync();
         }
     }
 }

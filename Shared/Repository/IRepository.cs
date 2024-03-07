@@ -29,5 +29,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
 
         // UserResponse Repository
         public Task<List<UserResponseModel>> GetResponsesOfUser(string userid);
+        Task<List<SubcategoryModel>> GetSubcategoriesBySegmentAsync(int segmentId);
     }
 }
