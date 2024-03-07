@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
 using ValhallaVaultCyberAwareness.Data;
 
@@ -48,8 +49,20 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         /// Asynchronously retrieves all <see cref="T"/> entities from the database.
         /// </summary>
         /// <returns>A list of all <see cref="T"/> objects.</returns>
+        public async Task<List<T>> GetAllAsync(params Expression<Func<T, object>>[] includes)
+        {
+            var query = _dbSet.AsQueryable();
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+            return await query.ToListAsync();
+        }
+
         public async Task<List<T>> GetAllAsync()
         {
+
             return await _dbSet.ToListAsync();
         }
 

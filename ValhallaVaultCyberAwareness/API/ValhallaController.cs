@@ -59,7 +59,8 @@ namespace ValhallaVaultCyberAwareness.API
         public async Task<IActionResult> GetAllCategories()
         {
             //Get all categories
-            var Cate = await uow.CategoryRepo.GetAllAsync();
+            var Cate = await uow.CategoryRepo.GetAllAsync(c => c.Segments);
+            var Sub = await uow.SubcategoryRepo.GetAllAsync(s => s.Questions);
 
 
             if (Cate.Any())
@@ -74,7 +75,7 @@ namespace ValhallaVaultCyberAwareness.API
                         Id = s.Id,
                         Name = s.Name,
                         CategoryId = s.CategoryId,
-                        Subcategorys = s.Subcategorys.Select(sc => new SubcategoryApiModel
+                        Subcategorys = Sub.Where(s => s.SegmentId == s.Id).Select(sc => new SubcategoryApiModel
                         {
                             Id = sc.Id,
                             Name = sc.Name,
@@ -124,7 +125,7 @@ namespace ValhallaVaultCyberAwareness.API
         public async Task<IActionResult> GetAllQuestionsAsync()
         {
             //Get all questions
-            var Qs = await uow.QuestionRepo.GetAllAsync();
+            var Qs = await uow.QuestionRepo.GetAllAsync(q => q.Answers, q => q.UserResponse);
 
 
             if (Qs.Any())
@@ -132,6 +133,7 @@ namespace ValhallaVaultCyberAwareness.API
                 //Turn Dbmodel to Apimodel
                 var ApiQuestionsToReturn = Qs.Select(q => new QuestionApiModel
                 {
+                    Id = q.Id,
                     Title = q.Title,
                     SubcategoryId = q.SubcategoryId,
                     Answers = q.Answers.Select(a => new AnswerApiModel
