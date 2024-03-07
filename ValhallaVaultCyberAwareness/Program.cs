@@ -5,6 +5,7 @@ using ValhallaVaultCyberAwareness.API;
 using ValhallaVaultCyberAwareness.Components;
 using ValhallaVaultCyberAwareness.Components.Account;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
+using ValhallaVaultCyberAwareness.DAL.Repository;
 using ValhallaVaultCyberAwareness.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,6 +18,13 @@ builder.Services.AddCascadingAuthenticationState();
 builder.Services.AddScoped<IdentityUserAccessor>();
 builder.Services.AddScoped<IdentityRedirectManager>();
 builder.Services.AddScoped<AuthenticationStateProvider, IdentityRevalidatingAuthenticationStateProvider>();
+builder.Services.AddScoped<IRepository<CategoryModel>, Repository<CategoryModel>>();
+builder.Services.AddScoped<IRepository<SegmentModel>, Repository<SegmentModel>>();
+builder.Services.AddScoped<IRepository<SubcategoryModel>, Repository<SubcategoryModel>>();
+builder.Services.AddScoped<IRepository<QuestionModel>, Repository<QuestionModel>>();
+builder.Services.AddScoped<IRepository<AnswerModel>, Repository<AnswerModel>>();
+builder.Services.AddScoped<IRepository<ApplicationUser>, Repository<ApplicationUser>>();
+builder.Services.AddScoped<IRepository<UserResponseModel>, Repository<UserResponseModel>>();
 
 builder.Services.AddAuthentication(options =>
     {

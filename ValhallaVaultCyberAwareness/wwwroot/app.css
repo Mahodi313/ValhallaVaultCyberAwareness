@@ -155,3 +155,71 @@ h1:focus {
 .mar {
     margin:20px;
 }
+
+/*Home page*/
+.navbar-home {
+    height:70px;
+    border-bottom:solid white;
+}
+
+.search-container {
+    max-width: 600px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+}
+
+.search-input {
+    width:100%;
+    padding:0.5rem;
+    font-size:1rem;
+    border:2px solid #CCCCCC;
+    border-radius:25px;
+    box-shadow: 0 0.0125rem 0.25rem, rgba(0, 0, 0, 0.075);
+    outline:none;
+    transition: all 0.3s ease-in-out;
+}
+
+.search-input:focus {
+    border-color: #007bff;
+    box-shadow: 0 0 8px 0 rgba(0, 123, 255, 0.6);
+}
+
+.search-input::placeholder {
+   color: #CCCCCC;
+}
+
+.category-card {
+    border: 1px solid white;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.segment-info {
+    margin-bottom: 10px;
+}
+
+.segment-name {
+    font-weight: bold;
+    margin-bottom: 5px;
+    color:black;
+}
+
+.progress {
+    border-radius: 0.25rem;
+}
+
+.progress-bar {
+    line-height: 20px;
+    color: white;
+    background-color: #007bff;
+}
+
+.card {
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.card-header {
+    font-size: 1.5rem;
+}
