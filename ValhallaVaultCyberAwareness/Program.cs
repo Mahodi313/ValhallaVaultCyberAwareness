@@ -46,7 +46,6 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddSignInManager()
     .AddDefaultTokenProviders();
 
-// Oscar 
 builder.Services.AddRazorPages();
 builder.Services.AddServerSideBlazor();
 async Task CreateRolesAndUsersAsync(IServiceProvider serviceProvider)
@@ -140,6 +139,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseAntiforgery();
 
+// TODO: Döp om App123 till något annat, kanske AppStart eller liknande (Sålänge man kan kalla på den)
 app.MapRazorComponents<App123>()
     .AddInteractiveServerRenderMode();
 
@@ -153,7 +153,6 @@ app.MapControllers();
 app.UseCors("AllowAll");
 
 
-// Oscar
 await CreateRolesAndUsersAsync(app.Services);
 
 app.Run();
