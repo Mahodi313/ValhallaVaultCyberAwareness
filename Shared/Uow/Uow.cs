@@ -29,27 +29,30 @@ namespace ValhallaVaultCyberAwareness.DAL.Uow
 
 
 
-        IRepository<AnswerModel> IUow.AnswerRepo { get; }
+        IRepository<AnswerModel> IUow.AnswerRepo => _answerRepo;
 
-        IRepository<CategoryModel> IUow.CategoryRepo { get; }
+        IRepository<CategoryModel> IUow.CategoryRepo => _categoryRepo;
 
-        IRepository<QuestionModel> IUow.QuestionRepo { get; }
+        IRepository<QuestionModel> IUow.QuestionRepo => _questionRepo;
 
-        IRepository<SegmentModel> IUow.SegmentRepo { get; }
+        IRepository<SegmentModel> IUow.SegmentRepo => _segmentRepo;
 
-        IRepository<SubcategoryModel> IUow.SubcategoryRepo { get; }
+        IRepository<SubcategoryModel> IUow.SubcategoryRepo => _subcategoryRepo;
 
-        IRepository<UserResponseModel> IUow.UserResponseRepo { get; }
-        public IRepository<ApplicationUser> UserRepo { get; }
+        IRepository<UserResponseModel> IUow.UserResponseRepo => _userResponseRepo;
+        public IRepository<ApplicationUser> UserRepo => _userRepo;
+
 
         public void Dispose()
         {
             _context.Dispose();
         }
 
-        public void SaveChanges()
+        public async Task SaveChanges()
         {
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
+
+
     }
 }
