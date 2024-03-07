@@ -1,0 +1,216 @@
+﻿@page "/question/{SegmentId:int}"
+@using ValhallaVaultCyberAwareness.DAL.DbModels
+@using ValhallaVaultCyberAwareness.DAL.Repository
+@inject IRepository<QuestionModel> questionRepository
+@inject IRepository<AnswerModel> answerRepository
+@inject IRepository<SubcategoryModel> subcategoryRepository
+@rendermode InteractiveServer
+
+
+<PageTitle>Quiz - Segment</PageTitle>
+
+<div class="container bg-white text-dark rounded shadow-sm p-4 my-4">
+    @if (!isLoaded)
+    {
+        <div class="text-center">
+            <p><em>Laddar frågor...</em></p>
+        </div>
+    }
+    else if (!showResults)
+    {
+        @if (subcategories != null && currentSubcategoryIndex < subcategories.Count)
+        {
+            <h2 class="text-center mb-3">@subcategories[currentSubcategoryIndex].Name</h2>
+        }
+
+        @if (questions != null && questions.Any())
+        {
+            <h4 class="text-center mb-4">@currentQuestion.Title</h4>
+        }
+
+        @if(answers != null)
+        {
+            @foreach (var answer in answers)
+            {
+                <div class="form-check mb-2">
+                    <input class="form-check-input" type="radio" name="answer" id="@($"answer-{answer.Id}")" @onchange="@(() => SelectAnswer(answer))" />
+                    <label class="form-check-label" for="@($"answer-{answer.Id}")">@answer.Answer</label>
+                </div>
+            }
+        }
+
+        <div class="d-flex justify-content-between mt-4">
+            @if (currentSubcategoryIndex > 0 || currentIndex > 0)
+            {
+                <button class="btn btn-outline-secondary" @onclick="@(async () => await PreviousQuestion())">Föregående</button>
+            }
+            else
+            {
+                <span></span> <!-- Placeholder for alignment -->
+            }
+
+            @if (currentIndex < (questions?.Count - 1) || currentSubcategoryIndex < (subcategories?.Count - 1))
+            {
+                <button class="btn btn-outline-primary" @onclick="@(async () => await NextQuestion())">Nästa</button>
+            }
+            else
+            {
+                <button class="btn btn-outline-success" @onclick="SubmitAnswers">Skicka in svaren</button>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center">
+            <h3>Resultat</h3>
+            @foreach (var response in userResponses)
+            {
+                <p>@response.Question.Title - @(response.IsCorrect ? "Rätt" : "Fel")</p>
+            }
+        </div>
+    }
+</div>
+
+@*
+    Att göra på sidan:
+    - Visa en fråga
+    - Visa alternativen
+    - En knapp för att skicka svaret
+        - Efter svaret är skickat ska det stå rätt eller fel
+        - Visa en förklaring
+    - En knapp för att gå vidare till nästa fråga
+
+    - En tillbaka knapp för att återvända till subkategorierna
+ *@
+@code {
+    [Parameter]
+    public int SegmentId { get; set; }
+
+    private int currentSubcategoryIndex = 0;
+    private List<SubcategoryModel>? subcategories;
+
+    private List<QuestionModel>? questions;
+    private List<AnswerModel>? answers;
+    private List<UserResponseModel> userResponses = new();
+    private QuestionModel? currentQuestion;
+    private AnswerModel? selectedAnswer;
+    private bool isLoaded = false;
+    private bool showResults = false;
+    private int currentIndex = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Hämta alla subkategorier för det angivna segmentet.
+        subcategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
+
+        // Kontrollera om det finns några subkategorier. Om det finns, ladda frågorna för den första subkategorin.
+        if (subcategories.Any())
+        {
+            currentSubcategoryIndex = 0; // Starta med den första subkategorin
+            await LoadQuestionsForSubcategory(subcategories[currentSubcategoryIndex].Id);
+            isLoaded = true; // Indikera att sidan har laddats och är redo att visas
+        }
+        else
+        {
+            // Hantera scenariot då inga subkategorier finns för det angivna segmentet
+            // Detta kan innebära att visa ett meddelande till användaren eller navigera bort från sidan
+            isLoaded = true;
+        }
+    }
+
+    private async Task NextQuestion()
+    {
+        if (currentIndex < questions.Count - 1)
+        {
+            currentIndex++;
+            currentQuestion = questions[currentIndex];
+            await LoadAnswersForCurrentQuestion(); // Använd await här
+        }
+        else if (currentSubcategoryIndex < subcategories.Count - 1)
+        {
+            currentSubcategoryIndex++;
+            await LoadQuestionsForSubcategory(subcategories[currentSubcategoryIndex].Id); // Och här
+        }
+        else
+        {
+            showResults = true;
+        }
+    }
+
+    private async Task PreviousQuestion()
+    {
+        if (currentIndex > 0)
+        {
+            currentIndex--;
+            currentQuestion = questions[currentIndex];
+            await LoadAnswersForCurrentQuestion(); // Använd await här
+        }
+        else if (currentSubcategoryIndex > 0)
+        {
+            currentSubcategoryIndex--;
+            await LoadQuestionsForSubcategory(subcategories[currentSubcategoryIndex].Id, loadLastQuestion: true); // Och här
+        }
+    }
+
+    private async Task LoadQuestionsForSubcategory(int subcategoryId, bool loadLastQuestion = false)
+    {
+        try
+        {
+            questions = await questionRepository.GetQuestionsBySubcategoryAsync(subcategoryId);
+            if (questions.Any())
+            {
+                currentIndex = loadLastQuestion ? questions.Count - 1 : 0;
+                currentQuestion = questions[currentIndex];
+                await LoadAnswersForCurrentQuestion();
+            }
+            else
+            {
+                // Hantera när inga frågor finns
+            }
+        }
+        catch (Exception ex)
+        {
+            // Logga undantaget och ge feedback till användaren
+        }
+    }
+
+    private async Task LoadAnswersForCurrentQuestion()
+    {
+        if (currentQuestion != null)
+        {
+            answers = await answerRepository.GetByQuestionIdAsync(currentQuestion.Id);
+            StateHasChanged(); // Detta kommer att orsaka att UI uppdateras med de nya svaren
+        }
+    }
+
+
+
+
+
+
+
+    // SE ÖVER NEDAN
+
+
+    private async Task SelectAnswer(AnswerModel answer)
+    {
+        var response = userResponses.FirstOrDefault(ur => ur.QuestionId == currentQuestion.Id);
+        if (response != null)
+        {
+            response.IsCorrect = answer.IsCorrectAnswer;
+        }
+        else
+        {
+            userResponses.Add(new UserResponseModel
+                {
+                    QuestionId = currentQuestion.Id,
+                    IsCorrect = answer.IsCorrectAnswer
+                });
+        }
+    }
+
+    private void SubmitAnswers()
+    {
+        showResults = true;
+    }
+}

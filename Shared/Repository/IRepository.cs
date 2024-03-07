@@ -23,5 +23,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         // SubcategoryRepository
         Task<List<SubcategoryModel>> GetSubcategoryBySegmentAsync(int segmentId);
         Task<List<QuestionModel>> GetQuestionForSubcategoryAsync(int subcategoryId);
+        Task<List<SubcategoryModel>> GetSubcategoriesBySegmentAsync(int segmentId);
     }
 }
