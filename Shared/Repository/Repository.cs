@@ -261,6 +261,11 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             return await _context.Categories.Include(c => c.Segments).ToListAsync();
         }
 
+        public async Task<CategoryModel?> GetCategoryWithSegmentIdAsync(int segmentId)
+        {
+            return await _context.Segments.Where(s => s.Id == segmentId).Select(s => s.Category).FirstOrDefaultAsync();
+        }
+
         public async Task<List<SubcategoryModel>> GetSubcategoriesBySegmentAsync(int segmentId)
         {
             return await _context.Subcategories

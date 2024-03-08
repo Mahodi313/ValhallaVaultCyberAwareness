@@ -30,6 +30,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
 
         //Category Repository
         Task<List<CategoryModel>> GetCategoryIncludeSegmentAsync();
+        Task<CategoryModel?> GetCategoryWithSegmentIdAsync(int segmentId);
 
         // UserResponse Repository
         Task<List<UserResponseModel>> GetResponsesOfUser(string userid);
