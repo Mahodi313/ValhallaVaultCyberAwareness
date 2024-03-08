@@ -114,7 +114,17 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             var entity = await _dbSet.FindAsync(id);
             if (entity == null)
             {
-                throw new InvalidOperationException("Entity not found");
+                return null;
+            }
+            return entity;
+        }
+
+        public async Task<T> GetByIdAsync(string id)
+        {
+            var entity = await _dbSet.FindAsync(id);
+            if (entity == null)
+            {
+                return null;
             }
             return entity;
         }
@@ -179,6 +189,8 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
                 Console.WriteLine(ex.Message);
                 return new List<AnswerModel>();
             }
+
+
         }
 
         /// <summary>
@@ -200,7 +212,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         {
             return await _context.UserResponses.Where(ur => ur.QuestionId == questionId).ToListAsync();
         }
-
 
 
 
@@ -228,9 +239,9 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
 
         // TODO: Implementera logik
 
-        public Task<List<SubcategoryModel>> GetSubcategoryBySegmentAsync(int segmentId)
+        public async Task<List<SubcategoryModel>> GetSubcategoryBySegmentAsync(int segmentId)
         {
-            throw new NotImplementedException();
+            return await _context.Subcategories.Where(su => su.SegmentId == segmentId).ToListAsync();
         }
 
         public Task<List<QuestionModel>> GetQuestionForSubcategoryAsync(int subcategoryId)
@@ -238,9 +249,9 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             throw new NotImplementedException();
         }
 
-        public Task<List<UserResponseModel>> GetResponsesOfUser(string userid)
+        public async Task<List<UserResponseModel>> GetResponsesOfUser(string userid)
         {
-            throw new NotImplementedException();
+            return await _context.UserResponses.Where(ur => ur.UserId == userid).ToListAsync();
         }
 
         public async Task<List<CategoryModel>> GetCategoryIncludeSegmentAsync()
