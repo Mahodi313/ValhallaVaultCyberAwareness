@@ -1,5 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using ValhallaVaultCyberAwareness.API.DataTransferObjects;
+using ValhallaVaultCyberAwareness.Components.Pages;
 using ValhallaVaultCyberAwareness.DAL.ApiModel;
 using ValhallaVaultCyberAwareness.DAL.ApiModels;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
@@ -544,11 +546,100 @@ namespace ValhallaVaultCyberAwareness.API
 
         #region HttpPost
 
-        /* [HttpPost]
-         public async Task<List<UserApiModel>> GetUserByIdAsync(int id)
-         {
-             return new List<UserApiModel>();
-         }*/
+        [HttpPost]
+        //Category
+        public async Task<IActionResult> OnPost([FromBody] CategoryDTO category)
+        {
+            if (category == null) 
+            {
+                return BadRequest("Error: Invalid input! Please try again..");
+            }
+            else
+            {
+                // Transfer the DTO to Db-Model
+                CategoryModel categoryToAdd = new()
+                {
+                    Name = category.Title,
+                    Info = category.Info
+                };
+
+                await uow.CategoryRepo.CreateAsync(categoryToAdd);
+                await uow.SaveChanges();
+
+                return Ok("Category was successfully added!");
+            }
+        }
+
+        [HttpPost]
+        //Segment
+        public async Task<IActionResult> OnPost([FromBody] SegmentDTO segment)
+        {
+            if (segment == null)
+            {
+                return BadRequest("Error: Invalid input! Please try again..");
+            }
+            else
+            {
+                SegmentModel segmentToAdd = new() 
+                {
+                    Name = segment.Name,
+                    CategoryId = segment.CategoryId
+                };
+
+                await uow.SegmentRepo.CreateAsync(segmentToAdd);
+                await uow.SaveChanges();
+
+                return Ok("Segment was successfully added!");
+            }
+        }
+
+        [HttpPost]
+        //Subcategory
+        public async Task<IActionResult> OnPost([FromBody] SubCategoryDTO subCategory)
+        {
+            if (subCategory == null)
+            {
+                return BadRequest("Error: Invalid input! Please try again..");
+            }
+            else
+            {
+                SubcategoryModel subCategoryToAdd = new()
+                {
+                    Name = subCategory.Name,
+                    SegmentId = subCategory.SegmentId
+                };
+
+                await uow.SubcategoryRepo.CreateAsync(subCategoryToAdd);
+                await uow.SaveChanges();
+
+                return Ok("Subcategory was successfully added!");
+            }
+        }
+
+        [HttpPost]
+        //Answer 
+        public async Task<IActionResult> OnPost([FromBody] AnswerDTO answer)
+        {
+            if (answer == null)
+            {
+                return BadRequest("Error: Invalid input! Please try again..");
+            }
+            else
+            {
+                AnswerModel answerToAdd = new()
+                {
+                    Answer = answer.Answer,
+                    IsCorrectAnswer = answer.IsCorrectAnswer,
+                    Explanation = answer.Explanation,
+                    QuestionId = answer.QuestionId
+                };
+
+                await uow.AnswerRepo.CreateAsync(answerToAdd);
+                await uow.SaveChanges();
+
+                return Ok("Answer was successfully added!");
+            }
+        }
 
 
         #endregion
