@@ -1,48 +1,63 @@
 ﻿@page "/category/{Id:int}"
+@using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Mvc
+@using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.ApiModel
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.API
+@using ValhallaVaultCyberAwareness.DAL.Repository
+@using ValhallaVaultCyberAwareness.DAL.Uow
+@using ValhallaVaultCyberAwareness.DAL.ViewModel
 
+@* @attribute [Authorize]
+ *@
+@inject IViewModelService service
 
-@if(category != null)
+@if(category == null)
 {
-    <h1 class="mar">@category.Name</h1>
+<h2>Error.. Page not found</h2>
 }
 
 
 <div class="col categories mar">
-    <div class="row cat-information">
-        <p>Här kommer man kunna se informationen om en specifik kategori, njut av denna lorem ipsum som utfyllnad! Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Augue interdum velit euismod in pellentesque massa placerat. Ornare lectus sit amet est placerat in egestas erat. Commodo elit at imperdiet dui accumsan sit. Aliquet eget sit amet tellus cras. Ultricies mi quis hendrerit dolor. Hendrerit gravida rutrum quisque non tellus orci. Consequat semper viverra nam libero justo laoreet sit amet. Elit ut aliquam purus sit amet luctus venenatis lectus magna. Quis imperdiet massa tincidunt nunc pulvinar sapien et ligula. Elit at imperdiet dui accumsan sit amet. Lorem sed risus ultricies tristique nulla aliquet enim. Convallis tellus id interdum velit laoreet id donec ultrices tincidunt. Varius sit amet mattis vulputate enim nulla. Ac tortor vitae purus faucibus ornare. Aenean sed adipiscing diam donec adipiscing. Nunc aliquet bibendum enim facilisis gravida.</p>
-    </div>
-    <hr />
-
-    @if (Categories.Any())
+    
+    @if (category != null)
     {
-        <div class="row category">
+        <div class="row ">
+            <div class="row categories">
+                <h1 class="mar ">@category.Name</h1>
+                <p>@category.Info</p>
+            </div>
+            <hr />
 
-            @foreach (CategoryModel cat in Categories)
-            {
+            <div class="row category">
+
+
                 <div class="cat-row">
                     <div>
-                        <h2>@cat.Name</h2>
+                        <h2>@category.Name</h2>
                     </div>
 
-                    @foreach (SegmentModel seg in cat.Segments)
+                    @foreach (SegmentViewModel seg in segments)
                     {
                         <div class="cat-row cat-card">
                             <div style="margin:20px;">
-                                <img class="img-check" src="/Images/check.png" />
+                                <img class="img-check mar" src="/Images/check.png" />
                                 <span style="font-size:x-large">@seg.Name</span>
+
+                                <div class="cat-row">
+                                    <div class="d-flex flex-column ">
+                                        @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == seg.Id))
+                                        {
+                                            <div class="">@sub.Name</div>
+                                        }
+                                    </div>
+                                </div>
                             </div>
-                            
-                            <div class="d-flex fle">
-                                @foreach(SubcategoryModel sub in seg.Subcategorys)
-                                {
-                                    <div class="">@sub.Name</div>
-                                }
-                            </div>
-                            
+
+
+
+
                         </div>
 
                         <br />
@@ -55,8 +70,10 @@
 
 
                 </div>
-            }
+
+            </div>
         </div>
+        
         
         
 
@@ -73,140 +90,31 @@
 <!-- Show which segments are finished -->
 
 
-<div>
-    @if(Users.Any())
-    {
-        @foreach (UserApiModel user in Users)
-        {
-            <h1>@user.Username</h1>
-        }
-    }
-    
-
-</div>
-
 @code {
     [Parameter]
     public int Id { get; set; }
 
-    List<UserApiModel>? Users { get; set; } = new();
-    CategoryModel category { get; set; }
 
-    List<CategoryModel> Categories = new()
-    {
-        new CategoryModel
-        {
-            Id = 1,
-            Name = "Grunläggande IT-säkerhet",
-            Segments = new List<SegmentModel>
-            {
-                new SegmentModel
-                {
-                    Id = 1,
-                    Name = "Segment 1",
-                    Subcategorys = new List<SubcategoryModel>
-                    {
-                        new SubcategoryModel
-                        {
-                            Id = 1,
-                            Name = "Allmänt om digital säkerhet"
+    CategoryViewModel category { get; set; }
+    List<SegmentViewModel> segments { get; set; }
+    List<SubcategoryViewModel> subcategories { get; set; }
 
-                        },
-                        new SubcategoryModel
-                        {
-                            Id = 2,
-                            Name = "Specifikt om digital säkerhet"
-
-                        }
-                    }
-                },
-
-                new SegmentModel
-                {
-                    Id = 2,
-                    Name = "Segment 2",
-                    Subcategorys = new List<SubcategoryModel>
-                    {
-                        new SubcategoryModel
-                        {
-                            Id = 3,
-                            Name = "Annan typ av säkerhet att lära sig",
-
-                        },
-                        new SubcategoryModel
-                        {
-                            Id = 4,
-                            Name = "Kolla här, mer om säkerhet",
-
-                        }
-                    }
-                }
-
-
-            }
-        },
-
-
-
-            new CategoryModel
-        {
-            Id = 2,
-            Name = "Att skydda sig mot bedrägeri",
-            Segments = new List<SegmentModel>
-            {
-                new SegmentModel
-                {
-                    Id = 3,
-                    Name = "Segment 1",
-                    Subcategorys = new List<SubcategoryModel>
-                    {
-                        new SubcategoryModel
-                        {
-                            Id = 5,
-                            Name = "Allmänt om digital säkerhet",
-
-                        },
-                        new SubcategoryModel
-                        {
-                            Id = 6,
-                            Name = "Brandväggar och antivirus-program",
-
-                        }
-                    }
-                },
-
-                new SegmentModel
-                {
-                    Id = 4,
-                    Name = "Segment 2",
-                    Subcategorys = new List<SubcategoryModel>
-                    {
-                        new SubcategoryModel
-                        {
-                            Id = 7,
-                            Name = "Skydda din anslutning",
-
-                        },
-                        new SubcategoryModel
-                        {
-                            Id = 8,
-                            Name = "Håll dina program aktuella",
-
-                        }
-                    }
-                }
-            }
-
-        }
-    };
 
 
     protected override async Task OnInitializedAsync()
     {
         //Users = await userCont.GetAllUsersAsync();
 
-        category = Categories[Id];
+        List<CategoryViewModel> categories = await service.GetAllCategoriesAndMeta();
+        if (categories.Any())
+        {
+            category = (CategoryViewModel)categories.FirstOrDefault(c => c.Id == Id);
+            segments = category.Segments.Where(s => s.CategoryId == category.Id).ToList();
+            subcategories = category.Segments.SelectMany(s => s.Subcategories).ToList();
+        }
+        
 
 
     }
+
 }
