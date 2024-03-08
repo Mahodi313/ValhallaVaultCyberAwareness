@@ -53,18 +53,44 @@ namespace ValhallaVaultCyberAwareness.API
             }
 
         }
-
-
         [HttpGet("GetAllCategories")]
         public async Task<IActionResult> GetAllCategories()
         {
             //Get all categories
-            var Cate = await uow.CategoryRepo.GetAllAsync();
+            var Cate = await uow.CategoryRepo.GetAllAsync(c => c.Segments);
 
 
             if (Cate.Any())
             {
-                //Turn Dbmodel to Apimodel
+                //Turn Dbmodel to Apimodel<
+                var ApiCategoriesToReturn = Cate.Select(q => new CategoryApiModel
+                {
+                    Id = q.Id,
+                    Name = q.Name,
+
+                }).ToList();
+
+
+                return Ok(ApiCategoriesToReturn);
+            }
+            else
+            {
+                return NotFound("No categories available");
+            }
+
+        }
+
+        [HttpGet("GetAllCategoriesAndMetadata")]
+        public async Task<IActionResult> GetAllCategoriesAndMetdata()
+        {
+            //Get all categories
+            var Cate = await uow.CategoryRepo.GetAllAsync(c => c.Segments);
+            var Sub = await uow.SubcategoryRepo.GetAllAsync();
+            var Ques = await uow.QuestionRepo.GetAllAsync(q => q.Answers, q => q.UserResponse);
+
+            if (Cate.Any())
+            {
+                //Turn Dbmodel to Apimodel<
                 var ApiCategoriesToReturn = Cate.Select(q => new CategoryApiModel
                 {
                     Id = q.Id,
@@ -74,12 +100,12 @@ namespace ValhallaVaultCyberAwareness.API
                         Id = s.Id,
                         Name = s.Name,
                         CategoryId = s.CategoryId,
-                        Subcategorys = s.Subcategorys.Select(sc => new SubcategoryApiModel
+                        Subcategorys = s.Subcategorys.Where(su => su.Segment.Id == s.Id).Select(sc => new SubcategoryApiModel
                         {
                             Id = sc.Id,
                             Name = sc.Name,
                             SegmentId = sc.SegmentId,
-                            Questions = sc.Questions.Select(q => new QuestionApiModel
+                            Questions = Ques.Where(q => q.SubcategoryId == sc.Id).Select(q => new QuestionApiModel
                             {
                                 Title = q.Title,
                                 SubcategoryId = q.SubcategoryId,
@@ -88,6 +114,7 @@ namespace ValhallaVaultCyberAwareness.API
                                     Id = a.Id,
                                     Answer = a.Answer,
                                     IsCorrectAnswer = a.IsCorrectAnswer,
+                                    Explanation = a.Explanation,
                                     QuestionId = a.QuestionId
                                 }).ToList(),
 
@@ -120,11 +147,11 @@ namespace ValhallaVaultCyberAwareness.API
         }
 
 
-        [HttpGet("GetAllQuestions")]
-        public async Task<IActionResult> GetAllQuestionsAsync()
+        [HttpGet("GetAllQuestionsAndAnswers")]
+        public async Task<IActionResult> GetAllQuestionsAndAnswersAsync()
         {
             //Get all questions
-            var Qs = await uow.QuestionRepo.GetAllAsync();
+            var Qs = await uow.QuestionRepo.GetAllAsync(q => q.Answers, q => q.UserResponse);
 
 
             if (Qs.Any())
@@ -132,6 +159,7 @@ namespace ValhallaVaultCyberAwareness.API
                 //Turn Dbmodel to Apimodel
                 var ApiQuestionsToReturn = Qs.Select(q => new QuestionApiModel
                 {
+                    Id = q.Id,
                     Title = q.Title,
                     SubcategoryId = q.SubcategoryId,
                     Answers = q.Answers.Select(a => new AnswerApiModel
@@ -139,10 +167,10 @@ namespace ValhallaVaultCyberAwareness.API
                         Id = a.Id,
                         Answer = a.Answer,
                         IsCorrectAnswer = a.IsCorrectAnswer,
+                        Explanation = a.Explanation,
                         QuestionId = a.QuestionId
                     }).ToList(),
 
-                    //? Do we need to send userresponse?
                     UserResponse = q.UserResponse.Select(ur => new UserResponseApiModel
                     {
                         Id = ur.Id,

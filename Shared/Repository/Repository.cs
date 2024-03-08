@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using System.Linq.Expressions;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
 using ValhallaVaultCyberAwareness.Data;
 
@@ -48,8 +49,58 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         /// Asynchronously retrieves all <see cref="T"/> entities from the database.
         /// </summary>
         /// <returns>A list of all <see cref="T"/> objects.</returns>
+        /*public async Task<Dictionary<string, object>> GetAllMetaAsync<T>(T entity) where T : class
+        {
+            var metadata = new Dictionary<string, object>();
+
+            var properties = entity.GetType().GetProperties();
+
+            foreach (var prop in properties)
+            {
+                var propName = prop.Name;
+                var propValue = prop.GetValue(entity);
+
+                if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
+                {
+                    var nestledModels = new List<Dictionary<string, object>>();
+                    var list = prop.GetValue(entity) as IEnumerable<object>;
+
+                    if (list != null)
+                    {
+                        foreach (var nestled in list)
+                        {
+                            var nestledMetaData = await GetAllMetaAsync(nestled);
+                            nestledModels.Add(nestledMetaData);
+
+                        }
+                    }
+                    metadata[propName] = propValue;
+
+
+                }
+
+            }
+
+            return metadata;
+
+
+
+        }*/
+
+        public async Task<List<T>> GetAllAsync(params Expression<Func<T, object>>[] includes)
+        {
+            var query = _dbSet.AsQueryable();
+
+            foreach (var include in includes)
+            {
+                query = query.Include(include);
+            }
+            return await query.ToListAsync();
+        }
+
         public async Task<List<T>> GetAllAsync()
         {
+
             return await _dbSet.ToListAsync();
         }
 
@@ -188,9 +239,9 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             throw new NotImplementedException();
         }
 
-        public Task<List<UserResponseModel>> GetResponsesOfUser(string userid)
+        public async Task<List<UserResponseModel>> GetResponsesOfUser(string userid)
         {
-            throw new NotImplementedException();
+            return await _context.UserResponses.Where(u => u.UserId == userid).ToListAsync();
         }
 
         public async Task<List<CategoryModel>> GetCategoryIncludeSegmentAsync()
