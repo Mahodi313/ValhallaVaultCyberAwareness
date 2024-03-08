@@ -114,7 +114,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             var entity = await _dbSet.FindAsync(id);
             if (entity == null)
             {
-                return null;
+                throw new InvalidOperationException("Entity not found");
             }
             return entity;
         }
@@ -200,7 +200,8 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         /// <returns>A list of <see cref="QuestionModel"/> objects that belong to the specified subcategory.</returns>
         public async Task<List<QuestionModel>> GetQuestionsBySubcategoryAsync(int subcategoryId)
         {
-            return await _context.Questions.Where(q => q.SubcategoryId == subcategoryId).ToListAsync();
+            var question = await _context.Questions.Where(q => q.SubcategoryId == subcategoryId).ToListAsync();
+            return question;
         }
 
         /// <summary>
