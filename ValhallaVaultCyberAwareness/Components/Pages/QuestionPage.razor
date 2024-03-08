@@ -1,4 +1,5 @@
 ﻿@page "/question/{SegmentId:int}"
+@using Microsoft.AspNetCore.Authorization
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.Repository
 @inject IRepository<QuestionModel> questionRepository
@@ -6,6 +7,8 @@
 @inject IRepository<SubcategoryModel> subcategoryRepository
 @inject IRepository<SegmentModel> segmentRepository
 @rendermode InteractiveServer
+
+@attribute [Authorize]
 
 @if (segment != null)
 {

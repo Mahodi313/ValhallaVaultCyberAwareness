@@ -1,6 +1,10 @@
-﻿@page "/subcategory"
+﻿@page "/subcategory/{SegmentId:int}"
+@using ValhallaVaultCyberAwareness.DAL.DbModels
+@using ValhallaVaultCyberAwareness.DAL.Repository
+@inject IRepository<SubcategoryModel> subcategoryRepository
+@inject IRepository<SegmentModel> segmentRepository
 
-<PageTitle>Subcategory - Segment</PageTitle>
+<PageTitle>Category - @segment.Name</PageTitle>
 
 <div class="valhalla-row">
     <div class="valhalla-div">
@@ -20,5 +24,16 @@
 </div>
 
 @code {
+    [Parameter]
+    public int SegmentId { get; set; }
 
+    private List<SubcategoryModel>? subcategories;
+    private SegmentModel? segment;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Hämta alla subkategorier för det angivna segmentet.
+        subcategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
+        segment = await segmentRepository.GetByIdAsync(SegmentId);
+    }
 }
