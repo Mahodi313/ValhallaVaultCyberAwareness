@@ -4,10 +4,17 @@
 @inject IRepository<QuestionModel> questionRepository
 @inject IRepository<AnswerModel> answerRepository
 @inject IRepository<SubcategoryModel> subcategoryRepository
+@inject IRepository<SegmentModel> segmentRepository
 @rendermode InteractiveServer
 
-
-<PageTitle>Quiz - Segment</PageTitle>
+@if (segment != null)
+{
+    <PageTitle>Quiz - @segment.Name</PageTitle>
+}
+else
+{
+    <PageTitle>Quiz</PageTitle>
+}
 
 <div class="container bg-white text-dark rounded shadow-sm p-4 my-4">
     @if (!isLoaded)
@@ -28,9 +35,9 @@
             <h4 class="text-center mb-4">@currentQuestion.Title</h4>
         }
 
-        @if(answers != null)
+        @if (answers != null)
         {
-           
+
             @foreach (var answer in answers)
             {
                 <div class="form-check">
@@ -67,28 +74,54 @@
     {
         @if (showResults)
         {
-            foreach (var question in questions) // Loopa genom alla frågor
-            {
-                // Hitta det valda svaret för den aktuella frågan
-                var selectedAnswer = answers.FirstOrDefault(a => selectedAnswers.TryGetValue(question.Id, out var selectedAnswerId) && a.Id == selectedAnswerId);
-
-                // Kontrollera om svaret är korrekt
-                var isCorrect = selectedAnswer != null && selectedAnswer.IsCorrectAnswer;
-
-                <div>
-                    <strong>@question.Title</strong>
-                    @if (selectedAnswer != null)
-                    {
-                        <div>
-                            Valda svar: @selectedAnswer.Answer
-                            <span style="color: @(isCorrect ? "green" : "red")">@($"{(isCorrect ? "Rätt" : "Fel")}")</span>
-                        </div>
-                    }
-                    else
-                    {
-                        <div>Inga svar valda</div>
-                    }
+            <div style="position: relative;">
+                @* <img src="path-to-your-image.png" alt="Test Image" style="width: 100%;"> *@
+                <div style="position: absolute; top: 10px; right: 10px; background: white; padding: 5px;">
+                    @percentageCorrect% klarat
                 </div>
+            </div>
+            foreach (var subcategory in subcategories) // Loopa genom alla subkategorier
+            {
+                <h2>@subcategory.Name</h2>
+                // Subkategoriens namn som rubrik
+
+                foreach (var question in subcategory.Questions) // Loopa genom alla frågor inom subkategorin
+                {
+                    <div>
+                        <strong>@question.Title</strong>
+
+                        @foreach (var answer in question.Answers) // Visa alla svarsalternativ
+                        {
+                            bool tryGetValueResult = selectedAnswers.TryGetValue(question.Id, out var userSelectedAnswerId);
+                            bool isAnswerIdMatching = answer.Id == userSelectedAnswerId;
+                            bool isUserSelectedAnswer = tryGetValueResult && isAnswerIdMatching;
+
+                            string labelStyle = isUserSelectedAnswer ?
+                                (answer.IsCorrectAnswer ? "color: green;" : "color: red;") :
+                                (answer.IsCorrectAnswer ? "color: green;" : "");
+
+                            <div>
+                                @if (isUserSelectedAnswer)
+                                {
+                                    <input type="radio" id="@answer.Id"
+                                           name="@("answerGroup" + question.Id)"
+                                           value="@answer.Id"
+                                           checked="checked"
+                                           disabled />
+                                }
+                                else
+                                {
+                                    <input type="radio" id="@answer.Id"
+                                           name="@("answerGroup" + question.Id)"
+                                           value="@answer.Id"
+                                           disabled />
+                                }
+
+                                <label for="@answer.Id" style="@labelStyle">@answer.Answer</label>
+                            </div>
+                        }
+                    </div>
+                }
             }
         }
     }
@@ -104,23 +137,30 @@
     [Parameter]
     public int SegmentId { get; set; }
     private int? selectedAnswerId { get; set; }
-    private string errorMessage = "";
-    private int currentSubcategoryIndex = 0;
+
+    private int percentageCorrect;
+
+    private SegmentModel? segment;
+    private string? category;
     private List<SubcategoryModel>? subcategories;
-    private Dictionary<int, int> selectedAnswers = new Dictionary<int, int>();
     private List<QuestionModel>? questions;
     private List<AnswerModel>? answers;
     private List<UserResponseModel> userResponses = new();
+    private Dictionary<int, int> selectedAnswers = new Dictionary<int, int>();
     private QuestionModel? currentQuestion;
     private AnswerModel? selectedAnswer;
+    private int currentSubcategoryIndex = 0;
+    private int currentIndex = 0;
     private bool isLoaded = false;
     private bool showResults = false;
-    private int currentIndex = 0;
+    private string errorMessage = "";
 
     protected override async Task OnInitializedAsync()
     {
         // Hämta alla subkategorier för det angivna segmentet.
         subcategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
+
+        segment = await segmentRepository.GetByIdAsync(SegmentId);
 
         // Kontrollera om det finns några subkategorier. Om det finns, ladda frågorna för den första subkategorin.
         if (subcategories.Any())
@@ -131,8 +171,6 @@
         }
         else
         {
-            // Hantera scenariot då inga subkategorier finns för det angivna segmentet
-            // Detta kan innebära att visa ett meddelande till användaren eller navigera bort från sidan
             isLoaded = true;
         }
     }
@@ -177,7 +215,6 @@
     {
         try
         {
-            // GetSubcategoriesBySegmentAsync()
             questions = await questionRepository.GetQuestionsBySubcategoryAsync(subcategoryId);
             if (questions.Any())
             {
@@ -192,7 +229,6 @@
         }
         catch (Exception ex)
         {
-
         }
     }
 
@@ -240,6 +276,14 @@
 
         if (allQuestionsAnswered)
         {
+            // Räkna antalet korrekta svar.
+            int correctAnswersCount = questions.Count(q =>
+                selectedAnswers.TryGetValue(q.Id, out var selected) &&
+                q.Answers.Any(a => a.IsCorrectAnswer && a.Id == selected));
+
+            // Beräkna procentandelen av korrekta svar.
+            percentageCorrect = (int)(((double)correctAnswersCount / questions.Count) * 100);
+
             // Alla frågor har besvarats
             errorMessage = string.Empty;
             showResults = true;

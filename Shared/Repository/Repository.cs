@@ -141,12 +141,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             return question;
         }
 
-        public async Task<List<SubcategoryModel>> GetSubcategoriesBySegmentAsync(int segmentId)
-        {
-            var subgategories = await _context.Subcategories.Where(q => q.SegmentId == segmentId).ToListAsync();
-            return subgategories;
-        }
-
         /// <summary>
         /// Asynchronously retrieves user responses for a specific question.
         /// </summary>
