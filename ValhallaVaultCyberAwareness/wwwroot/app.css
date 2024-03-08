@@ -116,9 +116,14 @@ h1:focus {
     color: #FFFFFF;
 }
 
+
+/*category page*/
 .categories {
     height: 100%;
     width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .cat-information {
@@ -139,11 +144,14 @@ h1:focus {
 }
 
 .cat-card {
+    display: flex;
+    justify-content: center;
+    align-items: center;
     border: 2px solid #156AA3;
     padding: 20px;
     border-radius: 15px;
     background-color: #156AA3;
-    max-width:40vw;
+    max-width: 60vw;
     margin: 10 auto;
 }
 
@@ -155,6 +163,7 @@ h1:focus {
 .mar {
     margin:20px;
 }
+
 
 /*Home page*/
 .navbar-home {

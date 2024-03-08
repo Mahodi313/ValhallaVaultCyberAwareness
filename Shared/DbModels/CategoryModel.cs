@@ -7,6 +7,7 @@ namespace ValhallaVaultCyberAwareness.DAL.DbModels
         [Key]
         public int Id { get; set; }
         public string Name { get; set; } = null!;
+        public string? Info { get; set; }
         public List<SegmentModel> Segments { get; set; } = new();
     }
 }
