@@ -1,0 +1,53 @@
+﻿@page "/subcategory/{SegmentId:int}"
+@using ValhallaVaultCyberAwareness.DAL.DbModels
+@using ValhallaVaultCyberAwareness.DAL.Repository
+@inject IRepository<SubcategoryModel> subcategoryRepository
+@inject IRepository<SegmentModel> segmentRepository
+@inject IRepository<CategoryModel> categoryRepository
+
+@if (category == null && segment == null)
+{
+    <PageTitle>Segment - Category</PageTitle>
+}
+else if ((category != null && segment != null) && subcategories != null)
+{
+    <PageTitle>@segment.Name - @category.Name</PageTitle>
+
+    <div class="valhalla-row">
+        <div class="valhalla-div">
+            <h1 class="valhalla-title">@category.Name - @segment.Name</h1>
+            <a class="btn btn-primary valhalla-btn margin-top" href="/question/@segment.Id">Start Quiz</a>
+            <br />
+            <label class="margin-top valhalla-title">Information om segmentet:</label>
+            <div class="col align-content-center valhalla-description-div">
+                <p class="valhalla-description-subcategory">@segment.Info</p>
+                <br />
+                <label class="margin-top valhalla-title">Subcategorier i Quizet:</label>
+                @foreach (var subcategory in subcategories)
+                {
+                    <p class="valhalla-description-subcategory">- @subcategory.Name</p>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+
+@code {
+    [Parameter]
+    public int SegmentId { get; set; }
+
+    private List<SubcategoryModel>? subcategories;
+    private SegmentModel? segment;
+    private CategoryModel? category;
+
+    protected override async Task OnInitializedAsync()
+    {
+        // Hämta alla subkategorier för det angivna segmentet.
+        subcategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
+        segment = await segmentRepository.GetByIdAsync(SegmentId);
+        category = await categoryRepository.GetCategoryWithSegmentIdAsync(SegmentId);
+
+        StateHasChanged();
+    }
+}

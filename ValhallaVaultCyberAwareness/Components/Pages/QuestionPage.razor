@@ -1,4 +1,5 @@
 ﻿@page "/question/{SegmentId:int}"
+@using Microsoft.AspNetCore.Authorization
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.Repository
 @inject IRepository<QuestionModel> questionRepository
@@ -6,6 +7,8 @@
 @inject IRepository<SubcategoryModel> subcategoryRepository
 @inject IRepository<SegmentModel> segmentRepository
 @rendermode InteractiveServer
+
+@attribute [Authorize]
 
 @if (segment != null)
 {
@@ -74,55 +77,65 @@ else
     {
         @if (showResults)
         {
-            <div style="position: relative;">
-                @* <img src="path-to-your-image.png" alt="Test Image" style="width: 100%;"> *@
-                <div style="position: absolute; top: 10px; right: 10px; background: white; padding: 5px;">
-                    @percentageCorrect% klarat
+            <div class="container bg-white text-dark rounded shadow-sm p-4 my-4 position-relative">
+                <div class="position-absolute top-0 end-0 p-1">
+                    @if (isPassed)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            Godkänt - @percentageCorrect% klarat
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            Underkänt - @percentageCorrect% klarat
+                        </div>
+                    }
                 </div>
-            </div>
-            foreach (var subcategory in subcategories) // Loopa genom alla subkategorier
-            {
-                <h2>@subcategory.Name</h2>
-                // Subkategoriens namn som rubrik
 
-                foreach (var question in subcategory.Questions) // Loopa genom alla frågor inom subkategorin
+                @foreach (var subcategory in subcategories) // Loopa genom alla subkategorier
                 {
-                    <div>
-                        <strong>@question.Title</strong>
+                    <h2>@subcategory.Name</h2>
+                    // Subkategoriens namn som rubrik
 
-                        @foreach (var answer in question.Answers) // Visa alla svarsalternativ
-                        {
-                            bool tryGetValueResult = selectedAnswers.TryGetValue(question.Id, out var userSelectedAnswerId);
-                            bool isAnswerIdMatching = answer.Id == userSelectedAnswerId;
-                            bool isUserSelectedAnswer = tryGetValueResult && isAnswerIdMatching;
+                    foreach (var question in subcategory.Questions) // Loopa genom alla frågor inom subkategorin
+                    {
+                        <div>
+                            <strong>@question.Title</strong>
 
-                            string labelStyle = isUserSelectedAnswer ?
+                            @foreach (var answer in question.Answers) // Visa alla svarsalternativ
+                            {
+                                string labelStyle = IsUserSelectedAnswer(question, answer) ?
                                 (answer.IsCorrectAnswer ? "color: green;" : "color: red;") :
                                 (answer.IsCorrectAnswer ? "color: green;" : "");
 
-                            <div>
-                                @if (isUserSelectedAnswer)
-                                {
-                                    <input type="radio" id="@answer.Id"
-                                           name="@("answerGroup" + question.Id)"
-                                           value="@answer.Id"
-                                           checked="checked"
-                                           disabled />
-                                }
-                                else
-                                {
-                                    <input type="radio" id="@answer.Id"
-                                           name="@("answerGroup" + question.Id)"
-                                           value="@answer.Id"
-                                           disabled />
-                                }
+                                <div>
+                                    @if (IsUserSelectedAnswer(question, answer))
+                                    {
+                                        <input type="radio" id="@answer.Id"
+                                               name="@("answerGroup" + question.Id)"
+                                               value="@answer.Id"
+                                               checked="checked"
+                                               disabled />
+                                    }
+                                    else
+                                    {
+                                        <input type="radio" id="@answer.Id"
+                                               name="@("answerGroup" + question.Id)"
+                                               value="@answer.Id"
+                                               disabled />
+                                    }
 
-                                <label for="@answer.Id" style="@labelStyle">@answer.Answer</label>
-                            </div>
-                        }
-                    </div>
+                                    <label for="@answer.Id" style="@labelStyle">@answer.Answer</label>
+                                </div>
+                            }
+                        </div>
+                    }
                 }
-            }
+                <div class="position-absolute bottom-0 end-0 p-1">
+                    <a class="btn btn-primary" href="/subcategory/@SegmentId">Tillbaka</a>
+                </div>
+            </div>
         }
     }
     @if (!string.IsNullOrEmpty(errorMessage))
@@ -139,7 +152,7 @@ else
     private int? selectedAnswerId { get; set; }
 
     private int percentageCorrect;
-
+    private bool isPassed = false;
     private SegmentModel? segment;
     private string? category;
     private List<SubcategoryModel>? subcategories;
@@ -172,6 +185,14 @@ else
         {
             isLoaded = true;
         }
+    }
+
+    private bool IsUserSelectedAnswer(QuestionModel question, AnswerModel answer)
+    {
+        bool tryGetValueResult = selectedAnswers.TryGetValue(question.Id, out var userSelectedAnswerId);
+        bool isAnswerIdMatching = answer.Id == userSelectedAnswerId;
+        bool isUserSelectedAnswer = tryGetValueResult && isAnswerIdMatching;
+        return isUserSelectedAnswer;
     }
 
     private async Task NextQuestion()
@@ -276,12 +297,33 @@ else
         if (allQuestionsAnswered)
         {
             // Räkna antalet korrekta svar.
-            int correctAnswersCount = questions.Count(q =>
-                selectedAnswers.TryGetValue(q.Id, out var selected) &&
-                q.Answers.Any(a => a.IsCorrectAnswer && a.Id == selected));
+            int totalQuestions = 0;
+            int correctAnswersCount = 0;
+
+            // Iterera över varje subkategori
+            foreach (var subcategory in subcategories)
+            {
+                // Anta att varje subkategori innehåller en lista med frågor
+                foreach (var question in subcategory.Questions)
+                {
+                    totalQuestions++;
+
+                    // Kontrollera om det valda svaret för frågan är korrekt
+                    if (selectedAnswers.TryGetValue(question.Id, out var selectedAnswerId))
+                    {
+                        var correctAnswer = question.Answers.FirstOrDefault(a => a.IsCorrectAnswer);
+                        if (correctAnswer != null && correctAnswer.Id == selectedAnswerId)
+                        {
+                            correctAnswersCount++;
+                        }
+                    }
+                }
+            }
 
             // Beräkna procentandelen av korrekta svar.
-            percentageCorrect = (int)(((double)correctAnswersCount / questions.Count) * 100);
+            percentageCorrect = totalQuestions > 0 ? (int)(((double)correctAnswersCount / totalQuestions) * 100) : 0;
+
+            isPassed = percentageCorrect >= 80;
 
             // Alla frågor har besvarats
             errorMessage = string.Empty;
