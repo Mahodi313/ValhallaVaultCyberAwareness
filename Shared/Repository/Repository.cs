@@ -251,7 +251,11 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
 
         public async Task<List<UserResponseModel>> GetResponsesOfUser(string userid)
         {
+<<<<<<< HEAD
             return await _context.UserResponses.Where(ur => ur.UserId == userid).ToListAsync();
+=======
+            return await _context.UserResponses.Where(u => u.UserId == userid).ToListAsync();
+>>>>>>> 88493c99b4769fd5d9aaf8a4349d0b860e93336f
         }
 
         public async Task<List<CategoryModel>> GetCategoryIncludeSegmentAsync()

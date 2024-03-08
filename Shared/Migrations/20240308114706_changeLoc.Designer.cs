@@ -9,11 +9,11 @@ using ValhallaVaultCyberAwareness.Data;
 
 #nullable disable
 
-namespace ValhallaVaultCyberAwareness.Migrations
+namespace ValhallaVaultCyberAwareness.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240308054344_test")]
-    partial class test
+    [Migration("20240308114706_changeLoc")]
+    partial class changeLoc
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
