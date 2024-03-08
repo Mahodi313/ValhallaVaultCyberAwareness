@@ -8,7 +8,7 @@ using ValhallaVaultCyberAwareness.Data;
 
 #nullable disable
 
-namespace ValhallaVaultCyberAwareness.DAL.Migrations
+namespace ValhallaVaultCyberAwareness.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
     partial class ApplicationDbContextModelSnapshot : ModelSnapshot
@@ -17,7 +17,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "8.0.2")
+                .HasAnnotation("ProductVersion", "8.0.0")
                 .HasAnnotation("Relational:MaxIdentifierLength", 128);
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
