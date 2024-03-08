@@ -27,6 +27,7 @@ builder.Services.AddScoped<IRepository<AnswerModel>, Repository<AnswerModel>>();
 builder.Services.AddScoped<IRepository<ApplicationUser>, Repository<ApplicationUser>>();
 builder.Services.AddScoped<IRepository<UserResponseModel>, Repository<UserResponseModel>>();
 builder.Services.AddScoped<IUow, Uow>();
+builder.Services.AddScoped<IViewModelService, ViewModelService>();
 
 builder.Services.AddScoped<IUserResponseService, UserResponseService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
