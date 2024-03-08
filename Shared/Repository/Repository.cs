@@ -187,9 +187,9 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             throw new NotImplementedException();
         }
 
-        public Task<List<UserResponseModel>> GetResponsesOfUser(string userid)
+        public async Task<List<UserResponseModel>> GetResponsesOfUser(string userid)
         {
-            throw new NotImplementedException();
+            return await _context.UserResponses.Where(u => u.UserId == userid).ToListAsync();
         }
 
         public async Task<List<CategoryModel>> GetCategoryIncludeSegmentAsync()

@@ -1,6 +1,5 @@
 ﻿@using System.Net.Http
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Authorization
 @using Microsoft.AspNetCore.Components.Forms
 @using Microsoft.AspNetCore.Components.Routing
 @using Microsoft.AspNetCore.Components.Web
@@ -11,58 +10,62 @@
 @using ValhallaVaultCyberAwareness.DAL.Repository
 
 @attribute [Authorize]
+
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IRepository<UserResponseModel> userRepo
 @inject IRepository<CategoryModel> categoryRepo
+@inject IAuthService authService
+@inject IUserResponseService userResponseService
 @rendermode InteractiveServer
+
 @page "/Home"
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <span class = "navbar-brand mb-0 h1">Valhalla Home</span>
-    <div class = "d-flex justify-content-end">
+    <span class="navbar-brand mb-0 h1">Valhalla Home</span>
+    <div class="d-flex justify-content-end">
         <AuthorizeView Roles="Admin">
             <Authorized>
-                <a class ="btn btn-warning me-2" href = "#">Go To Admin Section</a>
+                <a class="btn btn-warning me-2" href="#">Go To Admin Section</a>
             </Authorized>
         </AuthorizeView>
-        <a class ="btn btn-success ms-2" href ="#">Edit Account info</a>
+        <a class="btn btn-success ms-2" href="#">Edit Account info</a>
 
         <form action="Account/Logout" method="post">
-             <AntiforgeryToken />
-             <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+            <AntiforgeryToken />
+            <input type="hidden" name="ReturnUrl" value="@currentUrl" />
             <button type="submit" class="btn btn-danger ms-2">Log out</button>
         </form>
-    </div>   
+    </div>
 </nav>
 <br />
 <main>
     <div class="search-container text-center">
         <input class="search-input" type="text" placeholder="Search for categories..." @bind="searchTerm" @oninput="SearchCategories" />
     </div>
-	<br />
-	<div class = "text-center">
-        @foreach(var category in categories)
+    <br />
+    <div class="text-center">
+        @foreach (var category in categories)
         {
 
-            <div class = "card category-card mb-3">
+            <div class="card category-card mb-3">
                 <div class="card-header bg-primary text-white">
                     <a href="#"><h2>@category.Name</h2></a>
                 </div>
                 @if (category.Segments != null && category.Segments.Any())
                 {
-                    <div class = "card-body">
+                    <div class="card-body">
 
                         @foreach (var segment in category.Segments)
                         {
                             int segmentCompletion = CalculateSegmentCompletion(segment);
-                            <div class = "segment-info mb-2">
-                                <p class = "segment-name">@segment.Name</p>
-                                <div class = "progress">
-                                    <div class = "progress-bar" role ="progressbar" style = "width: @segmentCompletion%" aria-valuenow="@segmentCompletion" aria-valuemin="0" aria-valuemax = "100">@segmentCompletion%</div>
+                            <div class="segment-info mb-2">
+                                <p class="segment-name">@segment.Name</p>
+                                <div class="progress">
+                                    <div class="progress-bar" role="progressbar" style="width: @segmentCompletion%" aria-valuenow="@segmentCompletion" aria-valuemin="0" aria-valuemax="100">@segmentCompletion%</div>
                                 </div>
                             </div>
-                        }                    
+                        }
                     </div>
                 }
             </div>
@@ -74,9 +77,7 @@
 
     private List<CategoryModel> categories = new();
     private List<UserResponseModel> userResponses = new();
-
     private string searchTerm = "";
-
     private string? currentUrl;
     private ClaimsPrincipal? currentUser;
 
@@ -84,18 +85,23 @@
     {
         categories = await LoadCategories();
 
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        currentUser = authState.User;
+        currentUser = await authService.GetCurrentUserDataAsync();
 
         if (currentUser.Identity.IsAuthenticated)
         {
             var userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+            if (userId != null)
+            {
+                userResponses = await userResponseService.GetUserResponsesAsync(userId);
+            }
         }
     }
 
     // I took the already implemented logout function and added it here
     // because there was a problem with Blazor Server Side when accessing httpContext,
     // while using @rendermode InteractiveServer
+
     protected override void OnInitialized()
     {
         currentUrl = navigationManager.ToBaseRelativePath(navigationManager.Uri);
@@ -134,20 +140,8 @@
 
     private int CalculateSegmentCompletion(SegmentModel segment)
     {
-        int totalQuestions = segment.Subcategorys.SelectMany(sc => sc.Questions).Count();
+        int precentage = userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
 
-        if (totalQuestions == 0)
-        {
-            return 0; 
-        }
-
-        // Counts the number of correct answers in a segment where the user has also responded correctly.
-        int correctAnswers = segment.Subcategorys
-            .SelectMany(sc => sc.Questions)
-            .SelectMany(q => q.Answers)
-            .Count(a => a.IsCorrectAnswer && userResponses.Any(ur => ur.QuestionId == a.Id && ur.IsCorrect));
-
-        double percentage = ((double)correctAnswers / totalQuestions) * 100;
-        return (int)Math.Round(percentage); 
+        return precentage;
     }
 }
