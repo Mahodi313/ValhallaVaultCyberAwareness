@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ValhallaVaultCyberAwareness.App.Services;
 using ValhallaVaultCyberAwareness.Components;
 using ValhallaVaultCyberAwareness.Components.Account;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
@@ -27,6 +28,9 @@ builder.Services.AddScoped<IRepository<ApplicationUser>, Repository<ApplicationU
 builder.Services.AddScoped<IRepository<UserResponseModel>, Repository<UserResponseModel>>();
 builder.Services.AddScoped<IUow, Uow>();
 
+builder.Services.AddScoped<IUserResponseService, UserResponseService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
+
 
 builder.Services.AddAuthentication(options =>
     {
@@ -35,13 +39,9 @@ builder.Services.AddAuthentication(options =>
     })
     .AddIdentityCookies();
 
-//var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-//builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-//    options.UseSqlServer(connectionString));
-//builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 builder.Services.AddDbContextFactory<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString, b => b.MigrationsAssembly("ValhallaVaultCyberAwareness")));
+    options.UseSqlServer(connectionString));
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.RequireConfirmedAccount = false)
