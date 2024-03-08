@@ -616,6 +616,29 @@ namespace ValhallaVaultCyberAwareness.API
             }
         }
 
+        [HttpPost("OnPostQuestion")]
+        //Question
+        public async Task<IActionResult> OnPostQuestion([FromBody] QuestionDTO question)
+        {
+            if (question == null)
+            {
+                return BadRequest("Error: Invalid input! Please try again..");
+            }
+            else
+            {
+                QuestionModel questionToAdd = new()
+                {
+                    Title = question.Title,
+                    SubcategoryId = question.SubcategoryId
+                };
+
+                await uow.QuestionRepo.CreateAsync(questionToAdd);
+                await uow.SaveChanges();
+
+                return Ok("Question was successfully added!");
+            }
+        }
+
         [HttpPost("OnPostAnswer")]
         //Answer 
         public async Task<IActionResult> OnPostAnswer([FromBody] AnswerDTO answer)
