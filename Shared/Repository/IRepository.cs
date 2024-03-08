@@ -12,6 +12,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         public Task<List<T>> GetAllAsync(params Expression<Func<T, object>>[] includes);
         //public Task<Dictionary<string, object>> GetAllMetaAsync<T>(T entity) where T : class;
         public Task<T> GetByIdAsync(int id);
+        public Task<T> GetByIdAsync(string id);
         public Task UpdateAsync(T entity);
 
         // QuestionRepository
@@ -31,7 +32,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         Task<List<CategoryModel>> GetCategoryIncludeSegmentAsync();
 
         // UserResponse Repository
-        public Task<List<UserResponseModel>> GetResponsesOfUser(string userid);
+        Task<List<UserResponseModel>> GetResponsesOfUser(string userid);
         Task<List<SubcategoryModel>> GetSubcategoriesBySegmentAsync(int segmentId);
     }
 }

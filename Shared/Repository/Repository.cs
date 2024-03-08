@@ -119,6 +119,16 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             return entity;
         }
 
+        public async Task<T> GetByIdAsync(string id)
+        {
+            var entity = await _dbSet.FindAsync(id);
+            if (entity == null)
+            {
+                return null;
+            }
+            return entity;
+        }
+
         /// <summary>
         /// Asynchronously updates an existing <see cref="T"/> entity in the database with the provided question details.
         /// </summary>
@@ -179,6 +189,8 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
                 Console.WriteLine(ex.Message);
                 return new List<AnswerModel>();
             }
+
+
         }
 
         /// <summary>
@@ -200,7 +212,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         {
             return await _context.UserResponses.Where(ur => ur.QuestionId == questionId).ToListAsync();
         }
-
 
 
 
@@ -228,9 +239,9 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
 
         // TODO: Implementera logik
 
-        public Task<List<SubcategoryModel>> GetSubcategoryBySegmentAsync(int segmentId)
+        public async Task<List<SubcategoryModel>> GetSubcategoryBySegmentAsync(int segmentId)
         {
-            throw new NotImplementedException();
+            return await _context.Subcategories.Where(su => su.SegmentId == segmentId).ToListAsync();
         }
 
         public Task<List<QuestionModel>> GetQuestionForSubcategoryAsync(int subcategoryId)
@@ -240,7 +251,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
 
         public async Task<List<UserResponseModel>> GetResponsesOfUser(string userid)
         {
-            return await _context.UserResponses.Where(u => u.UserId == userid).ToListAsync();
+            return await _context.UserResponses.Where(ur => ur.UserId == userid).ToListAsync();
         }
 
         public async Task<List<CategoryModel>> GetCategoryIncludeSegmentAsync()
