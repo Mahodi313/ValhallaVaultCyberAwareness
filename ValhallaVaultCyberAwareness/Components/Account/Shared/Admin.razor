@@ -1,38 +1,87 @@
-﻿@page "/admin"
-@using Microsoft.AspNetCore.Authorization
-@using Microsoft.EntityFrameworkCore
-@using ValhallaVaultCyberAwareness.Components.Pages
-@using ValhallaVaultCyberAwareness.Data
-@using global::ValhallaVaultCyberAwareness.DAL.DbModels
-@inject IDbContextFactory<ApplicationDbContext> AppDbContext
-@attribute [Authorize(Roles = "Admin")]
+﻿@page "/admin/categories"
+@using ValhallaVaultCyberAwareness.DAL.Uow
+@using ValhallaVaultCyberAwareness.DAL.DbModels
+@inject IUow UnitOfWork
 
-<h3>Admin</h3>
-
-<!-- Section for adding new category -->
-<h4>Add New Category</h4>
-<!-- Form for adding a new category -->
-
-<h4>Existing Categories</h4>
+<h3>Category Management</h3>
 
 @if (categories == null)
 {
-    <p><em>Loading...</em></p>
+    <p>Loading categories...</p>
 }
 else
 {
-    <!-- Display categories in a table or list with options to edit or delete -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Category Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in categories)
+            {
+                <tr>
+                    <td>@category.Name</td>
+                    <td>
+                        <button @onclick="() => EditCategory(category)">Edit</button>
+                        <button @onclick="() => DeleteCategory(category.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button @onclick="ShowAddCategoryForm">Add New Category</button>
+
+    @if (showEditForm)
+    {
+        <EditForm Model="selectedCategory" OnValidSubmit="SubmitEditCategory">
+            <InputText @bind-Value="selectedCategory.Name" />
+            <button type="submit">Update Category</button>
+        </EditForm>
+    }
 }
 
 @code {
     private List<CategoryModel> categories;
+    private CategoryModel selectedCategory = new CategoryModel();
+    private bool showEditForm = false;
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = AppDbContext.CreateDbContext();
-        categories = await context.Categories.ToListAsync();
+        categories = await UnitOfWork.CategoryRepo.GetAllAsync();
     }
 
-    // Methods for add, edit, delete operations
-}
+    private void EditCategory(CategoryModel category)
+    {
+        selectedCategory = category;
+        showEditForm = true;
+    }
 
+    private async Task SubmitEditCategory()
+    {
+        await UnitOfWork.CategoryRepo.UpdateAsync(selectedCategory);
+        await UnitOfWork.SaveChanges();
+        showEditForm = false;
+        // Refresh category list
+        categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+    }
+
+    private async Task DeleteCategory(int categoryId)
+    {
+        await UnitOfWork.CategoryRepo.DeleteAsync(categoryId);
+        await UnitOfWork.SaveChanges();
+        // Refresh category list
+        categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+    }
+
+    private void ShowAddCategoryForm()
+    {
+        selectedCategory = new CategoryModel();
+        showEditForm = true;
+    }
+
+    // Add methods for handling add category
+    // Note: You can add a similar form and methods for adding a new category
+}
