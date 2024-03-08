@@ -1,4 +1,5 @@
-﻿using ValhallaVaultCyberAwareness.DAL.DbModels;
+﻿using System.Linq.Expressions;
+using ValhallaVaultCyberAwareness.DAL.DbModels;
 
 namespace ValhallaVaultCyberAwareness.DAL.Repository
 {
@@ -8,6 +9,8 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         public Task<T> CreateAsync(T entity);
         public Task<T> DeleteAsync(int id);
         public Task<List<T>> GetAllAsync();
+        public Task<List<T>> GetAllAsync(params Expression<Func<T, object>>[] includes);
+        //public Task<Dictionary<string, object>> GetAllMetaAsync<T>(T entity) where T : class;
         public Task<T> GetByIdAsync(int id);
         public Task UpdateAsync(T entity);
 
