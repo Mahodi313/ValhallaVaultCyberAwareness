@@ -682,18 +682,134 @@ namespace ValhallaVaultCyberAwareness.API
 
         #region HttpDeleteById
 
-        /*[HttpDelete]
-        public async Task<List<UserApiModel>> GetUByIdAsync(int id)
+        [HttpDelete("DeleteCategory/{id}")]
+        //Category
+        public async Task<IActionResult> DeleteCategory(int id)
         {
-            return new List<UserApiModel>();
+            if (id <= 0)
+            {
+                return BadRequest("The Id can't be less than 1");
+            }
+            else
+            {
+                try
+                {
+                    //This variable is only here to check if it exists, if not, it throws exception.
+                    var category = await uow.CategoryRepo.GetByIdAsync(id);
+                    await uow.CategoryRepo.DeleteAsync(id);
+                    await uow.SaveChanges();
 
-        }*/
+                    return Ok("Category was successfully deleted!");
+                }
+                catch (InvalidOperationException)
+                {
+                    return NotFound("There is no category with that id! Please try again...");
+                }
+            }
+        }
+
+        [HttpDelete("DeleteSegment/{id}")]
+        //Segment
+        public async Task<IActionResult> DeleteSegment(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest("The Id can't be less than 1");
+            }
+            else
+            {
+                try
+                {
+                    var segment = await uow.SegmentRepo.GetByIdAsync(id);
+                    await uow.SegmentRepo.DeleteAsync(id);
+                    await uow.SaveChanges();
+
+                    return Ok("Segment was successfully deleted!");
+                }
+                catch (InvalidOperationException)
+                {
+                    return NotFound("There is no segment with that id! Please try again...");
+                }
+            }
+        }
+
+        [HttpDelete("DeleteSubCategory/{id}")]
+        //Subcategory
+        public async Task<IActionResult> DeleteSubCategory(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest("The Id can't be less than 1");
+            }
+            else
+            {
+                try
+                {
+                    var subcategory = await uow.SubcategoryRepo.GetByIdAsync(id);
+                    await uow.SubcategoryRepo.DeleteAsync(id);
+                    await uow.SaveChanges();
+
+                    return Ok("Subcategory was successfully deleted!");
+                }
+                catch (InvalidOperationException)
+                {
+                    return NotFound("There is no subcategory with that id! Please try again...");
+                }
+            }
+        }
+
+        [HttpDelete("DeleteQuestion/{id}")]
+        //question
+        public async Task<IActionResult> DeleteQuestion(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest("The Id can't be less than 1");
+            }
+            else
+            {
+                try
+                {
+                    var question = await uow.QuestionRepo.GetByIdAsync(id);
+                    await uow.QuestionRepo.DeleteAsync(id);
+                    await uow.SaveChanges();
+
+                    return Ok("Question was successfully deleted!");
+                }
+                catch (InvalidOperationException)
+                {
+                    return NotFound("There is no question with that id! Please try again...");
+                }
+            }
+        }
+
+        [HttpDelete("DeleteAnswer/{id}")]
+        //Answer
+        public async Task<IActionResult> DeleteAnswer(int id)
+        {
+            if (id <= 0)
+            {
+                return BadRequest("The Id can't be less than 1");
+            }
+            else
+            {
+                try
+                {
+                    var answer = await uow.AnswerRepo.GetByIdAsync(id);
+                    await uow.AnswerRepo.DeleteAsync(id);
+                    await uow.SaveChanges();
+
+                    return Ok("Answer was successfully deleted!");
+                }
+                catch (InvalidOperationException)
+                {
+                    return NotFound("There is no answer with that id! Please try again...");
+                }
+            }
+        }
+    }
 
 
         #endregion
-
-
-
-
-    }
 }
+
