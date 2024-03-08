@@ -546,11 +546,11 @@ namespace ValhallaVaultCyberAwareness.API
 
         #region HttpPost
 
-        [HttpPost]
+        [HttpPost("OnPostCategory")]
         //Category
-        public async Task<IActionResult> OnPost([FromBody] CategoryDTO category)
+        public async Task<IActionResult> OnPostCategory([FromBody] CategoryDTO category)
         {
-            if (category == null) 
+            if (category == null)
             {
                 return BadRequest("Error: Invalid input! Please try again..");
             }
@@ -570,9 +570,9 @@ namespace ValhallaVaultCyberAwareness.API
             }
         }
 
-        [HttpPost]
+        [HttpPost("OnPostSegment")]
         //Segment
-        public async Task<IActionResult> OnPost([FromBody] SegmentDTO segment)
+        public async Task<IActionResult> OnPostSegment([FromBody] SegmentDTO segment)
         {
             if (segment == null)
             {
@@ -580,7 +580,7 @@ namespace ValhallaVaultCyberAwareness.API
             }
             else
             {
-                SegmentModel segmentToAdd = new() 
+                SegmentModel segmentToAdd = new()
                 {
                     Name = segment.Name,
                     CategoryId = segment.CategoryId
@@ -593,9 +593,9 @@ namespace ValhallaVaultCyberAwareness.API
             }
         }
 
-        [HttpPost]
+        [HttpPost("OnPostSubcategory")]
         //Subcategory
-        public async Task<IActionResult> OnPost([FromBody] SubCategoryDTO subCategory)
+        public async Task<IActionResult> OnPostSubcategory([FromBody] SubCategoryDTO subCategory)
         {
             if (subCategory == null)
             {
@@ -616,9 +616,9 @@ namespace ValhallaVaultCyberAwareness.API
             }
         }
 
-        [HttpPost]
+        [HttpPost("OnPostAnswer")]
         //Answer 
-        public async Task<IActionResult> OnPost([FromBody] AnswerDTO answer)
+        public async Task<IActionResult> OnPostAnswer([FromBody] AnswerDTO answer)
         {
             if (answer == null)
             {
