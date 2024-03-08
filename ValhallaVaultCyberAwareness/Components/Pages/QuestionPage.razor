@@ -159,7 +159,6 @@ else
     {
         // Hämta alla subkategorier för det angivna segmentet.
         subcategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
-
         segment = await segmentRepository.GetByIdAsync(SegmentId);
 
         // Kontrollera om det finns några subkategorier. Om det finns, ladda frågorna för den första subkategorin.
