@@ -22,26 +22,26 @@
 @page "/Home"
 
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <span class="navbar-brand mb-0 h1">Valhalla Home</span>
+    <span class="navbar-brand mb-0 ms-2 h1 text-primary">Valhalla Home</span>
     <div class="d-flex justify-content-end">
         <AuthorizeView Roles="Admin">
             <Authorized>
-                <a class="btn btn-warning me-2" href="#">Go To Admin Section</a>
+                <a class="btn btn-outline-primary me-2" href="/Admin">Go To Admin Section</a>
             </Authorized>
         </AuthorizeView>
-        <a class="btn btn-success ms-2" href="#">Edit Account info</a>
+        <a class="btn btn-outline-primary ms-2" href="/Userpage">Edit Account info</a>
 
         <form action="Account/Logout" method="post">
             <AntiforgeryToken />
             <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-            <button type="submit" class="btn btn-danger ms-2">Log out</button>
+            <button type="submit" class="btn btn-outline-primary ms-2">Log out</button>
         </form>
     </div>
 </nav>
 <br />
 <main>
     <div class="search-container text-center">
-        <input class="search-input" type="text" placeholder="Search for categories..." @bind="searchTerm" @oninput="SearchCategories" />
+        <input class="search-input" type="text" placeholder="Search for categories..." @bind="searchTerm" @oninput="OnSearchInput" />
     </div>
     <br />
     <div class="text-center">
@@ -50,7 +50,7 @@
 
             <div class="card category-card mb-3">
                 <div class="card-header bg-primary text-white">
-                    <a href="#"><h2>@category.Name</h2></a>
+                    <a href="/category/@category.Id"><h2>@category.Name</h2></a>
                 </div>
                 @if (category.Segments != null && category.Segments.Any())
                 {
@@ -121,7 +121,14 @@
         return loadedCategories;
     }
 
-    private async Task SearchCategories(ChangeEventArgs e)
+    private int CalculateSegmentCompletion(SegmentModel segment)
+    {
+        int precentage = userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
+
+        return precentage;
+    }
+
+    private async Task OnSearchInput(ChangeEventArgs e)
     {
         searchTerm = e.Value.ToString();
 
@@ -136,12 +143,5 @@
             categories = await LoadCategories();
         }
 
-    }
-
-    private int CalculateSegmentCompletion(SegmentModel segment)
-    {
-        int precentage = userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
-
-        return precentage;
     }
 }
