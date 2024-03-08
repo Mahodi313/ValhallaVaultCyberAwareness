@@ -1,15 +1,22 @@
-﻿@page "/anvandarsida"
-
-@using Microsoft.AspNetCore.Components.Authorization
+﻿@page "/Userpage"
+@using Microsoft.AspNetCore.Identity
 @using System.Security.Claims
+@using ValhallaVaultCyberAwareness.DAL.DbModels
+@using ValhallaVaultCyberAwareness.DAL.ViewModel
+@inject UserManager<ApplicationUser> UserManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 
-<h3>AnvändarSida</h3>
+
+<h3>User Page</h3>
 
 @if (user.Identity.IsAuthenticated)
 {
-    <p>Welcome, @user.Identity.Name!</p>
-    <!-- User-specific content goes here -->
+    <EditForm Model="@userUpdateModel" OnValidSubmit="@UpdateUser">
+        <InputText @bind-Value="userUpdateModel.Email" />
+        <InputText @bind-Value="userUpdateModel.NewPassword" />
+        <button type="submit">Update Information</button>
+    </EditForm>
 }
 else
 {
@@ -17,11 +24,40 @@ else
 }
 
 @code {
+    private UserUpdateViewModel userUpdateModel = new UserUpdateViewModel();
     private ClaimsPrincipal user;
 
     protected override async Task OnInitializedAsync()
     {
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         user = authState.User;
+        if (user.Identity.IsAuthenticated)
+        {
+            userUpdateModel.Email = user.FindFirst(ClaimTypes.Email)?.Value ?? "";
+        }
+    }
+
+    private async Task UpdateUser()
+    {
+        var currentUser = await UserManager.FindByEmailAsync(userUpdateModel.Email);
+        if (currentUser != null)
+        {
+            currentUser.Email = userUpdateModel.Email;
+            await UserManager.UpdateAsync(currentUser);
+
+            if (!string.IsNullOrWhiteSpace(userUpdateModel.NewPassword))
+            {
+                await UserManager.RemovePasswordAsync(currentUser);
+                await UserManager.AddPasswordAsync(currentUser, userUpdateModel.NewPassword);
+            }
+
+            NavigationManager.NavigateTo("/user-updated"); // Redirect to a confirmation page
+        }
+    }
+    public class UserUpdateViewModel
+    {
+        public string Email { get; set; }
+        public string NewPassword { get; set; }
     }
 }
+

@@ -1,38 +1,125 @@
-﻿@page "/admin"
+﻿@page "/admin/categories"
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.EntityFrameworkCore
-@using ValhallaVaultCyberAwareness.Components.Pages
-@using ValhallaVaultCyberAwareness.Data
-@using global::ValhallaVaultCyberAwareness.DAL.DbModels
-@inject IDbContextFactory<ApplicationDbContext> AppDbContext
+@using ValhallaVaultCyberAwareness.DAL.Repository
+@using ValhallaVaultCyberAwareness.DAL.Uow
+@using ValhallaVaultCyberAwareness.DAL.DbModels
+@inject IUow UnitOfWork
+@attribute [Authorize]
+@inject NavigationManager navigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject IRepository<UserResponseModel> userRepo
+@inject IRepository<CategoryModel> categoryRepo
+@rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
 
-<h3>Admin</h3>
-
-<!-- Section for adding new category -->
-<h4>Add New Category</h4>
-<!-- Form for adding a new category -->
-
-<h4>Existing Categories</h4>
+<h3>Category Management</h3>
 
 @if (categories == null)
 {
-    <p><em>Loading...</em></p>
+    <p>Loading categories...</p>
 }
 else
 {
-    <!-- Display categories in a table or list with options to edit or delete -->
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Category Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var category in categories)
+            {
+                <tr>
+                    <td>@category.Name</td>
+                    <td>
+                        <button @onclick="() => ConfirmEditCategory(category)">Edit</button>
+                        <button @onclick="() => ConfirmDeleteCategory(category.Id)">Delete</button>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <button @onclick="ShowAddCategoryForm">Add New Category</button>
+
+    @if (showAddForm)
+    {
+        <EditForm Model="newCategory" OnValidSubmit="SubmitAddCategory">
+            <InputText @bind-Value="newCategory.Name" />
+            <button type="submit">Add Category</button>
+        </EditForm>
+    }
+
+    @if (showEditForm)
+    {
+        <EditForm Model="selectedCategory" OnValidSubmit="SubmitEditCategory">
+            <InputText @bind-Value="selectedCategory.Name" />
+            <button type="submit">Update Category</button>
+        </EditForm>
+    }
+
+    @if (showConfirmDelete)
+    {
+        <p>Are you sure you want to delete this category?</p>
+        <button @onclick="() => DeleteCategory(deleteCategoryId)">Confirm Delete</button>
+        <button @onclick="() => showConfirmDelete = false">Cancel</button>
+    }
 }
 
 @code {
     private List<CategoryModel> categories;
+    private CategoryModel newCategory = new CategoryModel();
+    private CategoryModel selectedCategory = new CategoryModel();
+    private bool showAddForm = false;
+    private bool showEditForm = false;
+    private bool showConfirmDelete = false;
+    private int deleteCategoryId;
 
     protected override async Task OnInitializedAsync()
     {
-        using var context = AppDbContext.CreateDbContext();
-        categories = await context.Categories.ToListAsync();
+        categories = await UnitOfWork.CategoryRepo.GetAllAsync();
     }
 
-    // Methods for add, edit, delete operations
-}
+    private void ConfirmEditCategory(CategoryModel category)
+    {
+        selectedCategory = category;
+        showEditForm = true;
+    }
 
+    private void ConfirmDeleteCategory(int categoryId)
+    {
+        deleteCategoryId = categoryId;
+        showConfirmDelete = true;
+    }
+
+    private async Task SubmitEditCategory()
+    {
+        await UnitOfWork.CategoryRepo.UpdateAsync(selectedCategory);
+        await UnitOfWork.SaveChanges();
+        showEditForm = false;
+        categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+    }
+
+    private async Task DeleteCategory(int categoryId)
+    {
+        await UnitOfWork.CategoryRepo.DeleteAsync(categoryId);
+        await UnitOfWork.SaveChanges();
+        showConfirmDelete = false;
+        categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+    }
+
+    private void ShowAddCategoryForm()
+    {
+        newCategory = new CategoryModel();
+        showAddForm = true;
+    }
+
+    private async Task SubmitAddCategory()
+    {
+        await UnitOfWork.CategoryRepo.CreateAsync(newCategory);
+        await UnitOfWork.SaveChanges();
+        showAddForm = false;
+        categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+    }
+}
