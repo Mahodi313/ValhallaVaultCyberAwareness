@@ -223,3 +223,16 @@ h1:focus {
 .card-header {
     font-size: 1.5rem;
 }
+
+.error-message-container {
+    position: fixed;
+    bottom: 1rem; /* Avstånd från botten av skärmen */
+    right: 1rem; /* Avstånd från höger kant av skärmen */
+    background-color: #f8d7da; /* En synlig bakgrundsfärg */
+    color: #721c24; /* Färg på texten */
+    border: 1px solid #f5c6cb;
+    border-radius: 0.25rem;
+    padding: 0.5rem;
+    z-index: 1050; /* Ställ in ett högt z-index så att meddelandet ligger över andra element */
+    box-shadow: 0 0 10px rgba(0,0,0,0.1); /* Lätt skugga för att höja elementet visuellt */
+}

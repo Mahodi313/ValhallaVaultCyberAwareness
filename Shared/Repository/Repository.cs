@@ -137,7 +137,14 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         /// <returns>A list of <see cref="QuestionModel"/> objects that belong to the specified subcategory.</returns>
         public async Task<List<QuestionModel>> GetQuestionsBySubcategoryAsync(int subcategoryId)
         {
-            return await _context.Questions.Where(q => q.SubcategoryId == subcategoryId).ToListAsync();
+            var question = await _context.Questions.Where(q => q.SubcategoryId == subcategoryId).ToListAsync();
+            return question;
+        }
+
+        public async Task<List<SubcategoryModel>> GetSubcategoriesBySegmentAsync(int segmentId)
+        {
+            var subgategories = await _context.Subcategories.Where(q => q.SegmentId == segmentId).ToListAsync();
+            return subgategories;
         }
 
         /// <summary>

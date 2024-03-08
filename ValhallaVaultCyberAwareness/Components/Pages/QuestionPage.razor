@@ -30,11 +30,15 @@
 
         @if(answers != null)
         {
+           
             @foreach (var answer in answers)
             {
-                <div class="form-check mb-2">
-                    <input class="form-check-input" type="radio" name="answer" id="@($"answer-{answer.Id}")" @onchange="@(() => SelectAnswer(answer))" />
-                    <label class="form-check-label" for="@($"answer-{answer.Id}")">@answer.Answer</label>
+                <div class="form-check">
+                    <input class="form-check-input" type="radio" name="answerGroup-@currentQuestion.Id"
+                           value="@answer.Id"
+                           checked="@(selectedAnswers.TryGetValue(currentQuestion.Id, out var selectedAnswerId) && selectedAnswerId == answer.Id)"
+                           @onchange="@(() => SelectAnswer(answer))" />
+                    <label class="form-check-label">@answer.Answer</label>
                 </div>
             }
         }
@@ -61,34 +65,49 @@
     }
     else
     {
-        <div class="text-center">
-            <h3>Resultat</h3>
-            @foreach (var response in userResponses)
+        @if (showResults)
+        {
+            foreach (var question in questions) // Loopa genom alla frågor
             {
-                <p>@response.Question.Title - @(response.IsCorrect ? "Rätt" : "Fel")</p>
+                // Hitta det valda svaret för den aktuella frågan
+                var selectedAnswer = answers.FirstOrDefault(a => selectedAnswers.TryGetValue(question.Id, out var selectedAnswerId) && a.Id == selectedAnswerId);
+
+                // Kontrollera om svaret är korrekt
+                var isCorrect = selectedAnswer != null && selectedAnswer.IsCorrectAnswer;
+
+                <div>
+                    <strong>@question.Title</strong>
+                    @if (selectedAnswer != null)
+                    {
+                        <div>
+                            Valda svar: @selectedAnswer.Answer
+                            <span style="color: @(isCorrect ? "green" : "red")">@($"{(isCorrect ? "Rätt" : "Fel")}")</span>
+                        </div>
+                    }
+                    else
+                    {
+                        <div>Inga svar valda</div>
+                    }
+                </div>
             }
+        }
+    }
+    @if (!string.IsNullOrEmpty(errorMessage))
+    {
+        <div class="alert alert-danger mt-2" role="alert">
+            @errorMessage
         </div>
     }
 </div>
 
-@*
-    Att göra på sidan:
-    - Visa en fråga
-    - Visa alternativen
-    - En knapp för att skicka svaret
-        - Efter svaret är skickat ska det stå rätt eller fel
-        - Visa en förklaring
-    - En knapp för att gå vidare till nästa fråga
-
-    - En tillbaka knapp för att återvända till subkategorierna
- *@
 @code {
     [Parameter]
     public int SegmentId { get; set; }
-
+    private int? selectedAnswerId { get; set; }
+    private string errorMessage = "";
     private int currentSubcategoryIndex = 0;
     private List<SubcategoryModel>? subcategories;
-
+    private Dictionary<int, int> selectedAnswers = new Dictionary<int, int>();
     private List<QuestionModel>? questions;
     private List<AnswerModel>? answers;
     private List<UserResponseModel> userResponses = new();
@@ -124,7 +143,8 @@
         {
             currentIndex++;
             currentQuestion = questions[currentIndex];
-            await LoadAnswersForCurrentQuestion(); // Använd await här
+            selectedAnswerId = null; // Nollställ det valda svaret
+            LoadAnswersForCurrentQuestion();
         }
         else if (currentSubcategoryIndex < subcategories.Count - 1)
         {
@@ -143,7 +163,8 @@
         {
             currentIndex--;
             currentQuestion = questions[currentIndex];
-            await LoadAnswersForCurrentQuestion(); // Använd await här
+            selectedAnswerId = null; // Nollställ det valda svaret
+            LoadAnswersForCurrentQuestion();
         }
         else if (currentSubcategoryIndex > 0)
         {
@@ -156,6 +177,7 @@
     {
         try
         {
+            // GetSubcategoriesBySegmentAsync()
             questions = await questionRepository.GetQuestionsBySubcategoryAsync(subcategoryId);
             if (questions.Any())
             {
@@ -170,7 +192,7 @@
         }
         catch (Exception ex)
         {
-            // Logga undantaget och ge feedback till användaren
+
         }
     }
 
@@ -179,25 +201,28 @@
         if (currentQuestion != null)
         {
             answers = await answerRepository.GetByQuestionIdAsync(currentQuestion.Id);
-            StateHasChanged(); // Detta kommer att orsaka att UI uppdateras med de nya svaren
+            StateHasChanged(); // Dettauppdaterar UI med de nya svaren
         }
     }
 
-
-
-
-
-
-
-    // SE ÖVER NEDAN
-
-
-    private async Task SelectAnswer(AnswerModel answer)
+    private void SelectAnswer(AnswerModel answer)
     {
-        var response = userResponses.FirstOrDefault(ur => ur.QuestionId == currentQuestion.Id);
-        if (response != null)
+        if (selectedAnswers.ContainsKey(currentQuestion.Id))
         {
-            response.IsCorrect = answer.IsCorrectAnswer;
+            // Användaren har redan valt ett svar för den här frågan, uppdatera det befintliga svaret
+            selectedAnswers[currentQuestion.Id] = answer.Id;
+        }
+        else
+        {
+            // Det är första gången användaren väljer ett svar för den här frågan, lägg till det nya svaret
+            selectedAnswers.Add(currentQuestion.Id, answer.Id);
+        }
+
+        // Uppdatera även UserResponseModel om det behövs
+        var existingResponse = userResponses.FirstOrDefault(r => r.QuestionId == currentQuestion.Id);
+        if (existingResponse != null)
+        {
+            existingResponse.IsCorrect = answer.IsCorrectAnswer;
         }
         else
         {
@@ -211,6 +236,20 @@
 
     private void SubmitAnswers()
     {
-        showResults = true;
+        bool allQuestionsAnswered = questions.All(q => selectedAnswers.ContainsKey(q.Id));
+
+        if (allQuestionsAnswered)
+        {
+            // Alla frågor har besvarats
+            errorMessage = string.Empty;
+            showResults = true;
+        }
+        else
+        {
+            // Inte alla frågor har besvarats
+            errorMessage = "Vänligen svara på alla frågor innan du skickar in dina svar.";
+        }
+
+        StateHasChanged(); // Se till att komponenten uppdateras med det nya tillståndet.
     }
 }
