@@ -328,30 +328,7 @@ namespace ValhallaVaultCyberAwareness.API
 
 
 
-        [HttpPost("OnPostAnswer")]
-        //Answer 
-        public async Task<IActionResult> OnPostAnswer([FromBody] AnswerDTO answer)
-        {
-            if (answer == null)
-            {
-                return BadRequest("Error: Invalid input! Please try again..");
-            }
-            else
-            {
-                AnswerModel answerToAdd = new()
-                {
-                    Answer = answer.Answer,
-                    IsCorrectAnswer = answer.IsCorrectAnswer,
-                    Explanation = answer.Explanation,
-                    QuestionId = answer.QuestionId
-                };
 
-                await uow.AnswerRepo.CreateAsync(answerToAdd);
-                await uow.SaveChanges();
-
-                return Ok("Answer was successfully added!");
-            }
-        }
 
 
         #endregion

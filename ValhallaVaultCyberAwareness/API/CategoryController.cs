@@ -142,7 +142,7 @@ namespace ValhallaVaultCyberAwareness.API
                 }
                 else
                 {
-                    return NotFound("No category found with that id!");
+                    return NotFound("No category found by that id!");
                 }
             }
             catch (Exception)
