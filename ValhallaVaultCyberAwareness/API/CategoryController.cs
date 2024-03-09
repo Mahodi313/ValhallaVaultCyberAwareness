@@ -25,107 +25,130 @@ namespace ValhallaVaultCyberAwareness.API
         [HttpGet("GetAllCategoriesAndMetadata")]
         public async Task<ActionResult<List<CategoryApiModel>>> GetAllCategoriesAndMetadata()
         {
-            //Get all categories
-            var Cate = await uow.CategoryRepo.GetAllAsync(c => c.Segments);
-            var Sub = await uow.SubcategoryRepo.GetAllAsync();
-            var Ques = await uow.QuestionRepo.GetAllAsync(q => q.Answers, q => q.UserResponse);
 
-            if (Cate.Any())
+            try
             {
-                //Turn Dbmodel to Apimodel<
-                var ApiCategoriesToReturn = Cate.Select(q => new CategoryApiModel
-                {
-                    Id = q.Id,
-                    Name = q.Name,
-                    Segments = q.Segments.Select(s => new SegmentApiModel
-                    {
-                        Id = s.Id,
-                        Name = s.Name,
-                        CategoryId = s.CategoryId,
-                        Subcategorys = s.Subcategorys.Where(su => su.Segment.Id == s.Id).Select(sc => new SubcategoryApiModel
-                        {
-                            Id = sc.Id,
-                            Name = sc.Name,
-                            SegmentId = sc.SegmentId,
-                            Questions = Ques.Where(q => q.SubcategoryId == sc.Id).Select(q => new QuestionApiModel
-                            {
-                                Title = q.Title,
-                                SubcategoryId = q.SubcategoryId,
-                                Answers = q.Answers.Select(a => new AnswerApiModel
-                                {
-                                    Id = a.Id,
-                                    Answer = a.Answer,
-                                    IsCorrectAnswer = a.IsCorrectAnswer,
-                                    Explanation = a.Explanation,
-                                    QuestionId = a.QuestionId
-                                }).ToList(),
+                //Get all categories
+                var Cate = await uow.CategoryRepo.GetAllAsync(c => c.Segments);
+                var Sub = await uow.SubcategoryRepo.GetAllAsync();
+                var Ques = await uow.QuestionRepo.GetAllAsync(q => q.Answers, q => q.UserResponse);
 
+                if (Cate.Any())
+                {
+                    //Turn Dbmodel to Apimodel<
+                    var ApiCategoriesToReturn = Cate.Select(q => new CategoryApiModel
+                    {
+                        Id = q.Id,
+                        Name = q.Name,
+                        Segments = q.Segments.Select(s => new SegmentApiModel
+                        {
+                            Id = s.Id,
+                            Name = s.Name,
+                            CategoryId = s.CategoryId,
+                            Subcategorys = s.Subcategorys.Where(su => su.Segment.Id == s.Id).Select(sc => new SubcategoryApiModel
+                            {
+                                Id = sc.Id,
+                                Name = sc.Name,
+                                SegmentId = sc.SegmentId,
+                                Questions = Ques.Where(q => q.SubcategoryId == sc.Id).Select(q => new QuestionApiModel
+                                {
+                                    Title = q.Title,
+                                    SubcategoryId = q.SubcategoryId,
+                                    Answers = q.Answers.Select(a => new AnswerApiModel
+                                    {
+                                        Id = a.Id,
+                                        Answer = a.Answer,
+                                        IsCorrectAnswer = a.IsCorrectAnswer,
+                                        Explanation = a.Explanation,
+                                        QuestionId = a.QuestionId
+                                    }).ToList(),
+
+                                }).ToList()
                             }).ToList()
                         }).ToList()
-                    }).ToList()
 
-                }).ToList();
+                    }).ToList();
 
-                return Ok(ApiCategoriesToReturn);
+                    return Ok(ApiCategoriesToReturn);
 
+                }
+                else
+                {
+                    return NotFound("Categories not available!");
+                }
             }
-            else
+            catch (Exception) 
             {
-                return NotFound("No categories available");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving all categories with meta data!");
             }
         }
 
         [HttpGet("GetAllCategories")]
         public async Task<ActionResult<CategoryDTO>> GetAllCategories()
         {
-            //Get all categories
-            var Cate = await uow.CategoryRepo.GetAllAsync();
-
-
-            if (Cate.Any())
+            try
             {
-                //Turn Dbmodel to Apimodel<
-                var ApiCategoriesToReturn = Cate.Select(q => new CategoryDTO
+                var Cate = await uow.CategoryRepo.GetAllAsync();
+
+
+                if (Cate.Any())
                 {
-                    Id = q.Id,
-                    Name = q.Name
+                    //Turn Dbmodel to Apimodel<
+                    var ApiCategoriesToReturn = Cate.Select(q => new CategoryDTO
+                    {
+                        Id = q.Id,
+                        Name = q.Name
 
-                }).ToList();
+                    }).ToList();
 
 
-                return Ok(ApiCategoriesToReturn);
+                    return Ok(ApiCategoriesToReturn);
+                }
+                else
+                {
+                    return NotFound("No categories available!");  
+                }
             }
-            else
+            catch(Exception)
             {
-                return NotFound("No categories available");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving all categories");
             }
+
+            //Get all categories
         }
 
         [HttpGet("GetCategoryById/{id}")]
-        public async Task<ActionResult<CategoryDTO>> GetCategoryByIdAsync(int id)
+        public async Task<ActionResult<CategoryDTO>> GetCategoryById(int id)
         {
-            var Cat = await uow.CategoryRepo.GetByIdAsync(id);
 
-            if (Cat != null)
+            try
             {
+                var Cat = await uow.CategoryRepo.GetByIdAsync(id);
 
-                //Turn Dbmodel to Apimodel<
-                var ApiCategoryToSave = new CategoryDTO
+                if (Cat != null)
                 {
-                    Id = Cat.Id,
-                    Name = Cat.Name,
-                    Info = Cat.Info
-                };
+
+                    //Turn Dbmodel to Apimodel<
+                    var ApiCategoryToSave = new CategoryDTO
+                    {
+                        Id = Cat.Id,
+                        Name = Cat.Name,
+                        Info = Cat.Info
+                    };
 
 
-                return Ok(ApiCategoryToSave);
+                    return Ok(ApiCategoryToSave);
 
+                }
+                else
+                {
+                    return NotFound("No category found with that id!");
+                }
             }
-            else
+            catch (Exception)
             {
-                return NotFound("No category found  with that id!");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving category by id");
             }
-
         }
 
         #endregion

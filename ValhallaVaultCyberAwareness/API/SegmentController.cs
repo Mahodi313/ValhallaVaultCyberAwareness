@@ -22,34 +22,48 @@ namespace ValhallaVaultCyberAwareness.API
         [HttpGet("GetAll")]
         public async Task<ActionResult<List<SegmentDTO>>> GetAll()
         {
-            var segments = await uow.SegmentRepo.GetAllAsync();
-
-            if (segments != null)
+            try
             {
+                var segments = await uow.SegmentRepo.GetAllAsync();
+
+                if (segments == null || segments.Count == 0)
+                {
+                    return NotFound("No segments found!");
+                }
+
                 return Ok(segments);
             }
-
-            return NotFound("No segments found!");
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving segment");
+            }
         }
 
         [HttpGet("GetSegmentById/{id}")]
         public async Task<ActionResult<SegmentDTO>> GetSegmentById(int id)
         {
-            var segment = await uow.SegmentRepo.GetByIdAsync(id);
-
-            var ApiSegmentToSave = new CategoryDTO
+            try
             {
-                Id = segment.Id,
-                Name = segment.Name,
-                Info = segment.Info
-            };
+                var segment = await uow.SegmentRepo.GetByIdAsync(id);
 
-            if (segment != null)
-            {
+                if (segment == null)
+                {
+                    return NotFound("There are no segments with that id!");
+                }
+
+                var ApiSegmentToSave = new CategoryDTO
+                {
+                    Id = segment.Id,
+                    Name = segment.Name,
+                    Info = segment.Info
+                };
+
                 return Ok(ApiSegmentToSave);
             }
-
-            return NotFound("There are no segments with that id!");
+            catch (Exception)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, "An error occurred while retrieving the segment");
+            }
         }
         #endregion
 

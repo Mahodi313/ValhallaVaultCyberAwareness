@@ -23,53 +23,70 @@ namespace ValhallaVaultCyberAwareness.API
         [HttpGet("GetAllSubcategories")]
         public async Task<ActionResult<SubCategoryDTO>> GetAllSubcategories()
         {
-            var SubCategory = await uow.SubcategoryRepo.GetAllAsync();
-
-
-            if (SubCategory.Any())
+            try
             {
-                var ApiSubCategoriesToSave = SubCategory.Select(q => new SubCategoryDTO
+                var SubCategory = await uow.SubcategoryRepo.GetAllAsync();
+
+
+                if (SubCategory.Any())
                 {
-                    Id = q.Id,
-                    Name = q.Name,
-                    SegmentId = q.SegmentId,
+                    var ApiSubCategoriesToSave = SubCategory.Select(q => new SubCategoryDTO
+                    {
+                        Id = q.Id,
+                        Name = q.Name,
+                        SegmentId = q.SegmentId,
 
 
-                }).ToList();
+                    }).ToList();
 
 
-                return Ok(ApiSubCategoriesToSave);
+                    return Ok(ApiSubCategoriesToSave);
+                }
+                else
+                {
+                    return NotFound("No subcategories available!");
+                }
             }
-            else
+            catch (Exception)
             {
-                return NotFound("No Subcategories available");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving all subcategories");
             }
+          
         }
 
         [HttpGet("GetSubCategoryById/{id}")]
-        public async Task<ActionResult<SubCategoryDTO>> GetSubCategoryByIdAsync(int id)
+        public async Task<ActionResult<SubCategoryDTO>> GetSubCategoryById(int id)
         {
-            var subcategory = await uow.SubcategoryRepo.GetByIdAsync(id);
 
-            if (subcategory != null)
+            try
             {
+                var subcategory = await uow.SubcategoryRepo.GetByIdAsync(id);
 
-                //Turn Dbmodel to Apimodel<
-                var ApiSubCategoryToSave = new SubCategoryDTO
+                if (subcategory != null)
                 {
-                    Id = subcategory.Id,
-                    Name = subcategory.Name,
-                    SegmentId = subcategory.SegmentId
-                };
+
+                    //Turn Dbmodel to Apimodel<
+                    var ApiSubCategoryToSave = new SubCategoryDTO
+                    {
+                        Id = subcategory.Id,
+                        Name = subcategory.Name,
+                        SegmentId = subcategory.SegmentId
+                    };
 
 
-                return Ok(ApiSubCategoryToSave);
+                    return Ok(ApiSubCategoryToSave);
 
+                }
+                else
+                {
+                    return NotFound("There are no subcategory with that id!");
+                }
             }
-            else
+            catch (Exception)
             {
-                return NotFound("No subcategory found  with that id!");
+                return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving subcategory by id");
             }
+
         }
 
         #endregion
