@@ -1,9 +1,12 @@
 ﻿@page "/subcategory/{SegmentId:int}"
+@using Microsoft.AspNetCore.Authorization
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.Repository
 @inject IRepository<SubcategoryModel> subcategoryRepository
 @inject IRepository<SegmentModel> segmentRepository
 @inject IRepository<CategoryModel> categoryRepository
+
+@attribute [Authorize]
 
 @if (category == null && segment == null)
 {
