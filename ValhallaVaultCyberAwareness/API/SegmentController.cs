@@ -37,9 +37,16 @@ namespace ValhallaVaultCyberAwareness.API
         {
             var segment = await uow.SegmentRepo.GetByIdAsync(id);
 
+            var ApiSegmentToSave = new CategoryDTO
+            {
+                Id = segment.Id,
+                Name = segment.Name,
+                Info = segment.Info
+            };
+
             if (segment != null)
             {
-                return Ok(segment);
+                return Ok(ApiSegmentToSave);
             }
 
             return NotFound("There are no segments with that id!");

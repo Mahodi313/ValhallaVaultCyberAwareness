@@ -110,14 +110,15 @@ namespace ValhallaVaultCyberAwareness.API
             {
 
                 //Turn Dbmodel to Apimodel<
-                var ApiCategoryToReturn = new CategoryDTO
+                var ApiCategoryToSave = new CategoryDTO
                 {
                     Id = Cat.Id,
                     Name = Cat.Name,
+                    Info = Cat.Info
                 };
 
 
-                return Ok(ApiCategoryToReturn);
+                return Ok(ApiCategoryToSave);
 
             }
             else
