@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using ValhallaVaultCyberAwareness.API.DataTransferObjects;
-using ValhallaVaultCyberAwareness.DAL.ApiModels;
+using ValhallaVaultCyberAwareness.API.Models;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
 using ValhallaVaultCyberAwareness.DAL.Repository;
 using ValhallaVaultCyberAwareness.DAL.Uow;

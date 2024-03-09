@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ValhallaVaultCyberAwareness.API.DataTransferObjects;
-using ValhallaVaultCyberAwareness.DAL.ApiModels;
+using ValhallaVaultCyberAwareness.API.Models;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
 using ValhallaVaultCyberAwareness.DAL.Uow;
 
@@ -85,36 +85,42 @@ namespace ValhallaVaultCyberAwareness.API
         }
 
         [HttpGet("GetQuestionAndItsAnswersById/{id}")]
-        public async Task<ActionResult<QuestionApiModel>> GetQuestionAndItsAnswersByIdAsync(int id)
+        public async Task<ActionResult<QuestionApiModel>> GetQuestionAndItsAnswersById(int id)
         {
-            var Ques = await uow.QuestionRepo.GetByIdAsync(id);
-
-            if (Ques != null)
+            try
             {
-                var Ans = await uow.AnswerRepo.GetAnswerForQuestionAsync(Ques.Id);
+                var Ques = await uow.QuestionRepo.GetByIdAsync(id);
 
-                //Turn Dbmodel to Apimodel<
-                var ApiQuestionToReturn = new QuestionApiModel
+                if (Ques != null)
                 {
-                    Id = Ques.Id,
-                    Title = Ques.Title,
-                    SubcategoryId = Ques.SubcategoryId,
-                    Answers = Ans.Select(a => new AnswerApiModel
+                    var Ans = await uow.AnswerRepo.GetAnswerForQuestionAsync(Ques.Id);
+
+                    // Turn Dbmodel to Apimodel
+                    var ApiQuestionToReturn = new QuestionApiModel
                     {
-                        Id = a.Id,
-                        Answer = a.Answer,
-                        IsCorrectAnswer = true,
-                        QuestionId = a.QuestionId,
-                        Explanation = a.Explanation
-                    }).ToList()
+                        Id = Ques.Id,
+                        Title = Ques.Title,
+                        SubcategoryId = Ques.SubcategoryId,
+                        Answers = Ans.Select(a => new AnswerApiModel
+                        {
+                            Id = a.Id,
+                            Answer = a.Answer,
+                            IsCorrectAnswer = a.IsCorrectAnswer,
+                            QuestionId = a.QuestionId,
+                            Explanation = a.Explanation
+                        }).ToList()
+                    };
 
-                };
-
-                return Ok(ApiQuestionToReturn);
+                    return Ok(ApiQuestionToReturn);
+                }
+                else
+                {
+                    return NotFound("No question found with that id!");
+                }
             }
-            else
+            catch (Exception ex)
             {
-                return NotFound("No question found  with that id!");
+                return StatusCode(500, "An error occurred while processing your request.");
             }
         }
 
