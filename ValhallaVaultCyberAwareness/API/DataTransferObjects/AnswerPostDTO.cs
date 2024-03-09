@@ -1,8 +1,7 @@
-﻿namespace ValhallaVaultCyberAwareness.DAL.ApiModels
+﻿namespace ValhallaVaultCyberAwareness.API.DataTransferObjects
 {
-    public class AnswerApiModel
+    public class AnswerPostDTO
     {
-        public int Id { get; set; }
         public string Answer { get; set; } = null!;
         public bool IsCorrectAnswer { get; set; }
         public string? Explanation { get; set; }
