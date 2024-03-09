@@ -76,7 +76,7 @@ namespace ValhallaVaultCyberAwareness.API
         }
 
         [HttpGet("GetAllCategories")]
-        public async Task<ActionResult<CategoryApiModel>> GetAllCategories()
+        public async Task<ActionResult<CategoryDTO>> GetAllCategories()
         {
             //Get all categories
             var Cate = await uow.CategoryRepo.GetAllAsync();
@@ -85,7 +85,7 @@ namespace ValhallaVaultCyberAwareness.API
             if (Cate.Any())
             {
                 //Turn Dbmodel to Apimodel<
-                var ApiCategoriesToReturn = Cate.Select(q => new CategoryApiModel
+                var ApiCategoriesToReturn = Cate.Select(q => new CategoryDTO
                 {
                     Id = q.Id,
                     Name = q.Name
@@ -113,7 +113,7 @@ namespace ValhallaVaultCyberAwareness.API
                 var ApiCategoryToReturn = new CategoryDTO
                 {
                     Id = Cat.Id,
-                    Title = Cat.Name,
+                    Name = Cat.Name,
                 };
 
 
@@ -143,7 +143,7 @@ namespace ValhallaVaultCyberAwareness.API
                 // Transfer the DTO to Db-Model
                 CategoryModel categoryToAdd = new()
                 {
-                    Name = category.Title,
+                    Name = category.Name,
                     Info = category.Info
                 };
 
@@ -168,12 +168,14 @@ namespace ValhallaVaultCyberAwareness.API
             {
                 try
                 {
-                    var categoryToUpdate = await uow.CategoryRepo.GetByIdAsync(category.Id);
+                    CategoryModel categoryToUpdate = new() 
+                    {
+                        Id =category.Id,
+                        Name = category.Name,
+                        Info=category.Info
+                    };
 
-                    categoryToUpdate.Name = category.Title;
-                    categoryToUpdate.Info = category.Info;
-
-                    await uow.SaveChanges();
+                    await uow.CategoryRepo.UpdateAsync(categoryToUpdate);
 
                     return Ok("Category was successfully updated!");
                 }

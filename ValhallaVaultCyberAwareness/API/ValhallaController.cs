@@ -435,52 +435,9 @@ namespace ValhallaVaultCyberAwareness.API
 
         #region HttpPost
 
-        //[HttpPost("OnPostCategory")]
-        ////Category
-        //public async Task<IActionResult> OnPostCategory([FromBody] CategoryDTO category)
-        //{
-        //    if (category == null)
-        //    {
-        //        return BadRequest("Error: Invalid input! Please try again..");
-        //    }
-        //    else
-        //    {
-        //        // Transfer the DTO to Db-Model
-        //        CategoryModel categoryToAdd = new()
-        //        {
-        //            Name = category.Title,
-        //            Info = category.Info
-        //        };
 
-        //        await uow.CategoryRepo.CreateAsync(categoryToAdd);
-        //        await uow.SaveChanges();
 
-        //        return Ok("Category was successfully added!");
-        //    }
-        //}
 
-        [HttpPost("OnPostSegment")]
-        //Segment
-        public async Task<IActionResult> OnPostSegment([FromBody] SegmentDTO segment)
-        {
-            if (segment == null)
-            {
-                return BadRequest("Error: Invalid input! Please try again..");
-            }
-            else
-            {
-                SegmentModel segmentToAdd = new()
-                {
-                    Name = segment.Name,
-                    CategoryId = segment.CategoryId
-                };
-
-                await uow.SegmentRepo.CreateAsync(segmentToAdd);
-                await uow.SaveChanges();
-
-                return Ok("Segment was successfully added!");
-            }
-        }
 
         [HttpPost("OnPostSubcategory")]
         //Subcategory
@@ -558,30 +515,7 @@ namespace ValhallaVaultCyberAwareness.API
 
         #region HttpDeleteById
 
-        [HttpDelete("DeleteSegment/{id}")]
-        //Segment
-        public async Task<IActionResult> DeleteSegment(int id)
-        {
-            if (id <= 0)
-            {
-                return BadRequest("The Id can't be less than 1");
-            }
-            else
-            {
-                try
-                {
-                    var segment = await uow.SegmentRepo.GetByIdAsync(id);
-                    await uow.SegmentRepo.DeleteAsync(id);
-                    await uow.SaveChanges();
 
-                    return Ok("Segment was successfully deleted!");
-                }
-                catch (InvalidOperationException)
-                {
-                    return NotFound("There is no segment with that id! Please try again...");
-                }
-            }
-        }
 
         [HttpDelete("DeleteSubCategory/{id}")]
         //Subcategory

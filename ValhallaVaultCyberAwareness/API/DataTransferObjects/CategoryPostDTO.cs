@@ -2,7 +2,7 @@
 {
     public class CategoryPostDTO
     {
-        public string Title { get; set; } = null!;
+        public string Name { get; set; } = null!;
         public string? Info { get; set; }
     }
 }
