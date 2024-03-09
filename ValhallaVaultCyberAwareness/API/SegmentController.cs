@@ -152,6 +152,5 @@ namespace ValhallaVaultCyberAwareness.API
             }
         }
         #endregion  
-
     }
 }

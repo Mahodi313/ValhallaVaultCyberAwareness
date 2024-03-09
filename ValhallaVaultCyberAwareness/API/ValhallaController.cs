@@ -271,61 +271,8 @@ namespace ValhallaVaultCyberAwareness.API
         //}
 
 
-        [HttpGet("GetSegmentById/{id}")]
-        public async Task<IActionResult> GetSegmentByIdAsync(int id)
-        {
-            var Seg = await uow.SegmentRepo.GetByIdAsync(id);
-
-            if (Seg != null)
-            {
-
-                //Turn Dbmodel to Apimodel<
-                var ApiSegmentToReturn = new SegmentApiModel
-                {
-                    Id = Seg.Id,
-                    Name = Seg.Name,
-                    CategoryId = Seg.CategoryId
-
-                };
 
 
-                return Ok(ApiSegmentToReturn);
-
-            }
-            else
-            {
-                return NotFound("No segments found with that id!");
-            }
-
-        }
-
-        [HttpGet("GetSubcategoryById/{id}")]
-        public async Task<IActionResult> GetSubcategoryByIdAsync(int id)
-        {
-            var Sub = await uow.SubcategoryRepo.GetByIdAsync(id);
-
-            if (Sub != null)
-            {
-
-                //Turn Dbmodel to Apimodel<
-                var ApiSubcategoryToReturn = new SubcategoryApiModel
-                {
-                    Id = Sub.Id,
-                    Name = Sub.Name,
-                    SegmentId = Sub.SegmentId
-
-                };
-
-
-                return Ok(ApiSubcategoryToReturn);
-
-            }
-            else
-            {
-                return NotFound("No subcategory found with that id!");
-            }
-
-        }
 
         [HttpGet("GetQuestionAndItsAnswersById/{id}")]
         public async Task<IActionResult> GetQuestionAndItsAnswersByIdAsync(int id)
@@ -364,70 +311,9 @@ namespace ValhallaVaultCyberAwareness.API
 
         }
 
-        [HttpGet("GetUserById/{id}")]
-        public async Task<IActionResult> GetUserByIdAsync(string id)
-        {
-            var User = await uow.UserRepo.GetByIdAsync(id);
-
-            if (User != null)
-            {
-
-                //Turn Dbmodel to Apimodel<
-                var ApiUserToReturn = new UserApiModel
-                {
-                    Id = User.Id,
-                    Username = User.UserName,
-                    Email = User.Email,
-
-                };
 
 
-                return Ok(ApiUserToReturn);
 
-            }
-            else
-            {
-                return NotFound("No user found with that id!");
-            }
-
-        }
-
-        [HttpGet("GetUserAndTheirResponsesById/{id}")]
-        public async Task<IActionResult> GetUserAndTheirResponesByIdAsync(string id)
-        {
-            var User = await uow.UserRepo.GetByIdAsync(id);
-
-            if (User != null)
-            {
-                var Resp = await uow.UserResponseRepo.GetResponsesOfUser(User.Id);
-
-                //Turn Dbmodel to Apimodel<
-                var ApiUserToReturn = new UserApiModel
-                {
-                    Id = User.Id,
-                    Username = User.UserName,
-                    Email = User.Email,
-                    Responses = Resp.Select(r => new UserResponseApiModel
-                    {
-                        Id = r.Id,
-                        IsCorrect = r.IsCorrect,
-                        QuestionId = r.QuestionId,
-                        UserId = User.Id
-
-                    }).ToList()
-
-                };
-
-
-                return Ok(ApiUserToReturn);
-
-            }
-            else
-            {
-                return NotFound("No user found with that id!");
-            }
-
-        }
 
 
         #endregion
@@ -439,51 +325,8 @@ namespace ValhallaVaultCyberAwareness.API
 
 
 
-        [HttpPost("OnPostSubcategory")]
-        //Subcategory
-        public async Task<IActionResult> OnPostSubcategory([FromBody] SubCategoryDTO subCategory)
-        {
-            if (subCategory == null)
-            {
-                return BadRequest("Error: Invalid input! Please try again..");
-            }
-            else
-            {
-                SubcategoryModel subCategoryToAdd = new()
-                {
-                    Name = subCategory.Name,
-                    SegmentId = subCategory.SegmentId
-                };
 
-                await uow.SubcategoryRepo.CreateAsync(subCategoryToAdd);
-                await uow.SaveChanges();
 
-                return Ok("Subcategory was successfully added!");
-            }
-        }
-
-        [HttpPost("OnPostQuestion")]
-        //Question
-        public async Task<IActionResult> OnPostQuestion([FromBody] QuestionDTO question)
-        {
-            if (question == null)
-            {
-                return BadRequest("Error: Invalid input! Please try again..");
-            }
-            else
-            {
-                QuestionModel questionToAdd = new()
-                {
-                    Title = question.Title,
-                    SubcategoryId = question.SubcategoryId
-                };
-
-                await uow.QuestionRepo.CreateAsync(questionToAdd);
-                await uow.SaveChanges();
-
-                return Ok("Question was successfully added!");
-            }
-        }
 
         [HttpPost("OnPostAnswer")]
         //Answer 
@@ -517,55 +360,9 @@ namespace ValhallaVaultCyberAwareness.API
 
 
 
-        [HttpDelete("DeleteSubCategory/{id}")]
-        //Subcategory
-        public async Task<IActionResult> DeleteSubCategory(int id)
-        {
-            if (id <= 0)
-            {
-                return BadRequest("The Id can't be less than 1");
-            }
-            else
-            {
-                try
-                {
-                    var subcategory = await uow.SubcategoryRepo.GetByIdAsync(id);
-                    await uow.SubcategoryRepo.DeleteAsync(id);
-                    await uow.SaveChanges();
 
-                    return Ok("Subcategory was successfully deleted!");
-                }
-                catch (InvalidOperationException)
-                {
-                    return NotFound("There is no subcategory with that id! Please try again...");
-                }
-            }
-        }
 
-        [HttpDelete("DeleteQuestion/{id}")]
-        //question
-        public async Task<IActionResult> DeleteQuestion(int id)
-        {
-            if (id <= 0)
-            {
-                return BadRequest("The Id can't be less than 1");
-            }
-            else
-            {
-                try
-                {
-                    var question = await uow.QuestionRepo.GetByIdAsync(id);
-                    await uow.QuestionRepo.DeleteAsync(id);
-                    await uow.SaveChanges();
 
-                    return Ok("Question was successfully deleted!");
-                }
-                catch (InvalidOperationException)
-                {
-                    return NotFound("There is no question with that id! Please try again...");
-                }
-            }
-        }
 
         [HttpDelete("DeleteAnswer/{id}")]
         //Answer

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ValhallaVaultCyberAwareness.API.DataTransferObjects;
+using ValhallaVaultCyberAwareness.DAL.ApiModels;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
 using ValhallaVaultCyberAwareness.DAL.Uow;
 
@@ -81,6 +82,40 @@ namespace ValhallaVaultCyberAwareness.API
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving question by id");
             }
 
+        }
+
+        [HttpGet("GetQuestionAndItsAnswersById/{id}")]
+        public async Task<ActionResult<QuestionApiModel>> GetQuestionAndItsAnswersByIdAsync(int id)
+        {
+            var Ques = await uow.QuestionRepo.GetByIdAsync(id);
+
+            if (Ques != null)
+            {
+                var Ans = await uow.AnswerRepo.GetAnswerForQuestionAsync(Ques.Id);
+
+                //Turn Dbmodel to Apimodel<
+                var ApiQuestionToReturn = new QuestionApiModel
+                {
+                    Id = Ques.Id,
+                    Title = Ques.Title,
+                    SubcategoryId = Ques.SubcategoryId,
+                    Answers = Ans.Select(a => new AnswerApiModel
+                    {
+                        Id = a.Id,
+                        Answer = a.Answer,
+                        IsCorrectAnswer = true,
+                        QuestionId = a.QuestionId,
+                        Explanation = a.Explanation
+                    }).ToList()
+
+                };
+
+                return Ok(ApiQuestionToReturn);
+            }
+            else
+            {
+                return NotFound("No question found  with that id!");
+            }
         }
 
         #endregion
