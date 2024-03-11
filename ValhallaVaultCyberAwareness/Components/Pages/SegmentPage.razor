@@ -43,7 +43,7 @@
                     @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == SegId))
                     {
                         <div class="row mar">
-                            <a class="btn btn-info" href="@($"subcategory/{SegId}")"><h6 style="" >@sub.Name</h6></a>
+                            <a class="btn btn-info" href="@($"subcategory/{SegId}/{sub.Id}")"><h6 style="" >@sub.Name</h6></a>
                         </div>
                     }
 

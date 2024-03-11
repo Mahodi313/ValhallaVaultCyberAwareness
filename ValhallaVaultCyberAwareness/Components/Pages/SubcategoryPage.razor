@@ -1,4 +1,4 @@
-﻿@page "/subcategory/{SegmentId:int}"
+﻿@page "/subcategory/{SegmentId:int}/{SubcategoryId:int}"
 @using Microsoft.AspNetCore.Authorization
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.Repository
@@ -12,45 +12,89 @@
 {
     <PageTitle>Segment - Category</PageTitle>
 }
-else if ((category != null && segment != null) && subcategories != null)
+else if ((category != null && segment != null) && subcategories != null && subcategory != null)
 {
     <PageTitle>@segment.Name - @category.Name</PageTitle>
 
     <div class="valhalla-row">
         <div class="valhalla-div">
-            <h1 class="valhalla-title">@category.Name - @segment.Name</h1>
+            <h1 class="valhalla-title">@subcategory.Name</h1>
+            <h4>@category.Name - @segment.Name</h4>
             <a class="btn btn-primary valhalla-btn margin-top" href="/question/@segment.Id">Start Quiz</a>
             <br />
-            <label class="margin-top valhalla-title">Information om segmentet:</label>
+            <label class="margin-top valhalla-title">Information om subkategorin:</label>
             <div class="col align-content-center valhalla-description-div">
-                <p class="valhalla-description-subcategory">@segment.Info</p>
+                <p class="valhalla-description-subcategory">@subcategory.Info</p>
                 <br />
-                <label class="margin-top valhalla-title">Subcategorier i Quizet:</label>
-                @foreach (var subcategory in subcategories)
+            </div>
+            <div class="d-flex justify-content-between mt-4">
+                @if (currentSubcategoryIndex > 0)
                 {
-                    <p class="valhalla-description-subcategory">- @subcategory.Name</p>
+                    <a href="@GetPreviousSubcategoryUrl()" class="btn btn-outline-secondary">Föregående</a>
+                }
+                else
+                {
+                    <span></span> <!-- Placeholder for alignment -->
+                }
+                <span></span> <!-- Placeholder for alignment -->
+                @if (currentSubcategoryIndex < subcategories.Count - 1)
+                {
+                <a href="@GetNextSubcategoryUrl()" class="btn btn-outline-primary">Nästa</a>
+                }
+                else
+                {
+                    <span></span> <!-- Placeholder for alignment when the button is not shown -->
                 }
             </div>
         </div>
     </div>
 }
 
-
 @code {
     [Parameter]
     public int SegmentId { get; set; }
+    [Parameter]
+    public int SubcategoryId { get; set; }
 
     private List<SubcategoryModel>? subcategories;
+    private SubcategoryModel? subcategory;
     private SegmentModel? segment;
     private CategoryModel? category;
+    private int currentSubcategoryIndex = 0;
 
     protected override async Task OnInitializedAsync()
     {
-        // Hämta alla subkategorier för det angivna segmentet.
         subcategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
+
+        subcategory = await subcategoryRepository.GetByIdAsync(SubcategoryId);
         segment = await segmentRepository.GetByIdAsync(SegmentId);
         category = await categoryRepository.GetCategoryWithSegmentIdAsync(SegmentId);
 
+        if (subcategories != null)
+        {
+            currentSubcategoryIndex = subcategories.FindIndex(sc => sc.Id == SubcategoryId);
+        }
+
         StateHasChanged();
+    }
+
+    private string GetPreviousSubcategoryUrl()
+    {
+        var prevIndex = currentSubcategoryIndex - 1;
+        if (prevIndex < 0)
+        {
+            prevIndex = subcategories.Count - 1;
+        }
+        return $"/subcategory/{SegmentId}/{subcategories[prevIndex].Id}";
+    }
+
+    private string GetNextSubcategoryUrl()
+    {
+        var nextIndex = currentSubcategoryIndex + 1;
+        if (nextIndex >= subcategories.Count)
+        {
+            nextIndex = 0;
+        }
+        return $"/subcategory/{SegmentId}/{subcategories[nextIndex].Id}";
     }
 }
