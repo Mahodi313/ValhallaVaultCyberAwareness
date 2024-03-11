@@ -22,14 +22,17 @@
     
     @if (category != null)
     {
-        <div class="row ">
-            <div class="row categories">
-                <h1 class="mar ">@category.Name</h1>
-                <p>@category.Info</p>
+        <div class="">
+            <div class="category">
+                <div class="cat-row ">
+                    <h1 class="mar text-center">@category.Name</h1>
+                    <p class="text-center " >@category.Info</p>
+                </div>
+                <hr />
             </div>
-            <hr />
+            
 
-            <div class="row category">
+            <div class="cat-row category">
 
 
                 <div class="cat-row">
@@ -41,10 +44,18 @@
                     {
                         <div class="cat-row cat-card">
                             <div style="margin:20px;">
-                                <img class="img-check mar" src="/Images/check.png" />
-                                <span style="font-size:x-large">@seg.Name</span>
+                                @if(isDone)
+                                {
+                                    <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
+                                }
+                                else
+                                {
+                                    <img class="img-check mar" src="/Images/check.png" style="visibility: hidden;" />
+                                }
+                                
+                                <a class="btn btn-light" href="@($"segment/{seg.Id}")" ><span style="font-size:x-large">@seg.Name</span></a>
 
-                                <div class="cat-row">
+                                <div class="cat-row category">
                                     <div class="d-flex flex-column ">
                                         @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == seg.Id))
                                         {
@@ -61,7 +72,6 @@
 
                         <br />
                         <br />
-
                         <br />
 
 
@@ -73,21 +83,8 @@
             </div>
         </div>
         
-        
-        
-
     }
 </div>
-
-
-<!-- Infomation about a specific Category -->
-
-<!-- View of the segments in the category -->
-
-<!-- View of the subcategorys in the segment -->
-
-<!-- Show which segments are finished -->
-
 
 @code {
     [Parameter]
@@ -97,7 +94,7 @@
     CategoryViewModel category { get; set; }
     List<SegmentViewModel> segments { get; set; }
     List<SubcategoryViewModel> subcategories { get; set; }
-
+    bool isDone { get; set; }
 
 
     protected override async Task OnInitializedAsync()
@@ -110,6 +107,8 @@
             category = (CategoryViewModel)categories.FirstOrDefault(c => c.Id == Id);
             segments = category.Segments.Where(s => s.CategoryId == category.Id).ToList();
             subcategories = category.Segments.SelectMany(s => s.Subcategories).ToList();
+
+            
         }
         
 

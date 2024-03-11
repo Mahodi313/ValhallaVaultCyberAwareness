@@ -135,7 +135,6 @@ h1:focus {
     justify-content: center;
     align-items: center;
     margin: 40px;
-    
 }
 
 .cat-row {
@@ -162,6 +161,12 @@ h1:focus {
 
 .mar {
     margin:20px;
+}
+
+.cent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 
