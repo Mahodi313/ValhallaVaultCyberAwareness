@@ -126,6 +126,15 @@ h1:focus {
     align-items: center;
 }
 
+.categories2 {
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
 .cat-information {
     max-width:80vw;
 }

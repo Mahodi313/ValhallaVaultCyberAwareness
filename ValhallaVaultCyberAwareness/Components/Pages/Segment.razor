@@ -1,10 +1,64 @@
-﻿@page "/segment/{Id:int}"
+﻿@page "/segment/{CatId:int}/{SegId:int}"
+@using System.Security.Claims
+@using ValhallaVaultCyberAwareness.App.Services
+@using ValhallaVaultCyberAwareness.DAL.DbModels
+@using ValhallaVaultCyberAwareness.DAL.ViewModel
 
-<h3>Segment under construction</h3>
+@* @attribute [Authorize]
+ *@
+@inject IViewModelService service
+@inject IUserResponseService userResponseService
+
+
+    @if (segment == null)
+    {
+        <h2>Error.. Page not found</h2>
+    }
+
 
 <br />
 <br />
-<a class="btn " href="@($"subcategory/{Id}")" >Go to subcategory</a>
+
+@if(segment != null)
+{
+    <div class="categories2">
+        <div class="">
+
+            <div class="row category">
+                <h1 class="text-center">@category.Name</h1>
+            </div>
+            
+            <div class="row cat-card ">
+                <div class="col-5">
+
+                    <h2 class="text-center">@segment.Name</h2>
+                    <hr />
+                    <p class="text-center">@segment.Info</p>
+
+                    <hr />
+
+                </div>
+                <div class="col-7 d-flex flex-column justify-content-around">
+
+                    @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == SegId))
+                    {
+                        <div class="row mar">
+                            <a class="btn btn-info" href="@($"subcategory/{SegId}")">@sub.Name</a>
+                        </div>
+                    }
+
+
+
+                </div>
+            </div>
+        </div>
+        
+
+
+
+    </div>
+}
+
 
 <!-- Information about the segment -->
 
@@ -17,8 +71,31 @@
 
 @code {
     [Parameter]
-    public int Id { get; set; }
+    public int CatId { get; set; }
+    [Parameter]
+    public int SegId { get; set; }
+
+    CategoryViewModel? category { get; set; }
+    SegmentViewModel? segment { get; set; }
+    List<SubcategoryViewModel>? subcategories { get; set; }
+    private List<UserResponseModel> userResponses = new();
+    private ClaimsPrincipal? currentUser;
+    bool isDone { get; set; }
+
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        List<CategoryViewModel> categories = await service.GetAllCategoriesAndMeta();
+        if (categories.Any())
+        {
+            category = (CategoryViewModel?)categories.FirstOrDefault(c => c.Id == CatId);
+            segment = (SegmentViewModel?)category.Segments.FirstOrDefault(s => s.Id == SegId);
+            subcategories = category.Segments.SelectMany(s => s.Subcategories).ToList();
+
+        }
 
 
 
+    }
 }

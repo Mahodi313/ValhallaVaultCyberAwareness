@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ValhallaVaultCyberAwareness.DAL.DbModels;
+﻿using ValhallaVaultCyberAwareness.DAL.DbModels;
+using ValhallaVaultCyberAwareness.DAL.ViewModel;
 
 namespace ValhallaVaultCyberAwareness.App.Services
 {
@@ -11,5 +7,6 @@ namespace ValhallaVaultCyberAwareness.App.Services
     {
         public Task<List<UserResponseModel>> GetUserResponsesAsync(string userId);
         public int CalculateSegmentCompletionBasedOnUser(SegmentModel segment, List<UserResponseModel> userResponses);
+        public int CalculateSegmentCompletionBasedOnUser(SegmentViewModel segment, List<UserResponseModel> userResponses);
     }
 }
