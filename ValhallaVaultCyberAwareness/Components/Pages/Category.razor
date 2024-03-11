@@ -1,6 +1,7 @@
 ﻿@page "/category/{Id:int}"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Mvc
+@using System.Security.Claims
 @using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.API
@@ -11,6 +12,8 @@
 @* @attribute [Authorize]
  *@
 @inject IViewModelService service
+@inject IAuthService authService
+@inject IUserResponseService userResponseService
 
 @if(category == null)
 {
@@ -26,7 +29,7 @@
             <div class="category">
                 <div class="cat-row ">
                     <h1 class="mar text-center">@category.Name</h1>
-                    <p class="text-center " >@category.Info</p>
+                    <p class="text-center" >@category.Info</p>
                 </div>
                 <hr />
             </div>
@@ -36,31 +39,37 @@
 
 
                 <div class="cat-row">
-                    <div>
-                        <h2>@category.Name</h2>
-                    </div>
 
                     @foreach (SegmentViewModel seg in segments)
                     {
-                        <div class="cat-row cat-card">
-                            <div style="margin:20px;">
-                                @if(isDone)
-                                {
-                                    <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
-                                }
-                                else
-                                {
-                                    <img class="img-check mar" src="/Images/check.png" style="visibility: hidden;" />
-                                }
-                                
-                                <a class="btn btn-light" href="@($"segment/{seg.Id}")" ><span style="font-size:x-large">@seg.Name</span></a>
+                        int Comp = CalculateSegmentCompletion(seg);
+                        @if(Comp == 100){ isDone = true; }
 
+                        <div class="cat-card">
+                            <div class="mar">
+                                <div class="categories">
+                                    <!--Visar en checkbox icon om segmentet är avklarat-->
+                                    @if (isDone)
+                                    {
+                                        <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
+                                    }
+
+                                    <a class="btn btn-light" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
+
+                                </div>
+                                <br />
+                                    
                                 <div class="cat-row category">
                                     <div class="d-flex flex-column ">
-                                        @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == seg.Id))
-                                        {
-                                            <div class="">@sub.Name</div>
-                                        }
+                                        <ol>
+                                            @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == seg.Id))
+                                            {
+                                                <div class="text-center" style="margin:5px;">
+                                                <li><h5>@sub.Name</h5></li>
+                                                </div>
+                                            }
+                                        </ol>
+                                        
                                     </div>
                                 </div>
                             </div>
@@ -94,6 +103,8 @@
     CategoryViewModel category { get; set; }
     List<SegmentViewModel> segments { get; set; }
     List<SubcategoryViewModel> subcategories { get; set; }
+    private List<UserResponseModel> userResponses = new();
+    private ClaimsPrincipal? currentUser;
     bool isDone { get; set; }
 
 
@@ -108,11 +119,30 @@
             segments = category.Segments.Where(s => s.CategoryId == category.Id).ToList();
             subcategories = category.Segments.SelectMany(s => s.Subcategories).ToList();
 
-            
+            //Medhis logik från Homepage
+            currentUser = await authService.GetCurrentUserDataAsync();
+            if (currentUser.Identity.IsAuthenticated)
+            {
+                var userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                if (userId != null)
+                {
+                    userResponses = await userResponseService.GetUserResponsesAsync(userId);
+                }
+            }
+
         }
         
 
 
+    }
+
+    //Medhis logik från homepage
+    private int CalculateSegmentCompletion(SegmentViewModel segment)
+    {
+        int precentage = userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
+
+        return precentage;
     }
 
 }
