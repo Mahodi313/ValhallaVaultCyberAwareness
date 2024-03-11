@@ -1,4 +1,10 @@
-﻿<h3>Segment</h3>
+﻿@page "/segment/{Id:int}"
+
+<h3>Segment under construction</h3>
+
+<br />
+<br />
+<a class="btn " href="@($"subcategory/{Id}")" >Go to subcategory</a>
 
 <!-- Information about the segment -->
 
@@ -10,6 +16,9 @@
 
 
 @code {
+    [Parameter]
+    public int Id { get; set; }
+
 
 
 }
