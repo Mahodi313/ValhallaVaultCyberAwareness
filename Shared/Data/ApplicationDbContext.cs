@@ -21,6 +21,8 @@ namespace ValhallaVaultCyberAwareness.Data
 
             base.OnModelCreating(builder);
 
+            #region CategoryModel
+
             builder.Entity<CategoryModel>().HasData(
             new CategoryModel
             {
@@ -42,6 +44,9 @@ namespace ValhallaVaultCyberAwareness.Data
                 Info = "Cyberspionage för företag\" är categorin där vi utforskar olika aspekter av cyberspionage och dess förebyggande åtgärder på en djupare nivå. Vi börjar med att förstå cyberspionage som ett fenomen och identifierar det som en aktivitet där aktörer, vanligtvis statliga, engagerar sig i övervakning och datainsamling genom cybermedel för att erhålla hemlig information för politiska, militära eller ekonomiska fördelar.\r\n\r\nVi undersöker även vikten av att öka användningen av kryptering för att skydda känslig kommunikation och betonar att implementera program för beteendeanalys och anomalidetektering för att upptäcka insiderhot, vilket är en av de svåraste säkerhetsutmaningarna att hantera.\r\n\r\nEn annan viktig aspekt är hanteringen av mjukvarusårbarheter, som ofta utnyttjas i cyberspionageattacker. Vi betonar vikten av att hålla all mjukvara och operativsystem uppdaterade med de senaste säkerhetspatcharna för att minimera risken för intrång och dataläckor.\r\n\r\nVi diskuterar också olika metoder för cyberspionage, inklusive riktade cyberattacker som utnyttjar noll-dagars sårbarheter och betonar behovet av att ha robusta säkerhetsskyddsåtgärder, som fastställs av lagar som säkerhetsskyddslagen, för att skydda nationellt känslig information från spioneri och andra säkerhetshot.\r\n\r\nSlutligen, vi identifierar olika aktörer inom cyberspionage, särskilt statssponsrade hackers, som är aktiva med stöd från regeringar för att genomföra cyberspionage mot utländska intressen eller organisationer för strategiska fördelar."
             });
 
+            #endregion
+
+            #region SegmentModel
             ////Seedad Segments
             builder.Entity<SegmentModel>().HasData(
 
@@ -120,6 +125,10 @@ namespace ValhallaVaultCyberAwareness.Data
                 Info = "I del 3 av Cyberspionage diskuteras Svensk underrättelsetjänst och cyberförsvar, signalspaning, informationssäkerhet och 5G, samt samverkan mot cyberspionage. Det inkluderar Sveriges förmåga att hantera och förebygga cyberspionage, användningen av signalspaning för att skydda kommunikation, särskilt i 5G-nätverk, samt betydelsen av samarbete mellan olika aktörer för att bekämpa hotet från cyberspionage.",
                 CategoryId = 3
             });
+
+            #endregion
+
+            #region SubcategoryModel
 
             //Seeding Subcategories
             builder.Entity<SubcategoryModel>().HasData(
@@ -204,6 +213,9 @@ namespace ValhallaVaultCyberAwareness.Data
             new SubcategoryModel { Id = 54, Name = "Samverkan mot cyberspionage", SegmentId = 10 }
             );
 
+            #endregion
+
+            #region QuestionModel
 
             builder.Entity<QuestionModel>().HasData(
 
@@ -287,6 +299,9 @@ namespace ValhallaVaultCyberAwareness.Data
             new QuestionModel { Id = 54, Title = "Hur kan länder effektivt samverka för att bekämpa cyberspionage?", SubcategoryId = 54 }
             );
 
+            #endregion
+
+            #region AnswerModel
 
             // Answers for each question
             builder.Entity<AnswerModel>().HasData(
@@ -1694,6 +1709,8 @@ namespace ValhallaVaultCyberAwareness.Data
                 Explanation = "Att begränsa användningen av internet globalt är varken realistiskt eller genomförbart och skulle också ha negativa konsekvenser för samhällen och ekonomier över hela världen.",
                 QuestionId = 54
             });
+
+            #endregion
         }
     }
 }
