@@ -146,9 +146,19 @@ h1:focus {
     margin: 40px;
 }
 
+.category2 {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    margin: 40px;
+}
+
+
 .cat-row {
-   
     margin-top: 5px;
+    max-width: 80vw;
+    min-width:60vw;
 }
 
 .cat-card {
@@ -176,6 +186,26 @@ h1:focus {
     display: flex;
     justify-content: center;
     align-items: center;
+}
+
+ol {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+@media screen and (min-width:414px) and (max-width: 720px) {
+
+    .cat-card {
+        max-width: 100vw;
+    }
+}
+
+@media screen and (min-width:720px) and (max-width: 1024px) {
+
+    .cat-card {
+        max-width: 80vw;
+    }
 }
 
 

@@ -29,7 +29,7 @@
             <div class="category">
                 <div class="cat-row ">
                     <h1 class="mar text-center">@category.Name</h1>
-                    <p class="text-center " >@category.Info</p>
+                    <p class="text-center" >@category.Info</p>
                 </div>
                 <hr />
             </div>
@@ -39,36 +39,37 @@
 
 
                 <div class="cat-row">
-                    <div>
-                        <h2>@category.Name</h2>
-                    </div>
 
                     @foreach (SegmentViewModel seg in segments)
                     {
                         int Comp = CalculateSegmentCompletion(seg);
                         @if(Comp == 100){ isDone = true; }
 
-                        <div class="cat-row cat-card">
-                            <div style="margin:20px;">
-                                <strong>@Comp</strong>
-                                <!--Visar en checkbox icon om segmentet är avklarat-->
-                                @if(isDone)
-                                {
-                                    <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
-                                }
-                                else
-                                {
-                                    <img class="img-check mar" src="/Images/check.png" style="visibility: hidden;" />
-                                }
+                        <div class="cat-card">
+                            <div class="mar">
+                                <div class="categories">
+                                    <!--Visar en checkbox icon om segmentet är avklarat-->
+                                    @if (isDone)
+                                    {
+                                        <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
+                                    }
 
-                                <a class="btn btn-light" href="@($"segment/{Id}/{seg.Id}")"><span style="font-size:x-large">@seg.Name</span></a>
+                                    <a class="btn btn-light" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
 
+                                </div>
+                                <br />
+                                    
                                 <div class="cat-row category">
                                     <div class="d-flex flex-column ">
-                                        @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == seg.Id))
-                                        {
-                                            <div class="">@sub.Name</div>
-                                        }
+                                        <ol>
+                                            @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == seg.Id))
+                                            {
+                                                <div class="text-center" style="margin:5px;">
+                                                <li><h5>@sub.Name</h5></li>
+                                                </div>
+                                            }
+                                        </ol>
+                                        
                                     </div>
                                 </div>
                             </div>
