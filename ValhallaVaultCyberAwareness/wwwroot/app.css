@@ -209,6 +209,16 @@ ol {
     }
 }
 
+.disabled-link {
+    pointer-events: none;
+    opacity:0.5;
+    
+}
+
+.text-op{
+    opacity:0.5 !important;
+}
+
 
 /*Home page*/
 .navbar-home {
@@ -305,3 +315,4 @@ ol {
     background-color: #f8d7da;
     border-color: #f5c6cb;
 }
+
