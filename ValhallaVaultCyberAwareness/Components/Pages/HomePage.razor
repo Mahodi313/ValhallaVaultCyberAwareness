@@ -1,16 +1,10 @@
-﻿@using System.Net.Http
+﻿@page "/Home"
 @using Microsoft.AspNetCore.Authorization
-@using Microsoft.AspNetCore.Components.Forms
-@using Microsoft.AspNetCore.Components.Routing
-@using Microsoft.AspNetCore.Components.Web
-@using Microsoft.JSInterop
 @using System.Security.Claims
 @using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.Repository
-
 @attribute [Authorize]
-
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject IRepository<UserResponseModel> userRepo
@@ -19,59 +13,72 @@
 @inject IUserResponseService userResponseService
 @rendermode InteractiveServer
 
-@page "/Home"
+<style>
+    body {
+        background-image: url(Gifs/stars3.gif);
+        background-size: 100% auto;
+        background-repeat: repeat-x;
+        background-position: center;
+        height: 100vh; 
+        margin: 0; 
+        padding: 0;
+    }
+</style>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
-    <span class="navbar-brand mb-0 ms-2 h1 text-primary">Valhalla Home</span>
-    <div class="d-flex justify-content-end">
-        <AuthorizeView Roles="Admin">
-            <Authorized>
-                <a class="btn btn-outline-primary me-2" href="/Admin">Go To Admin Section</a>
-            </Authorized>
-        </AuthorizeView>
-        <a class="btn btn-outline-primary ms-2" href="/Userpage">Edit Account info</a>
+<div class="container-fluid">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1 text-dark">Valhalla Home</span>
+            <div class="navbar-nav ml-auto">
+                <AuthorizeView Roles="Admin">
+                    <Authorized>
+                        <a class="btn btn-outline-dark me-2" href="/Admin">Admin Section</a>
+                    </Authorized>
+                </AuthorizeView>
+                <a class="btn btn-outline-dark ms-2" href="/Userpage">Edit Account</a>
+                <form class="d-inline-block" action="Account/Logout" method="post">
+                    <AntiforgeryToken />
+                    <input type="hidden" name="ReturnUrl" value="@currentUrl" />
+                    <button type="submit" class="btn btn-outline-dark ms-2">Log out</button>
+                </form>
+            </div>
+        </div>
+    </nav>
 
-        <form action="Account/Logout" method="post">
-            <AntiforgeryToken />
-            <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-            <button type="submit" class="btn btn-outline-primary ms-2">Log out</button>
-        </form>
-    </div>
-</nav>
-<br />
-<main>
-    <div class="search-container text-center">
-        <input class="search-input" type="text" placeholder="Search for categories..." @bind="searchTerm" @oninput="OnSearchInput" />
-    </div>
-    <br />
-    <div class="text-center">
-        @foreach (var category in categories)
-        {
-
-            <div class="card category-card mb-3">
-                <div class="card-header bg-primary text-white">
-                    <a href="/category/@category.Id"><h2>@category.Name</h2></a>
-                </div>
-                @if (category.Segments != null && category.Segments.Any())
-                {
-                    <div class="card-body">
-
-                        @foreach (var segment in category.Segments)
+    <main class="container">
+        <div class="search-container text-center my-4">
+            <input class="form-control search-input" type="text" placeholder="Search categories..." @bind="searchTerm" @oninput="OnSearchInput" />
+        </div>
+        <div class="row justify-content-center">
+            @foreach (var category in categories)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card category-card">
+                        <div class="card-header bg-dark text-white">
+                            <h2 class="card-title"><a href="/category/@category.Id" class="text-white">@category.Name</a></h2>
+                         </div>
+                        @if (category.Segments != null && category.Segments.Any())
                         {
-                            int segmentCompletion = CalculateSegmentCompletion(segment);
-                            <div class="segment-info mb-2">
-                                <p class="segment-name">@segment.Name</p>
-                                <div class="progress">
-                                    <div class="progress-bar" role="progressbar" style="width: @segmentCompletion%" aria-valuenow="@segmentCompletion" aria-valuemin="0" aria-valuemax="100">@segmentCompletion%</div>
-                                </div>
+                            <div class="card-body">
+                                @foreach (var segment in category.Segments)
+                                {
+                                    int segmentCompletion = CalculateSegmentCompletion(segment);
+                                        <div class="segment-info mb-2">
+                                            <p class="segment-name">@segment.Name</p>
+                                            <div class="progress">
+                                                <div class="progress-bar" role="progressbar" style="width: @segmentCompletion%" aria-valuenow="@segmentCompletion" aria-valuemin="0" aria-valuemax="100">@segmentCompletion%</div>
+                                            </div>
+                                         </div>
+                                }
                             </div>
                         }
+                        </div>
                     </div>
-                }
-            </div>
-        }
-    </div>
-</main>
+             }
+        </div>
+    </main>
+</div>
+
 
 @code {
 
