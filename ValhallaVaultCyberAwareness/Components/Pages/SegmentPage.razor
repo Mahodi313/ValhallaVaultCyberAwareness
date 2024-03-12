@@ -23,7 +23,7 @@
 @if(segment != null)
 {
     <div class="categories2">
-        <div class="">
+        <div class="mar">
 
             <div class="row category">
                 <h1 class="text-center">@category.Name</h1>
@@ -46,7 +46,7 @@
                     @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == SegId))
                     {
                         <div class="row mar">
-                            <a class="btn btn-info text-white" href="@($"subcategory/{SegId}/{sub.Id}")"><h6 style="" >@sub.Name</h6></a>
+                            <a class="btn btn-light" href="@($"subcategory/{SegId}/{sub.Id}")"><h5 style="" >@sub.Name</h5></a>
                         </div>
                     }
 
@@ -60,6 +60,8 @@
 
 
     </div>
+    <br />
+    <br />
 }
 
 

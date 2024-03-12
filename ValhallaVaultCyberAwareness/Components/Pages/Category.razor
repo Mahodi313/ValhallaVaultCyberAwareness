@@ -54,13 +54,13 @@
                                     {
                                         <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
                                         
-                                        <a class="btn btn-info text-white" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
+                                        <a class="btn btn-light" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
                                         
 
                                     }
                                     else if(isCleardBefore)
                                     {
-                                        <a class="btn btn-info text-white" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
+                                        <a class="btn btn-light" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
                                     }
 
                                     else if(!isDone)
@@ -68,12 +68,12 @@
                                         <!-- Makes first segment clickable -->
                                         @if (isFirst)
                                         {
-                                            <a class="btn btn-info text-white " href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
+                                            <a class="btn btn-light" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
 
                                         }
                                         else
                                         {
-                                            <a class="btn btn-info text-white disabled-link" href="#"><h3>@seg.Name</h3></a>
+                                            <a class="btn btn-light disabled-link" href="#"><h3>@seg.Name</h3></a>
                                             
                                         }
                                     }
