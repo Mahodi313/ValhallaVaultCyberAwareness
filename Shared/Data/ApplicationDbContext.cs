@@ -21,6 +21,8 @@ namespace ValhallaVaultCyberAwareness.Data
 
             base.OnModelCreating(builder);
 
+            #region CategoryModel
+
             builder.Entity<CategoryModel>().HasData(
             new CategoryModel
             {
@@ -42,6 +44,9 @@ namespace ValhallaVaultCyberAwareness.Data
                 Info = "Cyberspionage för företag\" är categorin där vi utforskar olika aspekter av cyberspionage och dess förebyggande åtgärder på en djupare nivå. Vi börjar med att förstå cyberspionage som ett fenomen och identifierar det som en aktivitet där aktörer, vanligtvis statliga, engagerar sig i övervakning och datainsamling genom cybermedel för att erhålla hemlig information för politiska, militära eller ekonomiska fördelar.\r\n\r\nVi undersöker även vikten av att öka användningen av kryptering för att skydda känslig kommunikation och betonar att implementera program för beteendeanalys och anomalidetektering för att upptäcka insiderhot, vilket är en av de svåraste säkerhetsutmaningarna att hantera.\r\n\r\nEn annan viktig aspekt är hanteringen av mjukvarusårbarheter, som ofta utnyttjas i cyberspionageattacker. Vi betonar vikten av att hålla all mjukvara och operativsystem uppdaterade med de senaste säkerhetspatcharna för att minimera risken för intrång och dataläckor.\r\n\r\nVi diskuterar också olika metoder för cyberspionage, inklusive riktade cyberattacker som utnyttjar noll-dagars sårbarheter och betonar behovet av att ha robusta säkerhetsskyddsåtgärder, som fastställs av lagar som säkerhetsskyddslagen, för att skydda nationellt känslig information från spioneri och andra säkerhetshot.\r\n\r\nSlutligen, vi identifierar olika aktörer inom cyberspionage, särskilt statssponsrade hackers, som är aktiva med stöd från regeringar för att genomföra cyberspionage mot utländska intressen eller organisationer för strategiska fördelar."
             });
 
+            #endregion
+
+            #region SegmentModel
             ////Seedad Segments
             builder.Entity<SegmentModel>().HasData(
 
@@ -121,89 +126,419 @@ namespace ValhallaVaultCyberAwareness.Data
                 CategoryId = 3
             });
 
+            #endregion
+
+            #region SubcategoryModel
+
             //Seeding Subcategories
             builder.Entity<SubcategoryModel>().HasData(
 
             // Category 1 - "Att skydda sig mot bedrägerier"
             // Subcategories for Segment "Del 1"
-            new SubcategoryModel { Id = 1, Name = "Kreditkortsbedrägeri", SegmentId = 1 },
-            new SubcategoryModel { Id = 2, Name = "Säkerhetsåtgärder mot bedrägerier", SegmentId = 1 },
-            new SubcategoryModel { Id = 3, Name = "Kommunikationsmetoder", SegmentId = 1 },
-            new SubcategoryModel { Id = 4, Name = "Telefonbedrägeriers förebyggande", SegmentId = 1 },
-            new SubcategoryModel { Id = 5, Name = "Romansbedrägeri", SegmentId = 1 },
-            new SubcategoryModel { Id = 6, Name = "Investeringsbedrägeri", SegmentId = 1 },
-            new SubcategoryModel { Id = 7, Name = "Telefonbedrägeri", SegmentId = 1 },
+            new SubcategoryModel
+            {
+                Id = 1,
+                Name = "Kreditkortsbedrägeri",
+                Info = "I vår digitala era är det avgörande att vara vaksam mot oväntade förfrågningar om personlig information. Denna överblick uppmanar till försiktighet vid telefonsamtal som begär känslig information, understryker vikten av säkerhetsmedvetenhet och uppmuntrar till verifiering genom officiella kanaler för att förebygga potentiella bedrägerier.",
+                SegmentId = 1
+            },
+            new SubcategoryModel
+            {
+                Id = 2,
+                Name = "Säkerhetsåtgärder mot bedrägerier",
+                Info = "När du står inför ett misstänkt telefonsamtal som begär personlig finansiell information, är det kritiskt att vidta omedelbara åtgärder för att skydda din integritet och ekonomi. Denna överblick understryker vikten av att vara vaksam och att alltid bekräfta uppgifter genom betrodda och säkra kommunikationskanaler.",
+                SegmentId = 1
+            },
+            new SubcategoryModel
+            {
+                Id = 3,
+                Name = "Kommunikationsmetoder",
+                Info = "I den digitala världen är det viktigt att förstå hur legitima finansiella institutioner interagerar med sina kunder för att skydda personlig och finansiell information. Denna överblick framhäver vikten av säker kommunikation och utbildar om rätt sätt för banker att begära information, vilket bidrar till en ökad medvetenhet om bedrägeriförebyggande.",
+                SegmentId = 1
+            },
+            new SubcategoryModel
+            {
+                Id = 4,
+                Name = "Telefonbedrägeriers förebyggande",
+                Info = "I takt med att telefonbedrägerier blir alltmer sofistikerade, blir det allt viktigare att vidta åtgärder för att skydda sig. Från att identifiera och blockera misstänkta samtal till att stärka säkerheten genom samarbeten med finansiella institutioner, finns det flera metoder för att minska risken för bedrägeri. Denna överblick betonar vikten av proaktivitet och medvetenhet om de verktyg och strategier som finns tillgängliga för att förebygga bedrägerier.",
+                SegmentId = 1
+            },
+            new SubcategoryModel
+            {
+                Id = 5,
+                Name = "Romansbedrägeri",
+                Info = "I vårt digitala samhälle har online-dejting blivit ett populärt sätt att träffa nya människor. Dock har detta också öppnat dörren för oärliga individer som utnyttjar andras tillit genom sofistikerade bedrägerier. Denna överblick belyser vikten av att vara vaksam och kritisk mot de man interagerar med online, särskilt när det kommer till att dela personlig information eller ekonomiska resurser.",
+                SegmentId = 1
+            },
+            new SubcategoryModel
+            {
+                Id = 6,
+                Name = "Investeringsbedrägeri",
+                Info = "I en värld där nya investeringsmöjligheter kontinuerligt presenteras, är det viktigt att närma sig erbjudanden med en kritisk blick. Denna överblick betonar vikten av att vara skeptisk till erbjudanden som lovar snabba och höga avkastningar, särskilt de som når dig genom oönskade kommunikationsvägar, och understryker betydelsen av grundlig undersökning innan några åtaganden görs.",
+                SegmentId = 1
+            },
+            new SubcategoryModel
+            {
+                Id = 7,
+                Name = "Telefonbedrägeri",
+                Info = "Med den ökande populariteten av online-shopping följer också en ökad risk för ekonomiska bedrägerier. Denna överblick belyser betydelsen av att regelbundet övervaka ditt kreditkortsutdrag för att upptäcka oidentifierade transaktioner, vilket kan vara en varningssignal för potentiella säkerhetsbrott och obehörig användning av dina kortuppgifter.",
+                SegmentId = 1
+            },
 
             // Subcategories for Segment "Del 2"
-            new SubcategoryModel { Id = 8, Name = "Bedrägerier i hemmet", SegmentId = 2 },
-            new SubcategoryModel { Id = 9, Name = "Identitetsstöld", SegmentId = 2 },
-            new SubcategoryModel { Id = 10, Name = "Nätfiske och bluffmejl", SegmentId = 2 },
-            new SubcategoryModel { Id = 11, Name = "Investeringsbedrägeri på nätet", SegmentId = 2 },
+            new SubcategoryModel
+            {
+                Id = 8,
+                Name = "Bedrägerier i hemmet",
+                Info = "I tider när personliga och hemrelaterade tjänster blomstrar, växer också potentialen för bedrägerier inom detta område. Denna överblick betonar vikten av försiktighet vid hemförsäljning och hantverkstjänster, speciellt när du ställs inför krav på omedelbar eller stor förskottsbetalning och \"engångserbjudanden\". Att vara medveten om dessa tecken kan hjälpa till att skydda dig från oärliga aktörer.",
+                SegmentId = 2
+            },
+            new SubcategoryModel
+            {
+                Id = 9,
+                Name = "Identitetsstöld",
+                Info = "I en värld där digital information ständigt cirkulerar, är risken för identitetsstöld ett växande bekymmer. Denna överblick understryker vikten av proaktiva åtgärder såsom regelbunden övervakning av kontoutdrag och användning av starka, unika lösenord. Genom att vidta dessa steg kan du bidra till att skydda din personliga och finansiella information från obehörig åtkomst och missbruk.",
+                SegmentId = 2
+            },
+            new SubcategoryModel
+            {
+                Id = 10,
+                Name = "Nätfiske och bluffmejl",
+                Info = "I en värld där digital kommunikation är alltmer vanlig, är det viktigt att vara på sin vakt mot nätfiske och bluffmejl. Denna överblick betonar vikten av att aldrig klicka på länkar eller följa instruktioner från okända källor som begär personlig information. Istället bör du vidta säkra steg genom att kontakta din bank eller den berörda institutionen direkt via deras officiella kommunikationskanaler för att verifiera alla förfrågningar.",
+                SegmentId = 2
+            },
+            new SubcategoryModel
+            {
+                Id = 11,
+                Name = "Investeringsbedrägeri på nätet",
+                Info = "När det gäller att navigera i den digitala investeringsvärlden är det viktigt att vara medveten om varningssignaler som kan tyda på bedrägeri. Denna överblick understryker ett kritiskt tecken på potentiellt investeringsbedrägeri: löften om garanterad hög avkastning med liten eller ingen risk. Att känna igen sådana erbjudanden är avgörande för att skydda dina investeringar och ekonomiska välbefinnande.",
+                SegmentId = 2
+            },
 
             // Subcategories for Segment "Del 3"
-            new SubcategoryModel { Id = 12, Name = "Abonnemangsfällor och falska fakturor", SegmentId = 3 },
-            new SubcategoryModel { Id = 13, Name = "Ransomware", SegmentId = 3 },
-            new SubcategoryModel { Id = 14, Name = "Statistik och förhållningssätt", SegmentId = 3 },
+            new SubcategoryModel
+            {
+                Id = 12,
+                Name = "Abonnemangsfällor och falska fakturor",
+                Info = "Att undvika abonnemangsfällor kräver noggrannhet och kritisk granskning av erbjudanden. Denna överblick betonar vikten av att noggrant läsa avtal och villkor för att skydda sig mot oönskade avgifter och abonnemang. En medveten inställning till att förstå vad du samtycker till kan bidra till en säkrare och mer kontrollerad konsumtion.",
+                SegmentId = 3
+            },
+            new SubcategoryModel
+            {
+                Id = 13,
+                Name = "Ransomware",
+                Info = "I en värld där cyberhot ständigt utvecklas, är det viktigt att vidta åtgärder för att skydda sin digitala närvaro. Denna överblick betonar betydelsen av att vara proaktiv genom att anta strategier som stärker din digitala säkerhet, vilket kan inkludera en kombination av tekniska och beteendemässiga åtgärder för att minska risken för skadlig programvara och attacker.",
+                SegmentId = 3
+            },
+            new SubcategoryModel
+            {
+                Id = 14,
+                Name = "Statistik och förhållningssätt",
+                Info = "Statistik om cybersäkerhet avslöjar varierande förhållningssätt hos allmänheten, från en brist på grundläggande säkerhetsmedvetenhet till förtroendet i deras online-säkerhetspraxis. Denna överblick speglar den breda spektrumet av attityder och beteenden, understryker behovet av ökad utbildning och medvetenhet kring cybersäkerhet.",
+                SegmentId = 3
+            },
 
 
             // Category 2 - "Cybersäkerhet för företag"
             // Subcategories for Segment "Del 1"
-            new SubcategoryModel { Id = 15, Name = "Digital säkerhet på företag", SegmentId = 4 },
-            new SubcategoryModel { Id = 16, Name = "Lösenordshantering", SegmentId = 4 },
-            new SubcategoryModel { Id = 17, Name = "Säker fjärråtkomst", SegmentId = 4 },
-            new SubcategoryModel { Id = 18, Name = "E-postsäkerhet", SegmentId = 4 },
-            new SubcategoryModel { Id = 19, Name = "Risker och beredskap", SegmentId = 4 },
-            new SubcategoryModel { Id = 20, Name = "Aktörer inom cyberbrott", SegmentId = 4 },
-            new SubcategoryModel { Id = 21, Name = "Ökad digital närvaro och distansarbete", SegmentId = 4 },
-            new SubcategoryModel { Id = 22, Name = "Cyberangrepp mot känsliga sektorer", SegmentId = 4 },
-            new SubcategoryModel { Id = 23, Name = "Cyberrånet mot Mersk", SegmentId = 4 },
+            new SubcategoryModel
+            {
+                Id = 15,
+                Name = "Digital säkerhet på företag",
+                Info = "I företagsvärlden är skyddet av konfidentiella uppgifter av yttersta vikt. En intern granskning som avslöjar oavsiktlig installation av skadlig programvara belyser behovet av proaktiva säkerhetsåtgärder. Att stärka företagets försvar mot digitala hot bör omfatta en kombination av tekniska uppgraderingar och strategisk utbildning för att säkerställa en robust säkerhetsstruktur.",
+                SegmentId = 4
+            },
+            new SubcategoryModel
+            {
+                Id = 16,
+                Name = "Lösenordshantering",
+                Info = "Effektiv lösenordshantering är avgörande för att skydda företagsdata. Att implementera en robust strategi som främjar regelbundna uppdateringar och förstärker lösenordens komplexitet är nyckeln till att minimera säkerhetsrisker och säkerställa en stark försvarslinje mot digitala hot, vilket bidrar till en säkrare arbetsmiljö.",
+                SegmentId = 4
+            },
+            new SubcategoryModel
+            {
+                Id = 17,
+                Name = "Säker fjärråtkomst",
+                Info = "Att upprätthålla företagsdatas säkerhet i en alltmer uppkopplad värld kräver noggranna åtgärder, speciellt när det gäller fjärråtkomst. Denna överblick fokuserar på betydelsen av att säkerställa att anställda kan arbeta säkert från vilken plats som helst, utan att riskera exponering av känslig information genom otrygga nätverksanslutningar.",
+                SegmentId = 4
+            },
+            new SubcategoryModel
+            {
+                Id = 18,
+                Name = "E-postsäkerhet",
+                Info = "Navigeringen genom e-postsäkerhetens komplexa landskap är avgörande för företag som vill skydda sig mot cyberhot. Denna överblick fokuserar på strategier och tekniker för att försvara sig mot de ständigt närvarande riskerna från phishing och andra e-postbaserade angrepp, vilket understryker behovet av kontinuerlig uppmärksamhet och uppdatering av säkerhetsåtgärder.",
+                SegmentId = 4
+            },
+            new SubcategoryModel
+            {
+                Id = 19,
+                Name = "Risker och beredskap",
+                Info = "Identifiering och hantering av sårbarheter i programvara är en kritisk aspekt av cybersäkerhetsarbetet inom organisationer. Denna överblick adresserar vikten av beredskap och ansvarsfullt agerande när obehörig åtkomst till användardata riskeras.",
+                SegmentId = 4
+            },
+            new SubcategoryModel
+            {
+                Id = 20,
+                Name = "Aktörer inom cyberbrott",
+                Info = "Förståelsen av olika aktörer inom cyberbrott är avgörande för att utveckla effektiva försvarsstrategier mot cyberattacker. Denna överblick behandlar spektrumet av potentiella gärningsmän bakom DDoS-attacker, från enskilda hackare till organiserade grupper, och betonar vikten av att identifiera hotkällor för att skräddarsy säkerhetsåtgärder och skydda företagets digitala infrastruktur.",
+                SegmentId = 4
+            },
+            new SubcategoryModel
+            {
+                Id = 21,
+                Name = "Ökad digital närvaro och distansarbete",
+                Info = "Den ökade digitala närvaron och övergången till distansarbete har introducerat nya utmaningar för företagens cybersäkerhet, inklusive en uppsving i säkerhetsincidenter. Denna överblick fokuserar på anpassningen till dessa förändrade arbetsförhållanden, understryker vikten av att vidta åtgärder för att förstärka säkerheten och skydda företagsdata mot obehörig åtkomst i en alltmer uppkopplad värld.",
+                SegmentId = 4
+            },
+            new SubcategoryModel
+            {
+                Id = 22,
+                Name = "Cyberangrepp mot känsliga sektorer",
+                Info = "Cyberangrepp mot känsliga sektorer, såsom hälsovården, utgör en betydande risk mot samhällsviktig infrastruktur, med potentiellt allvarliga konsekvenser för tillgången till kritiska tjänster och skyddet av privat information. Denna överblick tar upp utmaningarna med att skydda dessa vitala system mot sofistikerade hot, vilket understryker behovet av stark cybersäkerhet och beredskap för att möta dessa utmaningar.",
+                SegmentId = 4
+            },
+            new SubcategoryModel
+            {
+                Id = 23,
+                Name = "Cyberrånet mot Mersk",
+                Info = "Cyberangreppet mot det globala fraktbolaget Maersk markerar en betydande händelse inom cybersäkerhet, som illustrerar de omfattande konsekvenserna som malware kan ha på internationella affärsoperationer. Denna överblick fokuserar på de utmaningar företag står inför när de konfronteras med sofistikerade cyberhot och betonar vikten av robusta säkerhetsåtgärder och beredskapsplaner för att minimera risken för liknande incidenter.",
+                SegmentId = 4
+            },
 
             // Subcategories for Segment "Del 2"
-            new SubcategoryModel { Id = 24, Name = "Social engineering", SegmentId = 5 },
-            new SubcategoryModel { Id = 25, Name = "Nätfiske och skräppost", SegmentId = 5 },
-            new SubcategoryModel { Id = 26, Name = "Vishing", SegmentId = 5 },
-            new SubcategoryModel { Id = 27, Name = "Varning för vishing", SegmentId = 5 },
-            new SubcategoryModel { Id = 28, Name = "Identifiera VD-mejl", SegmentId = 5 },
-            new SubcategoryModel { Id = 29, Name = "Öneangrepp och presentkortsbluffar", SegmentId = 5 },
+            new SubcategoryModel
+            {
+                Id = 24,
+                Name = "Social engineering",
+                Info = "Social engineering spelar en avgörande roll i många cyberangrepp, där angripare använder psykologiska metoder snarare än tekniska brister för att manipulera individer. Denna överblick riktar fokus mot de olika metoderna för social manipulation som används för att vinna obehörig åtkomst till konfidentiell information, vilket understryker betydelsen av medvetenhet och utbildning i att förebygga sådana hot.",
+                SegmentId = 5
+            },
+            new SubcategoryModel
+            {
+                Id = 25,
+                Name = "Nätfiske och skräppost",
+                Info = "Att navigera i den digitala världens utmaningar kräver vaksamhet, särskilt när det gäller att skydda sig mot nätfiske och skräppost. Denna överblick fokuserar på betydelsen av att identifiera och korrekt hantera misstänkta e-postmeddelanden för att förhindra obehörig åtkomst till personlig och företagskänslig information, vilket understryker vikten av grundläggande cybersäkerhetspraxis.",
+                SegmentId = 5
+            },
+            new SubcategoryModel
+            {
+                Id = 26,
+                Name = "Vishing",
+                Info = "Vishing, en form av social engineering via telefon, utgör en växande cybersäkerhetsrisk. Denna överblick belyser strategier för att identifiera och förhindra oönskade försök till obehörig åtkomst till personlig information, understryker vikten av kritiskt tänkande och proaktivitet i hanteringen av inkommande samtal från okända källor.",
+                SegmentId = 5
+            },
+            new SubcategoryModel
+            {
+                Id = 27,
+                Name = "Varning för vishing",
+                Info = "Att känna igen tecken på vishing är avgörande för att skydda personlig information i en alltmer uppkopplad värld. Denna överblick lyfter fram vikten av att vara vaksam mot potentiella bedrägeriförsök via telefon, speciellt de som involverar lockande erbjudanden som pressar till snabba beslut, och betonar behovet av kritisk granskning av sådana samtal.",
+                SegmentId = 5
+            },
+            new SubcategoryModel
+            {
+                Id = 28,
+                Name = "Identifiera VD-mejl",
+                Info = "I en tid då cyberbedrägerier blir allt mer sofistikerade, är det viktigt att vara medveten om potentiella falska begäranden, även de som verkar komma från höga positioner inom organisationen. Denna överblick betonar behovet av att noggrant granska och verifiera autenticiteten hos e-postmeddelanden som begär konfidentiell information, för att undvika potentiella säkerhetsrisker.",
+                SegmentId = 5
+            },
+            new SubcategoryModel
+            {
+                Id = 29,
+                Name = "Öneangrepp och presentkortsbluffar",
+                Info = "Öneangrepp och presentkortsbluffar är en växande oro inom cybersäkerhet, där bedragare använder olika taktiker för att lura individer och företag. Denna överblick fokuserar på att höja medvetenheten om hur sådana bedrägerier utförs och betonar vikten av att vara vaksam när man hanterar erbjudanden som involverar köp och överföring av presentkort, en vanlig metod använd av bedragare.",
+                SegmentId = 5
+            },
 
             // Subcategories for Segment "Del 3"
-            new SubcategoryModel { Id = 30, Name = "Virus, maskar och trojaner", SegmentId = 6 },
-            new SubcategoryModel { Id = 31, Name = "Så kan det gå till", SegmentId = 6 },
-            new SubcategoryModel { Id = 32, Name = "Nätverksintrång", SegmentId = 6 },
-            new SubcategoryModel { Id = 33, Name = "Dataintrång", SegmentId = 6 },
-            new SubcategoryModel { Id = 34, Name = "Hackad!", SegmentId = 6 },
-            new SubcategoryModel { Id = 35, Name = "Vägarna in", SegmentId = 6 },
+            new SubcategoryModel
+            {
+                Id = 30,
+                Name = "Virus, maskar och trojaner",
+                Info = "Att förstå skillnaderna mellan virus, maskar och trojaner är grundläggande för att navigera i cybersäkerhetens komplexa landskap. Denna överblick syftar till att belysa de unika egenskaperna och spridningsmetoderna för dessa olika typer av skadlig programvara, vilket är avgörande för att utforma effektiva strategier för att skydda digitala system och information.",
+                SegmentId = 6
+            },
+            new SubcategoryModel
+            {
+                Id = 31,
+                Name = "Så kan det gå till",
+                Info = "Dataintrång är en allvarlig hotbild mot organisationer världen över, med konsekvenser som kan vara förödande. Denna överblick tar sikte på de vanligaste metoderna genom vilka obehöriga aktörer kan få tillgång till känslig information, vilket understryker vikten av kontinuerliga säkerhetsutvärderingar och uppdateringar för att stärka försvar mot sådana intrång.",
+                SegmentId = 6
+            },
+            new SubcategoryModel
+            {
+                Id = 32,
+                Name = "Nätverksintrång",
+                Info = "Att identifiera tecken på ett potentiellt nätverksintrång är avgörande för att säkra företagets digitala tillgångar. Denna överblick betonar vikten av att övervaka nätverksaktivitet för ovanliga mönster som kan tyda på obehörig åtkomst eller andra säkerhetshot, vilket understryker behovet av robusta övervakningssystem och snabba åtgärdsplaner för att adressera sådana incidenter.",
+                SegmentId = 6
+            },
+            new SubcategoryModel
+            {
+                Id = 33,
+                Name = "Dataintrång",
+                Info = "Efter upptäckt av ett dataintrång står organisationer inför utmaningen att snabbt agera för att minimera skadan och återställa förtroendet. Denna överblick understryker stegen som bör tas för att effektivt hantera situationen, inklusive kommunikation med berörda parter och en omfattande säkerhetsgranskning, som är kritiska för att säkerställa en robust återhämtningsprocess och förebygga framtida säkerhetsbrister.",
+                SegmentId = 6
+            },
+            new SubcategoryModel
+            {
+                Id = 34,
+                Name = "Hackad!",
+                Info = "Att upptäcka att ens personliga data har blivit hackad kan vara en skrämmande upplevelse, men det finns steg man kan ta för att minska skadan. Denna överblick riktar in sig på initiala säkerhetsåtgärder för att säkra sina digitala konton och skydda sig mot ytterligare intrång, understryker vikten av proaktivitet och medvetenhet om cybersäkerhet.",
+                SegmentId = 6
+            },
+            new SubcategoryModel
+            {
+                Id = 35,
+                Name = "Vägarna in",
+                Info = "Att förstå de vanligaste metoderna som angripare använder för att infiltrera nätverk är avgörande för att utforma effektiva försvarsmekanismer. Denna överblick belyser olika taktiker vilket understryker behovet av omfattande säkerhetsstrategier och ständig vaksamhet för att skydda organisationens digitala infrastruktur mot intrång.",
+                SegmentId = 6
+            },
 
             // Subcategories for Segment "Del 4"
-            new SubcategoryModel { Id = 36, Name = "Utpressningsvirus", SegmentId = 7 },
-            new SubcategoryModel { Id = 37, Name = "Attacker mot servrar", SegmentId = 7 },
-            new SubcategoryModel { Id = 38, Name = "Cyberangrepp i Norden", SegmentId = 7 },
-            new SubcategoryModel { Id = 39, Name = "It-brottslingarnas verktyg", SegmentId = 7 },
-            new SubcategoryModel { Id = 40, Name = "Mirai, Wannacry och fallet Düsseldorf", SegmentId = 7 },
-            new SubcategoryModel { Id = 41, Name = "De sårbara molnen", SegmentId = 7 },
+            new SubcategoryModel
+            {
+                Id = 36,
+                Name = "Utpressningsvirus",
+                Info = "Skydd mot utpressningsvirus kräver proaktiva åtgärder och medvetenhet om digital säkerhet. Denna överblick fokuserar på vikten av förebyggande strategier. Genom att anta dessa metoder kan individer och organisationer stärka sitt skydd mot potentiella cyberhot och minimera risken för datarförlust.",
+                SegmentId = 7
+            },
+            new SubcategoryModel
+            {
+                Id = 37,
+                Name = "Attacker mot servrar",
+                Info = "För att effektivt förebygga attacker mot servrar måste företag anta en mångsidig säkerhetsstrategi. Denna överblick understryker vikten av grundläggande säkerhetsåtgärder. Genom att prioritera dessa åtgärder kan organisationer skapa ett robust försvar mot potentiella hot och skydda sin digitala infrastruktur.",
+                SegmentId = 7
+            },
+            new SubcategoryModel
+            {
+                Id = 38,
+                Name = "Cyberangrepp i Norden",
+                Info = "De nordiska länderna har, likt resten av världen, ställts inför utmaningar relaterade till cyberangrepp. Denna överblick betonar den ökande förekomsten av specifika typer av cyberhot. Fokus ligger på att höja medvetenheten och behovet av stärkta säkerhetsprotokoll för att skydda mot dessa växande hot.",
+                SegmentId = 7
+            },
+            new SubcategoryModel
+            {
+                Id = 39,
+                Name = "It-brottslingarnas verktyg",
+                Info = "IT-brottslingarnas arsenal av verktyg utvecklas ständigt för att effektivt kunna genomföra cyberattacker mot individer och organisationer. Denna överblick fokuserar på de metoder och tekniker som ofta används för att infiltrera och kompromettera system, vilket understryker vikten av att upprätthålla starka cybersäkerhetsåtgärder och ständig vaksamhet för att skydda mot sådana hot.",
+                SegmentId = 7
+            },
+            new SubcategoryModel
+            {
+                Id = 40,
+                Name = "Mirai, Wannacry och fallet Düsseldorf",
+                Info = "Mirai, WannaCry och cyberattacken mot Düsseldorf-sjukhuset representerar några av de mest uppmärksammade cyberhoten i modern tid. Denna överblick belyser det gemensamma draget hos dessa attacker.",
+                SegmentId = 7
+            },
+            new SubcategoryModel
+            {
+                Id = 41,
+                Name = "De sårbara molnen",
+                Info = "I takt med att molnteknik blir alltmer integrerad i företagens IT-strategier, ökar också utmaningarna kring molnsäkerhet. Denna överblick framhäver strategier för att stärka säkerheten i molnmiljöer, med fokus på att minimera riskerna genom effektiva åtgärder, vilket är avgörande för att skydda organisationens data och resurser.",
+                SegmentId = 7
+            },
 
 
             // Category 3 - "Cyberspionage"
             // Subcategories for "Cyberspionage", Segment "Del 1"
-            new SubcategoryModel { Id = 42, Name = "Allmänt om cyberspionage", SegmentId = 8 },
-            new SubcategoryModel { Id = 43, Name = "I takt med att cyberspionage blir allt mer sofistikerat, krävs det starkare skyddsmekanismer för att säkra känslig information. Ett av de mest effektiva sätten att skydda data är genom kryptering. Denna teknik säkerställer att informationen förblir privat, även om den skulle hamna i fel händer.", SegmentId = 8 },
-            new SubcategoryModel { Id = 44, Name = "Insiderhot är en av de svåraste säkerhetsutmaningarna att identifiera och förebygga. Dessa hot kan komma från anställda som, oavsett om det är avsiktligt eller oavsiktligt, läcker känslig information som kan utnyttjas för cyberspionage. Att använda avancerade verktyg för beteendeanalys och anomalidetektering kan ge tidiga varningar om potentiella säkerhetsbrott.", SegmentId = 8 },
-            new SubcategoryModel { Id = 45, Name = "Mjukvarusårbarheter är ofta den svaga länken som utnyttjas i cyberspionageattacker. Utan snabba och regelbundna säkerhetsuppdateringar och patchar, kan dessa sårbarheter lämna dörrarna vidöppna för angripare. Att hålla programvara och system uppdaterade är en grundläggande men kritisk del av ett effektivt cybersäkerhetsförsvar.", SegmentId = 8 },
-            new SubcategoryModel { Id = 46, Name = "Metoder för cyberspionage", SegmentId = 8 },
-            new SubcategoryModel { Id = 47, Name = "Säkerhetsskyddslagen", SegmentId = 8 },
-            new SubcategoryModel { Id = 48, Name = "Cyberspionagets aktörer", SegmentId = 8 },
+            new SubcategoryModel
+            {
+                Id = 42,
+                Name = "Allmänt om cyberspionage",
+                Info = "Cyberspionage representerar en sofistikerad form av cyberhot där aktörer, inklusive stater och organiserade grupper, använder elektroniska metoder för att infiltrera och övervaka för att samla in känslig information, vilket kan ha betydande politiska och ekonomiska konsekvenser.",
+                SegmentId = 8
+            },
+            new SubcategoryModel
+            {
+                Id = 43,
+                Name = "Skydd mot Cyberspionage",
+                Info = "För att möta hotet från cyberspionage, speciellt riktat mot känslig kommunikation, är det avgörande att organisationer implementerar robusta försvarsstrategier. Denna överblick fokuserar på behovet av att stärka säkerheten genom olika metoder.",
+                SegmentId = 8
+            },
+            new SubcategoryModel
+            {
+                Id = 44,
+                Name = "Hantering av Insiderhot",
+                Info = "Att hantera insiderhot kräver noggranna och avancerade strategier inom organisationer för att skydda känslig information. Det är avgörande för att tidigt upptäcka och förebygga potentiella säkerhetsrisker som kan uppstå internt, vilket bidrar till en säkrare arbetsmiljö.",
+                SegmentId = 8
+            },
+            new SubcategoryModel
+            {
+                Id = 45,
+                Name = "Förebyggande av Mjukvarusårbarheter",
+                Info = "I en värld där cyberspionage ständigt utvecklas, är det kritiskt att kontinuerligt uppdatera och skydda mjukvarusystem mot sårbarheter. Genom att prioritera regelbundna uppdateringar kan organisationer effektivt minska risken för säkerhetsintrång och skydda sig mot sofistikerade cyberhot.",
+                SegmentId = 8
+            },
+            new SubcategoryModel
+            {
+                Id = 46,
+                Name = "Metoder för cyberspionage",
+                Info = "Riktade cyberattacker som använder Zero-day sårbarheter representerar en av de mest avancerade metoderna för cyberspionage. Genom att förstå dessa taktiker kan organisationer och regeringar bättre förbereda sig och skydda sina kritiska infrastrukturer mot sådana sofistikerade hot.",
+                SegmentId = 8
+            },
+            new SubcategoryModel
+            {
+                Id = 47,
+                Name = "Säkerhetsskyddslagen",
+                Info = "Sveriges svar på de växande globala säkerhetshoten manifesteras i en viss lag. Denna överblick utforskar hur lagen skapar ett robust ramverk.",
+                SegmentId = 8
+            },
+            new SubcategoryModel
+            {
+                Id = 48,
+                Name = "Cyberspionagets aktörer",
+                Info = "När värdefull forskningsdata plötsligt försvinner från en akademisk institution, pekar spåren ofta mot aktörer med både kapaciteten och motivet för avancerat cyberspionage, vilket understryker vikten av stark cybersäkerhet inom akademiska och forskningsbaserade miljöer.",
+                SegmentId = 8
+            },
 
             // Subcategories for "Cyberspionage", Segment "Del 2"
-            new SubcategoryModel { Id = 49, Name = "Värvningsförsök", SegmentId = 9 },
-            new SubcategoryModel { Id = 50, Name = "Affärsspionage", SegmentId = 9 },
-            new SubcategoryModel { Id = 51, Name = "Påverkanskampanjer", SegmentId = 9 },
+            new SubcategoryModel
+            {
+                Id = 49,
+                Name = "Värvningsförsök",
+                Info = "Att identifiera och motverka värvningsförsök från utländska underrättelsetjänster kräver en proaktiv och medveten säkerhetskultur inom organisationer. Genom att implementera dessa åtgärder kan organisationer skapa ett robust försvar mot spionförsök och skydda sin kritiska information.",
+                SegmentId = 9
+            },
+            new SubcategoryModel
+            {
+                Id = 50,
+                Name = "Affärsspionage",
+                Info = "Affärsspionage utgör en betydande risk för företags konkurrenskraft och innovation. Att kunna identifiera tecken på potentiellt spionage är avgörande för att vidta tidiga försvarsåtgärder. Denna överblick understryker behovet av kontinuerlig övervakning och säkerhetsanalys för att skydda företagets värdefulla data och intellektuella egendom.",
+                SegmentId = 9
+            },
+            new SubcategoryModel
+            {
+                Id = 51,
+                Name = "Påverkanskampanjer",
+                Info = "I en tid där informationspåverkanskampanjer blir alltmer sofistikerade, är det avgörande för samhällen och organisationer att vidta åtgärder för att skydda sig.",
+                SegmentId = 9
+            },
 
             // Subcategories for "Cyberspionage", Segment "Del 3"
-            new SubcategoryModel { Id = 52, Name = "Svensk underrättelsetjänst och cyberförsvar", SegmentId = 10 },
-            new SubcategoryModel { Id = 53, Name = "Signalspaning, informationssäkerhet och 5G", SegmentId = 10 },
-            new SubcategoryModel { Id = 54, Name = "Samverkan mot cyberspionage", SegmentId = 10 }
-            );
+            new SubcategoryModel
+            {
+                Id = 52,
+                Name = "Svensk underrättelsetjänst och cyberförsvar",
+                Info = "Den svenska underrättelsetjänstens insatser för att stärka landets cyberförsvar utgör en viktig del av den nationella säkerhetsstrategin. Det spelar en central roll i att skydda Sverige mot ett växande spektrum av cyberhot och utmaningar.",
+                SegmentId = 10
+            },
+            new SubcategoryModel
+            {
+                Id = 53,
+                Name = "Signalspaning, informationssäkerhet och 5G",
+                Info = "FÖljande fråga berör Signalspaning, informationssäkerhet och 5G, i samband med vilken roll utveckling och implementeringen har i följande områden.",
+                SegmentId = 10
+            },
+            new SubcategoryModel
+            {
+                Id = 54,
+                Name = "Samverkan mot cyberspionage",
+                Info = "Länder behöver effektivt samverka för att bekämpa cyberspionage, men frågan är hur? Denna överblick understryker behovet av en samverkan för att skydda respektive länder från cyperspionage.",
+                SegmentId = 10
+            });
 
+            #endregion
+
+            #region QuestionModel
 
             builder.Entity<QuestionModel>().HasData(
 
@@ -270,8 +605,8 @@ namespace ValhallaVaultCyberAwareness.Data
             // Questions for segment - "Del 1"
             new QuestionModel { Id = 42, Title = "Regeringen upptäcker att känslig politisk kommunikation har läckt och misstänker elektronisk övervakning. Vilket fenomen beskriver bäst denna situation?", SubcategoryId = 42 },
             new QuestionModel { Id = 43, Title = "Vilken försvarsstrategi är mest effektiv mot cyberspionage som riktar sig mot känslig kommunikation?", SubcategoryId = 43 },
-            new QuestionModel { Id = 44, Title = "Hur kan organisationer bäst upptäcka och motverka insiderhot som bidrar till cyberspionage?", SubcategoryId = 44 },
-            new QuestionModel { Id = 45, Title = "Vilken åtgärd är viktigast för att skydda sig mot cyberspionage genom utnyttjande av mjukvarusårbarheter?", SubcategoryId = 45 },
+            new QuestionModel { Id = 44, Title = "Vilken metod är mest effektiv för att identifiera och hantera potentiella insiderhot som kan leda till informationsläckage?", SubcategoryId = 44 },
+            new QuestionModel { Id = 45, Title = "Vilken försvarsåtgärd är mest avgörande för att motverka exploateringen av mjukvarusårbarheter i syfte att förhindra cyberspionage?", SubcategoryId = 45 },
             new QuestionModel { Id = 46, Title = "Regeringen blir varse om en sofistikerad skadeprogramskampanj som utnyttjar Zero-day sårbarheter för att infiltrera deras nätverk och stjäla oerhört viktig data. Vilken metod för cyberspionage används sannolikt här?", SubcategoryId = 46 },
             new QuestionModel { Id = 47, Title = "Regeringen i Sverige ökar sitt interna säkerhetsprotokoll för att skydda sig mot utländska underrättelsetjänsters infiltration. Vilken lagstiftning ger ramverket för detta skydd?", SubcategoryId = 47 },
             new QuestionModel { Id = 48, Title = "Lunds universitet upptäcker att forskningsdata om ny teknologi har stulits. Undersökningar tyder på en välorganiserad grupp med kopplingar till en utländsk stat. Vilken typ av aktör ligger sannolikt bakom detta?", SubcategoryId = 48 },
@@ -287,6 +622,9 @@ namespace ValhallaVaultCyberAwareness.Data
             new QuestionModel { Id = 54, Title = "Hur kan länder effektivt samverka för att bekämpa cyberspionage?", SubcategoryId = 54 }
             );
 
+            #endregion
+
+            #region AnswerModel
 
             // Answers for each question
             builder.Entity<AnswerModel>().HasData(
@@ -1389,7 +1727,7 @@ namespace ValhallaVaultCyberAwareness.Data
                 Id = 130,
                 Answer = "Öka användningen av kryptering för all intern och extern kommunikation",
                 IsCorrectAnswer = true,
-                Explanation = "Kryptering är en kraftfull metod för att skydda känslig information under överföring och lagring, vilket gör det extremt svårt för obehöriga att få tillgång till och förstå informationen, även om de lyckas avlyssna kommunikationen.",
+                Explanation = "I takt med att cyberspionage blir allt mer sofistikerat, krävs det starkare skyddsmekanismer för att säkra känslig information. Ett av de mest effektiva sätten att skydda data är genom kryptering. Denna teknik säkerställer att informationen förblir privat, även om den skulle hamna i fel händer.",
                 QuestionId = 43
             },
             new AnswerModel
@@ -1423,13 +1761,13 @@ namespace ValhallaVaultCyberAwareness.Data
                 Id = 134,
                 Answer = "Implementera ett omfattande program för beteendeanalys och anomalidetektering",
                 IsCorrectAnswer = true,
-                Explanation = "Program för beteendeanalys och anomalidetektering kan effektivt identifiera ovanligt beteende eller aktiviteter som kan tyda på insiderhot eller obehörig åtkomst till känslig information, vilket är ett kritiskt steg för att förhindra cyberspionage.",
+                Explanation = "Insiderhot är en av de svåraste säkerhetsutmaningarna att identifiera och förebygga. Dessa hot kan komma från anställda som, oavsett om det är avsiktligt eller oavsiktligt, läcker känslig information som kan utnyttjas för cyberspionage. Att använda avancerade verktyg för beteendeanalys och anomalidetektering kan ge tidiga varningar om potentiella säkerhetsbrott.",
                 QuestionId = 44
             },
             new AnswerModel
             {
                 Id = 135,
-                Answer = "Begränsa internetanvändningen på arbetsplatsen till arbetsrelaterade aktiviteter",
+                Answer = "Införa en strikt policy för datadelning inom organisationen",
                 IsCorrectAnswer = false,
                 Explanation = "Att begränsa internetanvändningen till arbetsrelaterade aktiviteter kan vara en del av en övergripande säkerhetspolicy, men det skulle inte direkt förhindra cyberspionage, särskilt om angriparen redan har tillgång till företagets nätverk och resurser.",
                 QuestionId = 44
@@ -1439,9 +1777,9 @@ namespace ValhallaVaultCyberAwareness.Data
             new AnswerModel
             {
                 Id = 136,
-                Answer = "Genomföra regelbundna medvetenhetsträningar för alla anställda om cybersäkerhet",
+                Answer = "Införa starka lösenordspolicyer för alla system och applikationer",
                 IsCorrectAnswer = false,
-                Explanation = "Medvetenhetsträningar är viktiga för att öka anställdas kunskap om cybersäkerhet, men de kan inte ersätta behovet av att hålla all mjukvara och operativsystem uppdaterade med de senaste säkerhetspatcharna för att förhindra cyberspionage.",
+                Explanation = "Att införa starka lösenordspolicyer är viktiga för att öka anställdas kunskap om cybersäkerhet, men de kan inte ersätta behovet av att hålla all mjukvara och operativsystem uppdaterade med de senaste säkerhetspatcharna för att förhindra cyberspionage.",
                 QuestionId = 45
             },
             new AnswerModel
@@ -1449,15 +1787,15 @@ namespace ValhallaVaultCyberAwareness.Data
                 Id = 137,
                 Answer = "Hålla all mjukvara och operativsystem uppdaterade med de senaste säkerhetspatcharna",
                 IsCorrectAnswer = true,
-                Explanation = "Regelbundna uppdateringar och patchning av mjukvara och operativsystem är avgörande för att stänga säkerhetshål som annars kan utnyttjas av cyberspioner. Detta minskar risken för intrång och dataläckor avsevärt.",
+                Explanation = "Mjukvarusårbarheter är ofta den svaga länken som utnyttjas i cyberspionageattacker. Utan snabba och regelbundna säkerhetsuppdateringar och patchar, kan dessa sårbarheter lämna dörrarna vidöppna för angripare. Att hålla programvara och system uppdaterade är en grundläggande men kritisk del av ett effektivt cybersäkerhetsförsvar.",
                 QuestionId = 45
             },
             new AnswerModel
             {
                 Id = 138,
-                Answer = "Endast använda egenutvecklad mjukvara för alla verksamhetsprocesser",
+                Answer = "Använda krypteringstekniker för all dataöverföring",
                 IsCorrectAnswer = false,
-                Explanation = "Att endast använda egenutvecklad mjukvara för alla verksamhetsprocesser är inte en realistisk eller praktisk lösning för de flesta organisationer och kan inte garantera säkerheten. Dessutom kan egenutvecklad mjukvara också ha sårbarheter som behöver patchas regelbundet.",
+                Explanation = "Att använda krypteringstekniker för all dataöverföring är inte en realistisk eller praktisk lösning för de flesta organisationer och kan inte garantera säkerheten. Dessutom kan egenutvecklad mjukvara också ha sårbarheter som behöver patchas regelbundet.",
                 QuestionId = 45
             },
 
@@ -1694,6 +2032,8 @@ namespace ValhallaVaultCyberAwareness.Data
                 Explanation = "Att begränsa användningen av internet globalt är varken realistiskt eller genomförbart och skulle också ha negativa konsekvenser för samhällen och ekonomier över hela världen.",
                 QuestionId = 54
             });
+
+            #endregion
         }
     }
 }
