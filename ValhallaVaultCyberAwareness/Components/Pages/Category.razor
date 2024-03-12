@@ -9,8 +9,8 @@
 @using ValhallaVaultCyberAwareness.DAL.Uow
 @using ValhallaVaultCyberAwareness.DAL.ViewModel
 
-@* @attribute [Authorize]
- *@
+@attribute [Authorize]
+
 @inject IViewModelService service
 @inject IAuthService authService
 @inject IUserResponseService userResponseService
@@ -27,9 +27,9 @@
     {
         <div class="">
             <div class="category">
-                <div class="cat-row ">
+                <div class="cat-row2 ">
                     <h1 class="mar text-center">@category.Name</h1>
-                    <p class="text-center" >@category.Info</p>
+                    <p class="" style="text-align:justify">@category.Info</p>
                 </div>
                 <hr />
             </div>
@@ -48,13 +48,36 @@
                         <div class="cat-card">
                             <div class="mar">
                                 <div class="categories">
+
                                     <!--Visar en checkbox icon om segmentet är avklarat-->
                                     @if (isDone)
                                     {
                                         <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
+                                        
+                                        <a class="btn btn-light" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
+                                        
+
+                                    }
+                                    else if(isCleardBefore)
+                                    {
+                                        <a class="btn btn-light" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
                                     }
 
-                                    <a class="btn btn-light" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
+                                    else if(!isDone)
+                                    {
+                                        <!-- Makes first segment clickable -->
+                                        @if (isFirst)
+                                        {
+                                            <a class="btn btn-light" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
+
+                                        }
+                                        else
+                                        {
+                                            <a class="btn btn-light disabled-link" href="#"><h3>@seg.Name</h3></a>
+                                            
+                                        }
+                                    }
+                                    
 
                                 </div>
                                 <br />
@@ -62,12 +85,59 @@
                                 <div class="cat-row category">
                                     <div class="d-flex flex-column ">
                                         <ol>
-                                            @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == seg.Id))
-                                            {
-                                                <div class="text-center" style="margin:5px;">
-                                                <li><h5>@sub.Name</h5></li>
-                                                </div>
-                                            }
+                                            
+                                                @if(isDone)
+                                                {
+                                                    @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == seg.Id))
+                                                    {
+                                                        <div class="text-center" style="margin:5px;">
+                                                        <li><h5>@sub.Name</h5></li>
+                                                        </div>
+                                                    }
+
+                                                    isCleardBefore = true;
+                                                }
+
+                                                else if (isCleardBefore)
+                                                {
+                                                    @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == seg.Id))
+                                                    {
+                                                        <div class="text-center" style="margin:5px;">
+                                                         <li><h5>@sub.Name</h5></li>
+                                                        </div>
+                                                    }
+
+                                                    isCleardBefore = false;
+                                                }
+
+                                                else if(!isDone)
+                                                {
+                                                    @if (isFirst)
+                                                    {
+                                                        @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == seg.Id))
+                                                        {
+                                                            <div class="text-center" style="margin:5px;">
+                                                            <li><h5 class="">@sub.Name</h5></li>
+                                                            </div>
+                                                        }
+
+                                                        isFirst = false;
+                                                    }
+
+                                                    else
+                                                    {
+                                                        @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == seg.Id))
+                                                        {
+                                                            <div class="text-center text-op" style="margin:5px;">
+                                                             <li><h5 class="">@sub.Name</h5></li>
+                                                            </div>
+                                                        }
+
+                                                        isCleardBefore = false;
+                                                    }
+
+                                                }
+
                                         </ol>
                                         
                                     </div>
@@ -99,13 +169,14 @@
     [Parameter]
     public int Id { get; set; }
 
-
+    bool isCleardBefore { get; set; }
+    bool isFirst { get; set; } = true;
     CategoryViewModel category { get; set; }
     List<SegmentViewModel> segments { get; set; }
     List<SubcategoryViewModel> subcategories { get; set; }
     private List<UserResponseModel> userResponses = new();
     private ClaimsPrincipal? currentUser;
-    bool isDone { get; set; }
+    bool isDone { get; set; } = false;
 
 
     protected override async Task OnInitializedAsync()
