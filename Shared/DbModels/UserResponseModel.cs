@@ -1,8 +1,4 @@
-﻿// Detta paketet nedan var med i det gamla paketet som var deprecated:
-// using Microsoft.AspNet.Identity.EntityFramework;
-// **OBS** Detta paketet lades till med följande paket i Shared:
-// Microsoft.AspNetCore.Identity.EntityFrameworkCore (8.0.0)
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ValhallaVaultCyberAwareness.DAL.DbModels
 {
@@ -15,6 +11,6 @@ namespace ValhallaVaultCyberAwareness.DAL.DbModels
         public ApplicationUser User { get; set; } = null!;
         public int QuestionId { get; set; }
         public QuestionModel Question { get; set; } = null!;
-
+        public int? AnswerId { get; set; }
     }
 }

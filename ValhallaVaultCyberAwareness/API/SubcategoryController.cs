@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ValhallaVaultCyberAwareness.API.DataTransferObjects;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
 using ValhallaVaultCyberAwareness.DAL.Uow;
@@ -33,6 +32,7 @@ namespace ValhallaVaultCyberAwareness.API
                     {
                         Id = q.Id,
                         Name = q.Name,
+                        Info = q.Info,
                         SegmentId = q.SegmentId,
 
 
@@ -50,7 +50,7 @@ namespace ValhallaVaultCyberAwareness.API
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error retrieving all subcategories");
             }
-          
+
         }
 
         [HttpGet("GetSubCategoryById/{id}")]
@@ -69,6 +69,7 @@ namespace ValhallaVaultCyberAwareness.API
                     {
                         Id = subcategory.Id,
                         Name = subcategory.Name,
+                        Info = subcategory.Info,
                         SegmentId = subcategory.SegmentId
                     };
 
@@ -105,6 +106,7 @@ namespace ValhallaVaultCyberAwareness.API
                 SubcategoryModel subCategoryToAdd = new()
                 {
                     Name = subCategory.Name,
+                    Info = subCategory.Info,
                     SegmentId = subCategory.SegmentId,
                 };
 
@@ -131,8 +133,9 @@ namespace ValhallaVaultCyberAwareness.API
                 {
                     SubcategoryModel subCategoryToUpdate = new()
                     {
-                        Id= subCategory.Id,
+                        Id = subCategory.Id,
                         Name = subCategory.Name,
+                        Info = subCategory.Info,
                         SegmentId = subCategory.SegmentId,
                     };
 

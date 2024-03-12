@@ -18,8 +18,13 @@ namespace ValhallaVaultCyberAwareness.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-
             base.OnModelCreating(builder);
+
+            //builder.Entity<UserResponseModel>()
+            //    .HasOne(ur => ur.Answer)
+            //    .WithMany()
+            //    .HasForeignKey(ur => ur.AnswerId)
+            //    .OnDelete(DeleteBehavior.ClientSetNull);
 
             #region CategoryModel
 

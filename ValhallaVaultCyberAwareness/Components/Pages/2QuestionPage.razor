@@ -1,0 +1,352 @@
+﻿@page "/question/{SegmentId:int}/{SubcategoryId:int}"
+@using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@using ValhallaVaultCyberAwareness.DAL.DbModels
+@using ValhallaVaultCyberAwareness.DAL.Repository
+@inject IRepository<UserResponseModel> userResponseRepository
+@inject IRepository<SegmentModel> segmentRepository
+@inject IRepository<SubcategoryModel> subcategoryRepository
+@inject IRepository<QuestionModel> questionRepository
+@inject IRepository<AnswerModel> answerRepository
+@inject NavigationManager NavigationManager
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@rendermode InteractiveServer
+
+<PageTitle>Quiz - segment.Name</PageTitle>
+
+<a href="/subcategory/@SegmentId/@SubcategoryId" class="btn btn-primary">Return</a>
+
+<div class="container bg-white text-dark rounded shadow-sm p-4 my-4">
+    @if (!isLoaded)
+    {
+        <div class="text-center">
+            <p><em>Laddar frågor...</em></p>
+        </div>
+    }
+    else if (!showResults)
+    {
+        @if (subCategories != null && currentSubCategory != null)
+        {
+            <h2 class="text-center mb-3">@currentSubCategory.Name</h2>
+        }
+
+        @if (currentQuestion != null)
+        {
+        <h4 class="text-center mb-4">@currentQuestion.Title</h4>
+        }
+
+        if (answers != null && currentQuestion != null)
+        {
+            foreach (var answer in answers)
+            {
+                <div class="form-check">
+                    <input class="form-check-input" id="answer-@answer.Id" type="radio" name="answerGroup-@currentQuestion.Id"
+                           value="@answer.Id" @onclick="() => SelectAnswer(answer)"/>
+                    <label class="form-check-label @(isSubmitted ? (answer.IsCorrectAnswer ? "text-success" : "text-danger") : "")" 
+                    for="answer-@answer.Id">@answer.Answer</label>
+                </div>
+            }
+        }
+
+        @if(explanation != null)
+        {
+            <br />
+            <h5>Förklaring:</h5>
+            <label>@explanation</label>         
+        }
+
+        <!-- Button Navigation -->
+        <div class="d-flex justify-content-between mt-4">
+            <span></span> <!-- Placeholder for alignment -->
+
+            @if (!isSubmitted)
+            {
+                <!-- Om man inte har skickat in sitt svar på frågan så ska knappen "Skicka in svar" visas-->
+                <button class="btn btn-outline-success" @onclick="SubmitAnswer">Skicka in svar</button>
+            }
+            else if (isSubmitted && currentSubcategoryIndex < subCategories.Count() - 1)
+            {
+                <!-- Om man redan har "Skickat in svar", och finns fler frågor / subkategorier ska knappen bytas till "Nästa" -->
+                <button class="btn btn-outline-primary" @onclick="@(async () => await NextQuestion())">Nästa</button>
+            }
+            else
+            {
+                <!-- Om man redan har "Skickat in svar", och inte finns fler frågor / subkategorier ska knappen bytas till "Visa resultat" -->
+                <button class="btn btn-outline-primary" @onclick="@(async () => await NextQuestion())">Visa resultat</button>
+            }
+
+        </div>
+        @if (!string.IsNullOrEmpty(errorMessage))
+        {
+            <div class="alert alert-danger mt-2" role="alert">
+                @errorMessage
+            </div>
+        }
+    }
+    else
+    {
+        @if (showResults && segment != null)
+        {
+            <div class="container bg-white text-dark rounded shadow-sm p-4 my-4 position-relative">
+                <div class="position-absolute top-0 end-0 p-1">
+                    @if (isPassed)
+                    {
+                        <div class="alert alert-success" role="alert">
+                            Godkänt - @percentageCorrect% klarat
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-danger" role="alert">
+                            Underkänt - @percentageCorrect% klarat
+                        </div>
+                    }
+                </div>
+
+                @foreach (var subcategory in subCategories) // Loopa genom alla subkategorier
+                {
+                    <h2>@subcategory.Name</h2>
+                    // Subkategoriens namn som rubrik
+
+                    foreach (var question in subcategory.Questions) // Loopa genom alla frågor inom subkategorin
+                    {
+                        <div>
+                            <strong>@question.Title</strong>
+
+                            @foreach (var answer in question.Answers) // Visa alla svarsalternativ
+                            {
+                                <div class="form-check">
+                                    <input class="form-check-input" type="radio" id="@answer.Id"
+                                           name="@("answerGroup" + question.Id)" value="@answer.Id" checked=@(IsUserSelectedAnswer(question, answer) ? "checked" : "") />
+                                    @if (IsUserSelectedAnswer(question, answer))
+                                    {
+                                        <text>checked</text>
+                                    }
+                                    disabled>
+                                    <label class="form-check-label" for="@answer.Id">@answer.Answer</label>
+                                </div>
+                                @* string labelStyle = IsUserSelectedAnswer(question, answer) ?
+                                (answer.IsCorrectAnswer ? "color: green;" : "color: red;") :
+                                (answer.IsCorrectAnswer ? "color: green;" : "");
+
+                                <div>
+                                    @if (IsUserSelectedAnswer(question, answer))
+                                    {
+                                        <input type="radio" id="@answer.Id"
+                                               name="@("answerGroup" + question.Id)"
+                                               value="@answer.Id"
+                                               checked="checked"
+                                               disabled />
+                                    }
+                                    else
+                                    {
+                                        <input type="radio" id="@answer.Id"
+                                               name="@("answerGroup" + question.Id)"
+                                               value="@answer.Id"
+                                               disabled />
+                                    }
+
+                                    <label for="@answer.Id" style="@labelStyle">@answer.Answer</label>
+                                </div> *@
+                            }
+                        </div>
+                    }
+                }
+                <div class="position-absolute bottom-0 end-0 p-1">
+                    <a class="btn btn-primary" href="/segment/@segment.CategoryId/@SegmentId">Tillbaka</a>
+                </div>
+            </div>
+        }
+    }
+</div>
+
+@code {
+    [Parameter]
+    public int SegmentId { get; set; }
+    [Parameter]
+    public int SubcategoryId { get; set; }
+
+    private ClaimsPrincipal? user;
+    private List<SubcategoryModel>? subCategories;
+    private List<QuestionModel>? questions;
+    private List<AnswerModel>? answers;
+    private Dictionary<int, int> selectedAnswers = new();
+    private SegmentModel? segment;
+    private SubcategoryModel? currentSubCategory;
+    private QuestionModel? currentQuestion;
+    private AnswerModel? selectedAnswer;
+    private string? explanation;
+    private string errorMessage = "";
+    private int currentSubcategoryIndex = 0;
+    private double percentageCorrect;
+    // private int currentQuestionIndex = 0;
+    private bool showResults = false;
+    private bool isSubmitted = false;
+    private bool isLoaded = false;
+    private bool isPassed;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        segment = await segmentRepository.GetByIdAsync(SegmentId);
+
+        // Hämta alla subkategorier för det angivna segmentet.
+        subCategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
+
+        currentSubCategory = subCategories.First(s => s.Id == SubcategoryId);
+        currentQuestion = currentSubCategory.Questions[0];
+
+        await LoadAnswersForCurrentQuestion();
+        currentSubcategoryIndex = subCategories.FindIndex(sc => sc.Id == SubcategoryId);
+        isLoaded = !isLoaded;
+    }
+
+    private void UpdateCurrentIndex(int newIndex)
+    {
+        // currentSubCategoryIndex = newIndex;
+        // sessionStorage.SetItem("CurrentSubCategoryIndex", currentSubCategoryIndex);
+    }
+
+    private async Task LoadAnswersForCurrentQuestion()
+    {
+        if (currentQuestion != null)
+        {
+            answers = await answerRepository.GetAnswersByQuestionIdAsync(currentQuestion.Id);
+
+            StateHasChanged();
+        }
+    }
+
+    private void SelectAnswer(AnswerModel selectedAnswer)
+    {
+        this.selectedAnswer = selectedAnswer;
+        if (currentQuestion != null)
+        {
+            selectedAnswers[currentQuestion.Id] = selectedAnswer.Id;
+        }
+    }
+
+    private async void SubmitAnswer()
+    {
+
+        if (selectedAnswer == null)
+        {
+            errorMessage = "Vänligen välj ett svar.";
+            return;
+        }
+
+        isSubmitted = true;
+        errorMessage = string.Empty;
+        explanation = selectedAnswer.Explanation;
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
+
+        if (!user.Identity.IsAuthenticated)
+        {
+            errorMessage = "Användaren är inte autentiserad.";
+            return;
+        }
+
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+        if (string.IsNullOrEmpty(userId))
+        {
+            errorMessage = "Kunde inte hitta användarens Id.";
+            return; 
+        }
+
+        var existingResponse = await userResponseRepository.FindByUserAndQuestionAsync(userId, currentQuestion.Id);
+
+        if (existingResponse != null)
+        {
+            existingResponse.IsCorrect = selectedAnswer.IsCorrectAnswer;
+            await userResponseRepository.UpdateAsync(existingResponse);
+        }
+        else
+        {
+            var userResponse = new UserResponseModel
+                {
+                    UserId = userId,
+                    QuestionId = currentQuestion.Id,
+                    IsCorrect = selectedAnswer.IsCorrectAnswer,
+                    AnswerId = selectedAnswer.Id
+                };
+
+            await userResponseRepository.CreateAsync(userResponse);
+        }
+
+    }
+
+    private async Task NextQuestion()
+    {
+        // Finns det questions kvar? 
+
+        int questionIndex = currentSubCategory.Questions.IndexOf(currentQuestion);
+
+        if(currentSubCategory.Questions.Count() > questionIndex + 1)
+        {
+            // Det finns en fråga kvar
+            currentQuestion = currentSubCategory.Questions[questionIndex + 1];
+            selectedAnswer = null;
+            isSubmitted = false;
+            explanation = null;
+            await LoadAnswersForCurrentQuestion();
+        }
+        else
+        {
+            // Kolla så det finns en nästa subkategori!
+            if (currentSubcategoryIndex + 1 < subCategories.Count)
+            {
+                NavigationManager.NavigateTo($"/question/{SegmentId}/{SubcategoryId + 1}");
+            }
+            else
+            {
+                ShowResult();
+            }
+        }
+    }
+
+    private async Task ShowResult()
+    {
+        await CalculateResults();
+    }
+
+    private async Task CalculateResults()
+    {
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+
+        // Se till att vi har en giltig användar-ID.
+        if (string.IsNullOrEmpty(userId))
+        {
+            throw new InvalidOperationException("Kunde inte hitta användarens Id.");
+        }
+
+        // Hämta alla användarsvar för nuvarande segment.
+        var userResponses = await userResponseRepository.GetByUserIdAndSegmentIdAsync(userId, SegmentId);
+
+        // Räkna det totala antalet frågor och antalet rätta svar.
+        int totalQuestions = subCategories.SelectMany(sc => sc.Questions).Count();
+        int correctAnswers = userResponses.Count(ur => ur.IsCorrect);
+
+        // Beräkna procentandelen av rätta svar.
+        percentageCorrect = (int)(((double)correctAnswers / totalQuestions) * 100);
+        isPassed = percentageCorrect >= 80;
+        showResults = !showResults;
+
+        // Uppdatera komponenten med nya data.
+        StateHasChanged();
+    }
+
+    private bool IsUserSelectedAnswer(QuestionModel question, AnswerModel answer)
+    {
+        if (question == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+}

@@ -1,4 +1,4 @@
-﻿@page "/question/{SegmentId:int}"
+﻿@page "/1question/{SegmentId:int}/{SubcategoryId:int}"
 @using Microsoft.AspNetCore.Authorization
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.Repository
@@ -19,6 +19,8 @@ else
     <PageTitle>Quiz</PageTitle>
 }
 
+<a href="/subcategory/@SegmentId/@SubcategoryId" class="btn btn-primary">Return</a>
+
 <div class="container bg-white text-dark rounded shadow-sm p-4 my-4">
     @if (!isLoaded)
     {
@@ -26,14 +28,14 @@ else
             <p><em>Laddar frågor...</em></p>
         </div>
     }
-    else if (!showResults)
+    else if (!showResults) // Här kanske man ska ha en hasSubmittedAnswer
     {
         @if (subcategories != null && currentSubcategoryIndex < subcategories.Count)
         {
             <h2 class="text-center mb-3">@subcategories[currentSubcategoryIndex].Name</h2>
         }
 
-        @if (questions != null && questions.Any())
+        @if (questions != null && questions.Any()) // Questions kommer alltid att vara 1 FYI
         {
             <h4 class="text-center mb-4">@currentQuestion.Title</h4>
         }
@@ -44,16 +46,47 @@ else
             @foreach (var answer in answers)
             {
                 <div class="form-check">
-                    <input class="form-check-input" type="radio" name="answerGroup-@currentQuestion.Id"
+                    <input class="form-check-input" id="answer-@answer.Id" type="radio" name="answerGroup-@currentQuestion.Id"
                            value="@answer.Id"
-                           checked="@(selectedAnswers.TryGetValue(currentQuestion.Id, out var selectedAnswerId) && selectedAnswerId == answer.Id)"
-                           @onchange="@(() => SelectAnswer(answer))" />
-                    <label class="form-check-label">@answer.Answer</label>
+                           checked="@(selectedAnswers.TryGetValue(currentQuestion.Id, out var selectedAnswerId) 
+                            && selectedAnswerId == answer.Id)"
+                           @onclick="@(() => SelectAnswer(answer))" />
+                    <label class="form-check-label" for="answer-@answer.Id">@answer.Answer</label>
+                    @* <label class="form-check-label">@answer.Answer</label> *@
                 </div>
             }
         }
 
+        @*Implementera logik - Tankar:
+            - Det ska finnas en knapp på sidan där det står "Skicka in svaren" istället för "Nästa"
+            - När man har tryckt på knappen ska det rätta svarets "Name" markeras med grönt.
+            - Har man svarat fel på en fråga ska texten markeras med rött. 
+
+            - Förklaringen på svaret man kryssat i ska dyka upp, då förklaringarna kan komma att skiljas åt.
+            
+            - Efter att man skickat in svaret ska då knappen "Nästa" dyka upp.
+
+            - När man är på sista frågan ska man istället få knappen "Visa resultat"
+            - Det är då man får se vad man svarat på alla frågorna.
+        *@
+
         <div class="d-flex justify-content-between mt-4">
+@*             <button class="btn btn-outline-secondary"
+                    @onclick="@(async () => await PreviousQuestion())"
+                    disabled="@(currentIndex <= 0 && currentSubcategoryIndex <= 0)">
+                Föregående
+            </button> *@
+
+            @* @if (currentIndex < (questions?.Count - 1) || currentSubcategoryIndex < (subcategories?.Count - 1))
+            {
+                <button class="btn btn-outline-primary" @onclick="@(async () => await NextQuestion())">Skicka in svar</button>
+            }
+            else
+            {
+                <button class="btn btn-outline-success" @onclick="SubmitAnswers">Skicka in svaren</button>
+            } *@
+
+
             @if (currentSubcategoryIndex > 0 || currentIndex > 0)
             {
                 <button class="btn btn-outline-secondary" @onclick="@(async () => await PreviousQuestion())">Föregående</button>
@@ -65,7 +98,7 @@ else
 
             @if (currentIndex < (questions?.Count - 1) || currentSubcategoryIndex < (subcategories?.Count - 1))
             {
-                <button class="btn btn-outline-primary" @onclick="@(async () => await NextQuestion())">Nästa</button>
+                <button class="btn btn-outline-primary" @onclick="@(async () => await NextQuestion())">Skicka in svaret</button>
             }
             else
             {
@@ -149,11 +182,17 @@ else
 @code {
     [Parameter]
     public int SegmentId { get; set; }
+    [Parameter]
+    public int SubcategoryId { get; set; }
+
+
+
     private int? selectedAnswerId { get; set; }
 
     private int percentageCorrect;
     private bool isPassed = false;
     private SegmentModel? segment;
+    private SubcategoryModel? subcategory;
     private string? category;
     private List<SubcategoryModel>? subcategories;
     private List<QuestionModel>? questions;
@@ -167,12 +206,14 @@ else
     private bool isLoaded = false;
     private bool showResults = false;
     private string errorMessage = "";
+    private bool hasSubmittedAnswers = false;
 
     protected override async Task OnInitializedAsync()
     {
         // Hämta alla subkategorier för det angivna segmentet.
         subcategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
         segment = await segmentRepository.GetByIdAsync(SegmentId);
+        subcategory = await subcategoryRepository.GetByIdAsync(SubcategoryId);
 
         // Kontrollera om det finns några subkategorier. Om det finns, ladda frågorna för den första subkategorin.
         if (subcategories.Any())
@@ -197,12 +238,25 @@ else
 
     private async Task NextQuestion()
     {
-        if (currentIndex < questions.Count - 1)
+        if (currentIndex < subcategories.Count - 1)
         {
-            currentIndex++;
-            currentQuestion = questions[currentIndex];
-            selectedAnswerId = null; // Nollställ det valda svaret
-            LoadAnswersForCurrentQuestion();
+            if(hasSubmittedAnswers)
+            {
+                // Jämföra det valda svaret med det rätta
+                // Disabla radioknapparna
+                // Markera fel svar med rött
+
+                currentIndex++;
+                currentQuestion = questions[currentIndex];
+                selectedAnswerId = null; // Nollställ det valda svaret
+
+                await LoadAnswersForCurrentQuestion();
+            }
+            else // Har inte valt något svar ännu
+            {
+                errorMessage = "Välj ett svar först";
+            }
+
         }
         else if (currentSubcategoryIndex < subcategories.Count - 1)
         {
@@ -256,13 +310,15 @@ else
     {
         if (currentQuestion != null)
         {
-            answers = await answerRepository.GetByQuestionIdAsync(currentQuestion.Id);
+            answers = await answerRepository.GetAnswersByQuestionIdAsync(currentQuestion.Id);
             StateHasChanged(); // Dettauppdaterar UI med de nya svaren
         }
     }
 
     private void SelectAnswer(AnswerModel answer)
     {
+        hasSubmittedAnswers = true;
+
         if (selectedAnswers.ContainsKey(currentQuestion.Id))
         {
             // Användaren har redan valt ett svar för den här frågan, uppdatera det befintliga svaret
@@ -328,6 +384,7 @@ else
             // Alla frågor har besvarats
             errorMessage = string.Empty;
             showResults = true;
+            hasSubmittedAnswers = true;
         }
         else
         {
