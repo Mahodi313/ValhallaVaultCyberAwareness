@@ -37,13 +37,15 @@
 
                     <hr />
 
+                   
+
                 </div>
                 <div class="col-7 d-flex flex-column justify-content-around">
 
                     @foreach (SubcategoryViewModel sub in subcategories.Where(su => su.SegmentId == SegId))
                     {
                         <div class="row mar">
-                            <a class="btn btn-info" href="@($"subcategory/{SegId}/{sub.Id}")"><h6 style="" >@sub.Name</h6></a>
+                            <a class="btn btn-info text-white" href="@($"subcategory/{SegId}/{sub.Id}")"><h6 style="" >@sub.Name</h6></a>
                         </div>
                     }
 
