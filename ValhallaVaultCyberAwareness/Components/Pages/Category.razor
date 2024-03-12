@@ -9,8 +9,8 @@
 @using ValhallaVaultCyberAwareness.DAL.Uow
 @using ValhallaVaultCyberAwareness.DAL.ViewModel
 
-@* @attribute [Authorize]
- *@
+@attribute [Authorize]
+
 @inject IViewModelService service
 @inject IAuthService authService
 @inject IUserResponseService userResponseService
@@ -27,9 +27,9 @@
     {
         <div class="">
             <div class="category">
-                <div class="cat-row ">
+                <div class="cat-row2 ">
                     <h1 class="mar text-center">@category.Name</h1>
-                    <p class="text-center" >@category.Info</p>
+                    <p class="" style="text-align:justify">@category.Info</p>
                 </div>
                 <hr />
             </div>
@@ -69,8 +69,6 @@
                                         @if (isFirst)
                                         {
                                             <a class="btn btn-info text-white " href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
-
-                                            
 
                                         }
                                         else

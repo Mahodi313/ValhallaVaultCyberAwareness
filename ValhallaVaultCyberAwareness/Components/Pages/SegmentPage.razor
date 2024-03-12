@@ -1,11 +1,12 @@
 ﻿@page "/segment/{CatId:int}/{SegId:int}"
 @using System.Security.Claims
+@using Microsoft.AspNetCore.Authorization
 @using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.ViewModel
 
-@* @attribute [Authorize]
- *@
+@attribute [Authorize]
+
 @inject IViewModelService service
 @inject IUserResponseService userResponseService
 
@@ -33,7 +34,7 @@
 
                     <h2 class="text-center">@segment.Name</h2>
                     <hr />
-                    <p class="text-center">@segment.Info</p>
+                    <p class="" style="text-align:justify">@segment.Info</p>
 
                     <hr />
 
