@@ -285,8 +285,9 @@ ol {
     box-shadow: 0 0 8px 0 rgba(0, 123, 255, 0.6);
 }
 
+
 .search-input::placeholder {
-   color: #CCCCCC;
+   color: black;
 }
 
 .category-card {
