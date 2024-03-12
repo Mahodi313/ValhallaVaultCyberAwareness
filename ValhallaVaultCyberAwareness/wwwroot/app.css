@@ -117,6 +117,12 @@ h1:focus {
     color: #FFFFFF;
 }
 
+/*Homepage*/
+.navbar {
+    border:double black;
+    border-radius:15px;
+}
+
 
 /*category page*/
 .categories {
