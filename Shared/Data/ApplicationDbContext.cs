@@ -20,12 +20,6 @@ namespace ValhallaVaultCyberAwareness.Data
         {
             base.OnModelCreating(builder);
 
-            //builder.Entity<UserResponseModel>()
-            //    .HasOne(ur => ur.Answer)
-            //    .WithMany()
-            //    .HasForeignKey(ur => ur.AnswerId)
-            //    .OnDelete(DeleteBehavior.ClientSetNull);
-
             #region CategoryModel
 
             builder.Entity<CategoryModel>().HasData(

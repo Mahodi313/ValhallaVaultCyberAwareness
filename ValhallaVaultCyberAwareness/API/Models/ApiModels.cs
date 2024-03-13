@@ -51,7 +51,6 @@
         public bool IsCorrectAnswer { get; set; }
         public string? Explanation { get; set; }
         public int QuestionId { get; set; }
-        //public List<UserResponseApiModel> UserResponses { get; set; } = new();
     }
 
     public class UserResponseApiModel

@@ -11,6 +11,5 @@ namespace ValhallaVaultCyberAwareness.DAL.DbModels
         public string? Explanation { get; set; }
         public int QuestionId { get; set; }
         public QuestionModel Question { get; set; } = null!;
-        //public List<UserResponseModel> UserResponses { get; set; } = new();
     }
 }

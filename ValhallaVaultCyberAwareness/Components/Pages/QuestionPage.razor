@@ -14,8 +14,6 @@
 
 <PageTitle>Quiz - segment.Name</PageTitle>
 
-<a href="/subcategory/@SegmentId/@SubcategoryId" class="btn btn-primary">Return</a>
-
 <div class="container bg-white text-dark rounded shadow-sm p-4 my-4">
     @if (!isLoaded)
     {
@@ -40,9 +38,9 @@
             foreach (var answer in answers)
             {
                 <div class="form-check">
-                    <input class="form-check-input" id="answer-@answer.Id" type="radio" name="answerGroup-@currentQuestion.Id"
+                    <input class="form-check-input @active" id="answer-@answer.Id" type="radio" name="answerGroup-@currentQuestion.Id"
                            value="@answer.Id" @onclick="() => SelectAnswer(answer)"/>
-                    <label class="form-check-label @(isSubmitted ? (answer.IsCorrectAnswer ? "text-success" : "text-danger") : "")" 
+                    <label class="form-check-label @active @(isSubmitted ? (answer.IsCorrectAnswer ? "text-success" : "text-danger") : "")" 
                     for="answer-@answer.Id">@answer.Answer</label>
                 </div>
             }
@@ -57,23 +55,21 @@
 
         <!-- Button Navigation -->
         <div class="d-flex justify-content-between mt-4">
-            <span></span> <!-- Placeholder for alignment -->
+
 
             @if (!isSubmitted)
             {
-                <!-- Om man inte har skickat in sitt svar på frågan så ska knappen "Skicka in svar" visas-->
                 <button class="btn btn-outline-success" @onclick="SubmitAnswer">Skicka in svar</button>
             }
             else if (isSubmitted && currentSubcategoryIndex < subCategories.Count() - 1)
             {
-                <!-- Om man redan har "Skickat in svar", och finns fler frågor / subkategorier ska knappen bytas till "Nästa" -->
                 <button class="btn btn-outline-primary" @onclick="@(async () => await NextQuestion())">Nästa</button>
             }
             else
             {
-                <!-- Om man redan har "Skickat in svar", och inte finns fler frågor / subkategorier ska knappen bytas till "Visa resultat" -->
                 <button class="btn btn-outline-primary" @onclick="@(async () => await NextQuestion())">Visa resultat</button>
             }
+            <span></span> <!-- Placeholder for alignment -->
 
         </div>
         @if (!string.IsNullOrEmpty(errorMessage))
@@ -106,7 +102,6 @@
                 @foreach (var subcategory in subCategories) // Loopa genom alla subkategorier
                 {
                     <h2>@subcategory.Name</h2>
-                    // Subkategoriens namn som rubrik
 
                     foreach (var question in subcategory.Questions) // Loopa genom alla frågor inom subkategorin
                     {
@@ -116,38 +111,26 @@
                             @foreach (var answer in question.Answers) // Visa alla svarsalternativ
                             {
                                 <div class="form-check">
-                                    <input class="form-check-input" type="radio" id="@answer.Id"
-                                           name="@("answerGroup" + question.Id)" value="@answer.Id" checked=@(IsUserSelectedAnswer(question, answer) ? "checked" : "") />
                                     @if (IsUserSelectedAnswer(question, answer))
                                     {
-                                        <text>checked</text>
-                                    }
-                                    disabled>
-                                    <label class="form-check-label" for="@answer.Id">@answer.Answer</label>
-                                </div>
-                                @* string labelStyle = IsUserSelectedAnswer(question, answer) ?
-                                (answer.IsCorrectAnswer ? "color: green;" : "color: red;") :
-                                (answer.IsCorrectAnswer ? "color: green;" : "");
-
-                                <div>
-                                    @if (IsUserSelectedAnswer(question, answer))
-                                    {
-                                        <input type="radio" id="@answer.Id"
-                                               name="@("answerGroup" + question.Id)"
-                                               value="@answer.Id"
-                                               checked="checked"
-                                               disabled />
+                                        
+                                            <input type="radio" id="@answer.Id"
+                                                   name="@("answerGroup" + question.Id)"
+                                                   value="@answer.Id"
+                                                   checked
+                                                   disabled />
+                                            <label class="form-check-label" for="@answer.Id" style="@labelStyle">@answer.Answer</label>
                                     }
                                     else
                                     {
-                                        <input type="radio" id="@answer.Id"
-                                               name="@("answerGroup" + question.Id)"
-                                               value="@answer.Id"
-                                               disabled />
+                                            <input type="radio" id="@answer.Id"
+                                                   name="@("answerGroup" + question.Id)"
+                                                   value="@answer.Id"
+                                                   
+                                                   disabled />
+                                            <label class="form-check-label" for="@answer.Id" style="@labelStyle">@answer.Answer</label>
                                     }
-
-                                    <label for="@answer.Id" style="@labelStyle">@answer.Answer</label>
-                                </div> *@
+                                </div>
                             }
                         </div>
                     }
@@ -166,6 +149,8 @@
     [Parameter]
     public int SubcategoryId { get; set; }
 
+    private string active = "";
+    private string labelStyle = "";
     private ClaimsPrincipal? user;
     private List<SubcategoryModel>? subCategories;
     private List<QuestionModel>? questions;
@@ -177,9 +162,9 @@
     private AnswerModel? selectedAnswer;
     private string? explanation;
     private string errorMessage = "";
+    private string? userId;
     private int currentSubcategoryIndex = 0;
     private double percentageCorrect;
-    // private int currentQuestionIndex = 0;
     private bool showResults = false;
     private bool isSubmitted = false;
     private bool isLoaded = false;
@@ -198,8 +183,11 @@
         currentQuestion = currentSubCategory.Questions[0];
 
         await LoadAnswersForCurrentQuestion();
+        await LoadUser();
         currentSubcategoryIndex = subCategories.FindIndex(sc => sc.Id == SubcategoryId);
         isLoaded = !isLoaded;
+
+        StateHasChanged();
     }
 
     private void UpdateCurrentIndex(int newIndex)
@@ -227,6 +215,30 @@
         }
     }
 
+    private async Task LoadUser()
+    {
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
+
+        if (user.Identity != null)
+        {
+
+            if (!user.Identity.IsAuthenticated)
+            {
+                errorMessage = "Användaren är inte autentiserad.";
+                return;
+            }
+
+            userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+            if (string.IsNullOrEmpty(userId))
+            {
+                errorMessage = "Kunde inte hitta användarens Id.";
+                return;
+            }
+        }
+    }
+
     private async void SubmitAnswer()
     {
 
@@ -236,31 +248,19 @@
             return;
         }
 
+        active = "disabled";
         isSubmitted = true;
         errorMessage = string.Empty;
         explanation = selectedAnswer.Explanation;
 
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        user = authState.User;
-
-        if (!user.Identity.IsAuthenticated)
-        {
-            errorMessage = "Användaren är inte autentiserad.";
-            return;
-        }
-
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
-        if (string.IsNullOrEmpty(userId))
-        {
-            errorMessage = "Kunde inte hitta användarens Id.";
-            return; 
-        }
+        await LoadUser();
 
         var existingResponse = await userResponseRepository.FindByUserAndQuestionAsync(userId, currentQuestion.Id);
 
         if (existingResponse != null)
         {
             existingResponse.IsCorrect = selectedAnswer.IsCorrectAnswer;
+            existingResponse.AnswerId = selectedAnswer.Id;
             await userResponseRepository.UpdateAsync(existingResponse);
         }
         else
@@ -342,11 +342,24 @@
 
     private bool IsUserSelectedAnswer(QuestionModel question, AnswerModel answer)
     {
-        if (question == null)
+        if (question == null && userId != null)
         {
             return false;
         }
+        else
+        {
+            var userAnswer = userResponseRepository.GetUserResponse(userId, question.Id, answer.Id);
 
-        return true;
+            if (userAnswer != null)
+            {
+                labelStyle = answer.IsCorrectAnswer ? "color:green;" : "color:red;";
+                return true;
+            }
+            else
+            {
+                labelStyle = answer.IsCorrectAnswer ? "color:green;" : "";
+                return false;
+            }
+        }
     }
 }

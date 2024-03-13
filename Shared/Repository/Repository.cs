@@ -288,5 +288,11 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             return await _context.UserResponses
                 .FirstOrDefaultAsync(ur => ur.UserId == userId && ur.QuestionId == questionId && ur.AnswerId == answerId);
         }
+
+        public UserResponseModel? GetUserResponse(string userId, int questionId, int answerId)
+        {
+            return _context.UserResponses
+                .FirstOrDefault(ur => ur.UserId == userId && ur.QuestionId == questionId && ur.AnswerId == answerId);
+        }
     }
 }

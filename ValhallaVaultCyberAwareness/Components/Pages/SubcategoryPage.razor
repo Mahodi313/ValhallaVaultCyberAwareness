@@ -22,7 +22,8 @@ else if ((category != null && segment != null) && subcategories != null && subca
         <div class="valhalla-div">
             <h1 class="valhalla-title">@subcategory.Name</h1>
             <h4>@category.Name - @segment.Name</h4>
-            <a class="btn btn-primary valhalla-btn margin-top" href="/question/@SegmentId/@SubcategoryId">Start Quiz</a>
+            @* Här ska SubcategoryId vara första ID av subkategorin *@
+            <a class="btn btn-primary valhalla-btn margin-top" href="/question/@SegmentId/@firstSubCategoryId">Start Quiz</a>
             <br />
             <label class="margin-top valhalla-title">Information om subkategorin:</label>
             <div class="col align-content-center valhalla-description-div">
@@ -63,6 +64,7 @@ else if ((category != null && segment != null) && subcategories != null && subca
     private SegmentModel? segment;
     private CategoryModel? category;
     private int currentSubcategoryIndex = 0;
+    private int firstSubCategoryId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -75,6 +77,7 @@ else if ((category != null && segment != null) && subcategories != null && subca
         if (subcategories != null)
         {
             currentSubcategoryIndex = subcategories.FindIndex(sc => sc.Id == SubcategoryId);
+            firstSubCategoryId = subcategories.First().Id;
         }
 
         StateHasChanged();

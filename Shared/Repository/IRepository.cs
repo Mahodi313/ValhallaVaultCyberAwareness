@@ -38,5 +38,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         Task<UserResponseModel> FindByUserAndQuestionAsync(string userId, int questionId);
         Task<IEnumerable<UserResponseModel>> GetByUserIdAndSegmentIdAsync(string userId, int segmentId);
         Task<UserResponseModel?> GetUserResponseAsync(string userId, int questionId, int answerId);
+        UserResponseModel? GetUserResponse(string userId, int questionId, int answerId);
     }
 }
