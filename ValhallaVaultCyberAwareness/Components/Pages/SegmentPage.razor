@@ -8,14 +8,17 @@
 @attribute [Authorize]
 
 @inject IViewModelService service
+@inject IAuthService authService
 @inject IUserResponseService userResponseService
-
-
-    @if (segment == null)
-    {
-        <h2>Error.. Page not found</h2>
-    }
-
+@inject NavigationManager NavigationManager
+@inject ISegmentService segmentService
+@* @rendermode InteractiveServer 
+ *@
+   
+@if (segment == null)
+{
+    <h2>Error.. Page not found</h2>
+}
 
 <br />
 <br />
@@ -75,10 +78,12 @@
 
 
 @code {
+
     [Parameter]
     public int CatId { get; set; }
     [Parameter]
     public int SegId { get; set; }
+    bool isAccess { get; set; }
 
     CategoryViewModel? category { get; set; }
     SegmentViewModel? segment { get; set; }
@@ -88,19 +93,34 @@
     bool isDone { get; set; }
 
 
+
     protected override async Task OnInitializedAsync()
     {
+        isAccess = await segmentService.IsOpenSegment(CatId, SegId);
+
+        if (!isAccess)
+        {
+            NavigationManager.NavigateTo("/Home");
+            return;
+        }
 
         List<CategoryViewModel> categories = await service.GetAllCategoriesAndMeta();
+
         if (categories.Any())
         {
             category = (CategoryViewModel?)categories.FirstOrDefault(c => c.Id == CatId);
             segment = (SegmentViewModel?)category.Segments.FirstOrDefault(s => s.Id == SegId);
             subcategories = category.Segments.SelectMany(s => s.Subcategories).ToList();
-
         }
-
-
-
     }
+
+   
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+        
+    }
+    
 }
