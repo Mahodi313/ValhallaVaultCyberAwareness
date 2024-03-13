@@ -15,6 +15,7 @@
 @inject IAuthService authService
 @inject IUserResponseService userResponseService
 
+
 @if(category == null)
 {
 <h2>Error.. Page not found</h2>
@@ -42,8 +43,10 @@
 
                     @foreach (SegmentViewModel seg in segments)
                     {
+
                         int Comp = CalculateSegmentCompletion(seg);
                         @if(Comp == 100){ isDone = true; }
+                        else{ isDone = false; }
 
                         <div class="cat-card">
                             <div class="mar">
@@ -176,7 +179,8 @@
     List<SubcategoryViewModel> subcategories { get; set; }
     private List<UserResponseModel> userResponses = new();
     private ClaimsPrincipal? currentUser;
-    bool isDone { get; set; } = false;
+    bool isDone { get; set; }
+    bool isAccess { get; set; }
 
 
     protected override async Task OnInitializedAsync()
@@ -204,7 +208,7 @@
 
         }
         
-
+        
 
     }
 
