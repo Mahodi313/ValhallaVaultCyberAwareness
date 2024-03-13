@@ -7,15 +7,17 @@ namespace ValhallaVaultCyberAwareness.App.Services
     public class UserResponseService : IUserResponseService
     {
         private readonly IRepository<UserResponseModel> _userResponseRepo;
+        private readonly IRepository<QuestionModel> _questionRepo;
 
-        public UserResponseService(IRepository<UserResponseModel> userResponseRepo)
+        public UserResponseService(IRepository<UserResponseModel> userResponseRepo, IRepository<QuestionModel> questionRepo)
         {
             _userResponseRepo = userResponseRepo;
+            _questionRepo = questionRepo;
         }
 
         public int CalculateSegmentCompletionBasedOnUser(SegmentModel segment, List<UserResponseModel> userResponses)
         {
-            int totalQuestions = segment.Subcategorys.SelectMany(sc => sc.Questions).Count();
+            int totalQuestions = _questionRepo.GetTotalQuestionsInSegmentAsync(segment.Id);
 
             if (totalQuestions == 0)
             {
@@ -23,10 +25,7 @@ namespace ValhallaVaultCyberAwareness.App.Services
             }
 
             // Counts the number of correct answers in a segment where the user has also responded correctly.
-            int correctAnswers = segment.Subcategorys
-                .SelectMany(sc => sc.Questions)
-                .SelectMany(q => q.Answers)
-                .Count(a => a.IsCorrectAnswer && userResponses.Any(ur => ur.QuestionId == a.Id && ur.IsCorrect));
+            int correctAnswers = _userResponseRepo.GetCorrectAnswersCount(segment.Id, userResponses);
 
             double percentage = ((double)correctAnswers / totalQuestions) * 100;
             return (int)Math.Round(percentage);
@@ -35,7 +34,7 @@ namespace ValhallaVaultCyberAwareness.App.Services
         //Overloaded med viewmodel-version
         public int CalculateSegmentCompletionBasedOnUser(SegmentViewModel segment, List<UserResponseModel> userResponses)
         {
-            int totalQuestions = segment.Subcategories.SelectMany(sc => sc.Questions).Count();
+            int totalQuestions = _questionRepo.GetTotalQuestionsInSegmentAsync(segment.Id);
 
             if (totalQuestions == 0)
             {
@@ -43,10 +42,7 @@ namespace ValhallaVaultCyberAwareness.App.Services
             }
 
             // Counts the number of correct answers in a segment where the user has also responded correctly.
-            int correctAnswers = segment.Subcategories
-                .SelectMany(sc => sc.Questions)
-                .SelectMany(q => q.Answers)
-                .Count(a => a.IsCorrectAnswer && userResponses.Any(ur => ur.QuestionId == a.Id && ur.IsCorrect));
+            int correctAnswers = _userResponseRepo.GetCorrectAnswersCount(segment.Id, userResponses);
 
             double percentage = ((double)correctAnswers / totalQuestions) * 100;
             return (int)Math.Round(percentage);
