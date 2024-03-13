@@ -21,7 +21,7 @@
 }
 else
 {
-    <table class="table">
+    <table class="table text-light">
         <thead>
             <tr>
                 <th>Category Name</th>
@@ -32,7 +32,7 @@ else
             @foreach (var category in categories)
             {
                 <tr>
-                    <td>@category.Name</td>
+                    <td class="text-light">@category.Name</td>
                     <td>
                         <button @onclick="() => ConfirmEditCategory(category)">Edit</button>
                         <button @onclick="() => ConfirmDeleteCategory(category.Id)">Delete</button>
@@ -74,7 +74,7 @@ else
 }
 else
 {
-    <table class="table">
+        <table class="table text-light">
         <thead>
             <tr>
                 <th>Segment Name</th>
@@ -132,7 +132,7 @@ else
 }
 else
 {
-    <table class="table">
+        <table class="table text-light">
         <thead>
             <tr>
                 <th>Subcategory Name</th>
@@ -189,7 +189,7 @@ else
 }
 else
 {
-    <table class="table">
+        <table class="table text-light">
         <thead>
             <tr>
                 <th>Question Title</th>
