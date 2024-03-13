@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ValhallaVaultCyberAwareness.App;
 using ValhallaVaultCyberAwareness.App.Services;
 using ValhallaVaultCyberAwareness.Components;
 using ValhallaVaultCyberAwareness.Components.Account;
@@ -136,8 +137,9 @@ else
     app.UseHsts();
 }
 
+// Look here! This is where I apply the middleware.
 
-
+app.UseMiddleware<TimingMiddleware>();
 
 app.UseHttpsRedirection();
 
