@@ -101,6 +101,7 @@
             if (userId != null)
             {
                 userResponses = await userResponseService.GetUserResponsesAsync(userId);
+                Console.WriteLine($"User responses count: {userResponses.Count}");
             }
         }
     }

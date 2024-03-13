@@ -18,7 +18,6 @@ namespace ValhallaVaultCyberAwareness.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-
             base.OnModelCreating(builder);
 
             #region CategoryModel

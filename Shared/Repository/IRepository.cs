@@ -19,9 +19,11 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         Task<List<QuestionModel>> GetQuestionsBySubcategoryAsync(int subcategoryId);
         Task<List<AnswerModel>> GetAnswerForQuestionAsync(int questionId);
         Task<List<UserResponseModel>> GetUserResponsesForQuestionAsync(int questionId);
+        int GetTotalQuestionsInSegmentAsync(int segmentId);
+        int GetCorrectAnswersCount(int segmentId, List<UserResponseModel> userResponses);
 
         // AnswerRepository
-        Task<List<AnswerModel>> GetByQuestionIdAsync(int questionId);
+        Task<List<AnswerModel>> GetAnswersByQuestionIdAsync(int questionId);
         Task<List<AnswerModel>> GetCorrectAnswersByQuestionIdAsync(int questionId);
 
         // SubcategoryRepository
@@ -35,5 +37,9 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         // UserResponse Repository
         Task<List<UserResponseModel>> GetResponsesOfUser(string userid);
         Task<List<SubcategoryModel>> GetSubcategoriesBySegmentAsync(int segmentId);
+        Task<UserResponseModel> FindByUserAndQuestionAsync(string userId, int questionId);
+        Task<IEnumerable<UserResponseModel>> GetByUserIdAndSegmentIdAsync(string userId, int segmentId);
+        Task<UserResponseModel?> GetUserResponseAsync(string userId, int questionId, int answerId);
+        UserResponseModel? GetUserResponse(string userId, int questionId, int answerId);
     }
 }

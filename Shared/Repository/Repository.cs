@@ -221,7 +221,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         /// </summary>
         /// <param name="questionId">The ID of the question.</param>
         /// <returns>A list of answer entities associated with the question ID.</returns>
-        public async Task<List<AnswerModel>> GetByQuestionIdAsync(int questionId)
+        public async Task<List<AnswerModel>> GetAnswersByQuestionIdAsync(int questionId)
         {
             return await _context.Answers.Where(a => a.QuestionId == questionId).ToListAsync();
         }
@@ -266,11 +266,69 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             return await _context.Segments.Where(s => s.Id == segmentId).Select(s => s.Category).FirstOrDefaultAsync();
         }
 
+        public int GetTotalQuestionsInSegmentAsync(int segmentId)
+        {
+            var segment = _context.Segments
+                             .Include(s => s.Subcategorys)
+                             .ThenInclude(sc => sc.Questions)
+                             .FirstOrDefault(s => s.Id == segmentId);
+
+            if (segment != null)
+            {
+                return segment.Subcategorys
+                    .SelectMany(sc => sc.Questions)
+                    .Count();
+            }
+
+            return 0;
+        }
+
         public async Task<List<SubcategoryModel>> GetSubcategoriesBySegmentAsync(int segmentId)
         {
             return await _context.Subcategories
-                .Where(sc => sc.SegmentId == segmentId)
+                .Where(sc => sc.SegmentId == segmentId).Include(s => s.Questions)
                 .ToListAsync();
+        }
+
+        public async Task<UserResponseModel?> FindByUserAndQuestionAsync(string userId, int questionId)
+        {
+            return await _context.UserResponses.FirstOrDefaultAsync(ur => ur.UserId == userId && ur.QuestionId == questionId);
+        }
+
+        public async Task<IEnumerable<UserResponseModel>> GetByUserIdAndSegmentIdAsync(string userId, int segmentId)
+        {
+            return await _context.UserResponses
+                .Where(ur => ur.UserId == userId && ur.Question.Subcategory.SegmentId == segmentId).ToListAsync();
+        }
+        public async Task<UserResponseModel?> GetUserResponseAsync(string userId, int questionId, int answerId)
+        {
+            return await _context.UserResponses
+                .FirstOrDefaultAsync(ur => ur.UserId == userId && ur.QuestionId == questionId && ur.AnswerId == answerId);
+        }
+
+        public int GetCorrectAnswersCount(int segmentId, List<UserResponseModel> userResponses)
+        {
+            var segment = _context.Segments
+                .Include(s => s.Subcategorys)
+                    .ThenInclude(sc => sc.Questions)
+                        .ThenInclude(q => q.Answers)
+                .FirstOrDefault(s => s.Id == segmentId);
+
+            if (segment == null)
+                return 0;
+
+            int correctAnswersCount = segment.Subcategorys
+                .SelectMany(sc => sc.Questions)
+                .SelectMany(q => q.Answers)
+                .Count(a => a.IsCorrectAnswer && userResponses.Any(ur => ur.QuestionId == a.QuestionId && ur.IsCorrect));
+
+            return correctAnswersCount;
+        }
+
+        public UserResponseModel? GetUserResponse(string userId, int questionId, int answerId)
+        {
+            return _context.UserResponses
+                .FirstOrDefault(ur => ur.UserId == userId && ur.QuestionId == questionId && ur.AnswerId == answerId);
         }
     }
 }

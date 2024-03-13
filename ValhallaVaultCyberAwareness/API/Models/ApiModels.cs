@@ -30,6 +30,7 @@
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
+        public string? Info { get; set; }
         public int SegmentId { get; set; }
         public List<QuestionApiModel> Questions { get; set; } = new();
     }
@@ -58,5 +59,6 @@
         public bool IsCorrect { get; set; }
         public string UserId { get; set; } = null!;
         public int QuestionId { get; set; }
+        public int? AnswerId { get; set; }
     }
 }

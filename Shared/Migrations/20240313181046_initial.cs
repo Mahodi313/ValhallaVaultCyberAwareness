@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace ValhallaVaultCyberAwareness.DAL.Migrations
 {
     /// <inheritdoc />
-    public partial class start : Migration
+    public partial class initial : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -200,7 +200,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Migrations
                     Id = table.Column<int>(type: "int", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Info = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Info = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     SegmentId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -264,7 +264,8 @@ namespace ValhallaVaultCyberAwareness.DAL.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     IsCorrect = table.Column<bool>(type: "bit", nullable: false),
                     UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    QuestionId = table.Column<int>(type: "int", nullable: false)
+                    QuestionId = table.Column<int>(type: "int", nullable: false),
+                    AnswerId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

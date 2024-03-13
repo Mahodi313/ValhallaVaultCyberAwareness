@@ -8,6 +8,7 @@ namespace ValhallaVaultCyberAwareness.DAL.ViewModel
         [Required(ErrorMessage = "Subcategory name is required!")]
         [MinLength(2, ErrorMessage = "Subcategory name must be at least 2 characters long!")]
         public string Name { get; set; } = null!;
+        public string? Info { get; set; }
         public int SegmentId { get; set; }
         public SegmentViewModel? Segment { get; set; }
         public List<QuestionViewModel> Questions { get; set; } = new();
