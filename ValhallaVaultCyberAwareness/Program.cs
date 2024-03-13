@@ -139,7 +139,6 @@ else
 }
 
 // Look here! This is where I apply the middleware.
-
 app.UseMiddleware<TimingMiddleware>();
 
 app.UseHttpsRedirection();
