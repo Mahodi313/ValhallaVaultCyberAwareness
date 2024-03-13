@@ -1,5 +1,4 @@
-﻿using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using ValhallaVaultCyberAwareness.API.DataTransferObjects;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
 using ValhallaVaultCyberAwareness.DAL.Uow;
@@ -34,7 +33,7 @@ namespace ValhallaVaultCyberAwareness.API
                         Answer = q.Answer,
                         IsCorrectAnswer = q.IsCorrectAnswer,
                         Explanation = q.Explanation,
-                        QuestionId = q.QuestionId,
+                        QuestionId = q.QuestionId
 
                     }).ToList();
 
@@ -68,7 +67,7 @@ namespace ValhallaVaultCyberAwareness.API
                         Answer = answer.Answer,
                         IsCorrectAnswer = answer.IsCorrectAnswer,
                         Explanation = answer.Explanation,
-                        QuestionId = answer.QuestionId,
+                        QuestionId = answer.QuestionId
                     };
 
 

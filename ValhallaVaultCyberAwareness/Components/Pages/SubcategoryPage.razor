@@ -16,11 +16,14 @@ else if ((category != null && segment != null) && subcategories != null && subca
 {
     <PageTitle>@segment.Name - @category.Name</PageTitle>
 
+    <a href="/segment/@category.Id/@segment.Id" class="btn btn-primary">Return</a>
+
     <div class="valhalla-row">
         <div class="valhalla-div">
             <h1 class="valhalla-title">@subcategory.Name</h1>
             <h4>@category.Name - @segment.Name</h4>
-            <a class="btn btn-primary valhalla-btn margin-top" href="/question/@segment.Id">Start Quiz</a>
+            @* Här ska SubcategoryId vara första ID av subkategorin *@
+            <a class="btn btn-primary valhalla-btn margin-top" href="/question/@SegmentId/@firstSubCategoryId">Start Quiz</a>
             <br />
             <label class="margin-top valhalla-title">Information om subkategorin:</label>
             <div class="col align-content-center valhalla-description-div">
@@ -30,7 +33,7 @@ else if ((category != null && segment != null) && subcategories != null && subca
             <div class="d-flex justify-content-between mt-4">
                 @if (currentSubcategoryIndex > 0)
                 {
-                    <a href="@GetPreviousSubcategoryUrl()" class="btn btn-outline-secondary">Föregående</a>
+                    <a href="@GetPreviousSubcategoryUrl()" class="btn btn-secondary">Föregående</a>
                 }
                 else
                 {
@@ -39,7 +42,7 @@ else if ((category != null && segment != null) && subcategories != null && subca
                 <span></span> <!-- Placeholder for alignment -->
                 @if (currentSubcategoryIndex < subcategories.Count - 1)
                 {
-                <a href="@GetNextSubcategoryUrl()" class="btn btn-outline-primary">Nästa</a>
+                <a href="@GetNextSubcategoryUrl()" class="btn btn-primary">Nästa</a>
                 }
                 else
                 {
@@ -61,6 +64,7 @@ else if ((category != null && segment != null) && subcategories != null && subca
     private SegmentModel? segment;
     private CategoryModel? category;
     private int currentSubcategoryIndex = 0;
+    private int firstSubCategoryId;
 
     protected override async Task OnInitializedAsync()
     {
@@ -73,6 +77,7 @@ else if ((category != null && segment != null) && subcategories != null && subca
         if (subcategories != null)
         {
             currentSubcategoryIndex = subcategories.FindIndex(sc => sc.Id == SubcategoryId);
+            firstSubCategoryId = subcategories.First().Id;
         }
 
         StateHasChanged();

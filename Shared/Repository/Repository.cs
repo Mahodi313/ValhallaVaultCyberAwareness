@@ -221,7 +221,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         /// </summary>
         /// <param name="questionId">The ID of the question.</param>
         /// <returns>A list of answer entities associated with the question ID.</returns>
-        public async Task<List<AnswerModel>> GetByQuestionIdAsync(int questionId)
+        public async Task<List<AnswerModel>> GetAnswersByQuestionIdAsync(int questionId)
         {
             return await _context.Answers.Where(a => a.QuestionId == questionId).ToListAsync();
         }
@@ -269,8 +269,30 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         public async Task<List<SubcategoryModel>> GetSubcategoriesBySegmentAsync(int segmentId)
         {
             return await _context.Subcategories
-                .Where(sc => sc.SegmentId == segmentId)
+                .Where(sc => sc.SegmentId == segmentId).Include(s => s.Questions)
                 .ToListAsync();
+        }
+
+        public async Task<UserResponseModel?> FindByUserAndQuestionAsync(string userId, int questionId)
+        {
+            return await _context.UserResponses.FirstOrDefaultAsync(ur => ur.UserId == userId && ur.QuestionId == questionId);
+        }
+
+        public async Task<IEnumerable<UserResponseModel>> GetByUserIdAndSegmentIdAsync(string userId, int segmentId)
+        {
+            return await _context.UserResponses
+                .Where(ur => ur.UserId == userId && ur.Question.Subcategory.SegmentId == segmentId).ToListAsync();
+        }
+        public async Task<UserResponseModel?> GetUserResponseAsync(string userId, int questionId, int answerId)
+        {
+            return await _context.UserResponses
+                .FirstOrDefaultAsync(ur => ur.UserId == userId && ur.QuestionId == questionId && ur.AnswerId == answerId);
+        }
+
+        public UserResponseModel? GetUserResponse(string userId, int questionId, int answerId)
+        {
+            return _context.UserResponses
+                .FirstOrDefault(ur => ur.UserId == userId && ur.QuestionId == questionId && ur.AnswerId == answerId);
         }
     }
 }
