@@ -63,17 +63,17 @@
                                 @foreach (var segment in category.Segments)
                                 {
                                     int segmentCompletion = CalculateSegmentCompletion(segment);
-                                        <div class="segment-info mb-2">
-                                            <p class="segment-name">@segment.Name</p>
-                                            <div class="progress">
-                                                <div class="progress-bar" role="progressbar" style="width: @segmentCompletion%" aria-valuenow="@segmentCompletion" aria-valuemin="0" aria-valuemax="100">@segmentCompletion%</div>
-                                            </div>
-                                         </div>
+                                    <div class="segment-info mb-2">
+                                        <p class="segment-name">@segment.Name</p>
+                                        <div class="progress">
+                                            <div class="progress-bar" role="progressbar" style="width: @segmentCompletion%" aria-valuenow="@segmentCompletion" aria-valuemin="0" aria-valuemax="100">@segmentCompletion%</div>
+                                        </div>
+                                    </div>
                                 }
                             </div>
                         }
                         </div>
-                    </div>
+                 </div>
              }
         </div>
     </main>
