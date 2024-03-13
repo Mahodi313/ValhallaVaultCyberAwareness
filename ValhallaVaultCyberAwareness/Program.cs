@@ -32,7 +32,7 @@ builder.Services.AddScoped<ISegmentService, SegmentService>();
 
 builder.Services.AddScoped<IUserResponseService, UserResponseService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
-
+builder.Services.AddScoped<IAdminService, AdminService>();
 
 builder.Services.AddAuthentication(options =>
     {

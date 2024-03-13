@@ -1,5 +1,6 @@
 ﻿@page "/Admin"
 @using Microsoft.AspNetCore.Authorization
+@using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.Repository
 @using ValhallaVaultCyberAwareness.DAL.Uow
 @using ValhallaVaultCyberAwareness.DAL.DbModels
@@ -7,13 +8,10 @@
 @attribute [Authorize]
 @inject NavigationManager navigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject IRepository<UserResponseModel> userRepo
-@inject IRepository<CategoryModel> categoryRepo
-@inject IRepository<SegmentModel> segmentModel
-@inject IRepository<SubcategoryModel> subCategoryModel
-@inject IRepository<QuestionModel> subCategoryModel
+
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
+@inject IAdminService adminService
 
 <h3>Category Management</h3>
 
@@ -23,7 +21,7 @@
 }
 else
 {
-    <table class="table">
+    <table class="table text-light">
         <thead>
             <tr>
                 <th>Category Name</th>
@@ -34,7 +32,7 @@ else
             @foreach (var category in categories)
             {
                 <tr>
-                    <td>@category.Name</td>
+                    <td class="text-light">@category.Name</td>
                     <td>
                         <button @onclick="() => ConfirmEditCategory(category)">Edit</button>
                         <button @onclick="() => ConfirmDeleteCategory(category.Id)">Delete</button>
@@ -76,7 +74,7 @@ else
 }
 else
 {
-    <table class="table">
+        <table class="table text-light">
         <thead>
             <tr>
                 <th>Segment Name</th>
@@ -134,7 +132,7 @@ else
 }
 else
 {
-    <table class="table">
+        <table class="table text-light">
         <thead>
             <tr>
                 <th>Subcategory Name</th>
@@ -191,7 +189,7 @@ else
 }
 else
 {
-    <table class="table">
+        <table class="table text-light">
         <thead>
             <tr>
                 <th>Question Title</th>
@@ -214,7 +212,7 @@ else
         </tbody>
     </table>
 
-    <button @onclick="ShowAddQuestionForm">Add New Question</button>
+    <button @onclick="TriggerShowAddQuestionForm">Add New Question</button>
 }
 
 @if (showAddQuestionForm)
@@ -243,7 +241,8 @@ else
 }
 
 @code {
-    private List<CategoryModel> categories;
+
+    private IEnumerable<CategoryModel> categories;
     private CategoryModel newCategory = new CategoryModel();
     private CategoryModel selectedCategory = new CategoryModel();
     private bool showAddForm = false;
@@ -251,155 +250,146 @@ else
     private bool showConfirmDelete = false;
     private int deleteCategoryId;
     // Segment Variables
-    private List<SegmentModel> segments;
+    private IEnumerable<SegmentModel> segments;
     private SegmentModel newSegment = new SegmentModel();
     private SegmentModel selectedSegment = new SegmentModel();
     private bool showAddSegmentForm = false;
     private bool showEditSegmentForm = false;
     private bool showConfirmDeleteSegment = false;
     private int deleteSegmentId;
-    // ...
+    
 
     // Subsegment Variables
-    private List<SubcategoryModel> subcategories;
+    private IEnumerable<SubcategoryModel> subcategories;
     private SubcategoryModel newSubcategory = new SubcategoryModel();
     private SubcategoryModel selectedSubcategory = new SubcategoryModel();
     private bool showAddSubcategoryForm = false;
     private bool showEditSubcategoryForm = false;
     private bool showConfirmDeleteSubcategory = false;
     private int deleteSubcategoryId;
-    // ...
+    
 
     // Question Variables
-    private List<QuestionModel> questions;
+    private IEnumerable<QuestionModel> questions;
     private QuestionModel newQuestion = new QuestionModel();
     private QuestionModel selectedQuestion = new QuestionModel();
     private bool showAddQuestionForm = false;
     private bool showEditQuestionForm = false;
     private bool showConfirmDeleteQuestion = false;
     private int deleteQuestionId;
-    // ...
 
-
-    // For Caterory
     protected override async Task OnInitializedAsync()
     {
-        categories = await UnitOfWork.CategoryRepo.GetAllAsync();
-        segments = await UnitOfWork.SegmentRepo.GetAllAsync();
-        subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync(); 
-        questions = await UnitOfWork.QuestionRepo.GetAllAsync(); 
+        categories = await adminService.GetAllCategoriesAsync();
+        segments = await adminService.GetAllSegmentsAsync();
+        subcategories = await adminService.GetAllSubcategoriesAsync();
+        questions = await adminService.GetAllQuestionsAsync();
     }
-   
 
 
+    //CATEGORY
+    private async Task SubmitAddCategory()
+    {
+        await adminService.AddCategoryAsync(newCategory);
+        categories = await adminService.GetAllCategoriesAsync();
+        showAddForm = false;
+    }
+    private async Task SubmitEditCategory()
+    {
+        await adminService.UpdateCategoryAsync(selectedCategory);
+        categories = await adminService.GetAllCategoriesAsync();
+        showEditForm = false;
+    }
     private void ConfirmEditCategory(CategoryModel category)
     {
         selectedCategory = category;
         showEditForm = true;
     }
-
+    private async Task DeleteCategory(int categoryId)
+    {
+        await adminService.DeleteCategoryAsync(categoryId);
+        categories = await adminService.GetAllCategoriesAsync();
+        showConfirmDelete = false;
+    }
     private void ConfirmDeleteCategory(int categoryId)
     {
         deleteCategoryId = categoryId;
         showConfirmDelete = true;
     }
-
-    private async Task SubmitEditCategory()
-    {
-        await UnitOfWork.CategoryRepo.UpdateAsync(selectedCategory);
-        await UnitOfWork.SaveChanges();
-        showEditForm = false;
-        categories = await UnitOfWork.CategoryRepo.GetAllAsync();
-    }
-
-    private async Task DeleteCategory(int categoryId)
-    {
-        await UnitOfWork.CategoryRepo.DeleteAsync(categoryId);
-        await UnitOfWork.SaveChanges();
-        showConfirmDelete = false;
-        categories = await UnitOfWork.CategoryRepo.GetAllAsync();
-    }
-
     private void ShowAddCategoryForm()
     {
         newCategory = new CategoryModel();
         showAddForm = true;
     }
 
-    private async Task SubmitAddCategory()
+
+    //SEGMENT
+    private async Task SubmitAddSegment()
     {
-        await UnitOfWork.CategoryRepo.CreateAsync(newCategory);
-        await UnitOfWork.SaveChanges();
-        showAddForm = false;
-        categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+        await adminService.AddSegmentAsync(newSegment);
+        segments = await adminService.GetAllSegmentsAsync();
+        showAddSegmentForm = false;
     }
-
-    //For Segment
-  
-
-    // Load segments data, similar to categories
-    // ...
-
-    private void EditSegment(SegmentModel segment)
-    {
-        selectedSegment = segment;
-        showEditSegmentForm = true;
-    }
-
-    private async Task SubmitEditSegment()
-    {
-        await UnitOfWork.SegmentRepo.UpdateAsync(selectedSegment);
-        await UnitOfWork.SaveChanges();
-        showEditSegmentForm = false;
-        segments = await UnitOfWork.SegmentRepo.GetAllAsync();
-    }
-
-    private void ConfirmDeleteSegment(int segmentId)
-    {
-        deleteSegmentId = segmentId;
-        showConfirmDeleteSegment = true;
-    }
-
-    private async Task DeleteSegment(int segmentId)
-    {
-        await UnitOfWork.SegmentRepo.DeleteAsync(segmentId);
-        await UnitOfWork.SaveChanges();
-        showConfirmDeleteSegment = false;
-        segments = await UnitOfWork.SegmentRepo.GetAllAsync();
-    }
-
     private void ShowAddSegmentForm()
     {
         newSegment = new SegmentModel();
         showAddSegmentForm = true;
     }
 
-    private async Task SubmitAddSegment()
+    private async Task SubmitEditSegment()
     {
-        await UnitOfWork.SegmentRepo.CreateAsync(newSegment);
-        await UnitOfWork.SaveChanges();
-        showAddSegmentForm = false;
-        segments = await UnitOfWork.SegmentRepo.GetAllAsync();
+        await adminService.UpdateSegmentAsync(selectedSegment);
+        segments = await adminService.GetAllSegmentsAsync();
+        showEditSegmentForm = false;
+    }
+    private void EditSegment(SegmentModel segment)
+    {
+        selectedSegment = segment;
+        showEditSegmentForm = true;
+    }
+    private void ConfirmDeleteSegment(int segmentId)
+    {
+        deleteSegmentId = segmentId;
+        showConfirmDeleteSegment = true;
+    }
+    private async Task DeleteSegment(int segmentId)
+    {
+        await adminService.DeleteSegmentAsync(segmentId);
+        segments = await adminService.GetAllSegmentsAsync();
+        showConfirmDeleteSegment = false;
     }
 
-    //For SubSegment
-    // Existing methods for Categories and Segments
+    //SUBCATEGORY
 
-    // Subcategory Methods
- 
+    private async Task SubmitAddSubcategory()
+    {
+        await adminService.AddSubcategoryAsync(newSubcategory);
+        subcategories = await adminService.GetAllSubcategoriesAsync();
+        showAddSubcategoryForm = false;
+    }
+    private void ShowAddSubcategoryForm()
+    {
+        newSubcategory = new SubcategoryModel();
+        showAddSubcategoryForm = true;
+    }
 
+    private async Task SubmitEditSubcategory()
+    {
+        await adminService.UpdateSubcategoryAsync(selectedSubcategory);
+        subcategories = await adminService.GetAllSubcategoriesAsync();
+        showEditSubcategoryForm = false;
+    }
     private void EditSubcategory(SubcategoryModel subcategory)
     {
         selectedSubcategory = subcategory;
         showEditSubcategoryForm = true;
     }
 
-    private async Task SubmitEditSubcategory()
+    private async Task DeleteSubcategory(int subcategoryId)
     {
-        await UnitOfWork.SubcategoryRepo.UpdateAsync(selectedSubcategory);
-        await UnitOfWork.SaveChanges();
-        showEditSubcategoryForm = false;
-        subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
+        await adminService.DeleteSubcategoryAsync(subcategoryId);
+        subcategories = await adminService.GetAllSubcategoriesAsync();
+        showConfirmDeleteSubcategory = false;
     }
 
     private void ConfirmDeleteSubcategory(int subcategoryId)
@@ -408,68 +398,461 @@ else
         showConfirmDeleteSubcategory = true;
     }
 
-    private async Task DeleteSubcategory(int subcategoryId)
+    //QUESTIONS 
+
+    private async Task SubmitAddQuestion()
     {
-        await UnitOfWork.SubcategoryRepo.DeleteAsync(subcategoryId);
-        await UnitOfWork.SaveChanges();
-        showConfirmDeleteSubcategory = false;
-        subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
+        await adminService.AddQuestionAsync(newQuestion);
+        questions = await adminService.GetAllQuestionsAsync();
+        showAddQuestionForm = false;
     }
 
-    private void ShowAddSubcategoryForm()
+    private async Task SubmitEditQuestion()
     {
-        newSubcategory = new SubcategoryModel();
-        showAddSubcategoryForm = true;
+        await adminService.UpdateQuestionAsync(selectedQuestion);
+        questions = await adminService.GetAllQuestionsAsync();
+        showEditQuestionForm = false;
     }
-    private async Task SubmitAddSubcategory()
+
+    private async Task DeleteQuestion(int questionId)
     {
-        await UnitOfWork.SubcategoryRepo.CreateAsync(newSubcategory);
-        await UnitOfWork.SaveChanges();
-        showAddSubcategoryForm = false;
-        subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
+        await adminService.DeleteQuestionAsync(questionId);
+        questions = await adminService.GetAllQuestionsAsync();
+        showConfirmDeleteQuestion = false;
     }
-    // For questionmodel
+    private void TriggerShowAddQuestionForm()
+    {
+        newQuestion = new QuestionModel();
+        showAddQuestionForm = true;
+    }
     private void EditQuestion(QuestionModel question)
     {
         selectedQuestion = question;
         showEditQuestionForm = true;
     }
-
-    private async Task SubmitEditQuestion()
-    {
-        await UnitOfWork.QuestionRepo.UpdateAsync(selectedQuestion);
-        await UnitOfWork.SaveChanges();
-        showEditQuestionForm = false;
-        questions = await UnitOfWork.QuestionRepo.GetAllAsync();
-    }
-
     private void ConfirmDeleteQuestion(int questionId)
     {
         deleteQuestionId = questionId;
         showConfirmDeleteQuestion = true;
     }
-
-    private async Task DeleteQuestion(int questionId)
-    {
-        await UnitOfWork.QuestionRepo.DeleteAsync(questionId);
-        await UnitOfWork.SaveChanges();
-        showConfirmDeleteQuestion = false;
-        questions = await UnitOfWork.QuestionRepo.GetAllAsync();
-    }
-
-    private void ShowAddQuestionForm()
-    {
-        newQuestion = new QuestionModel();
-        showAddQuestionForm = true;
-    }
-
-    private async Task SubmitAddQuestion()
-    {
-        await UnitOfWork.QuestionRepo.CreateAsync(newQuestion);
-        await UnitOfWork.SaveChanges();
-        showAddQuestionForm = false;
-        questions = await UnitOfWork.QuestionRepo.GetAllAsync();
-    }
 }
 
-}
+
+
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
+    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
+    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
+    // }
+
+
+
+    // private void ConfirmEditCategory(CategoryModel category)
+    // {
+    //     selectedCategory = category;
+    //     showEditForm = true;
+    // }
+
+    // private void ConfirmDeleteCategory(int categoryId)
+    // {
+    //     deleteCategoryId = categoryId;
+    //     showConfirmDelete = true;
+    // }
+
+    // private async Task SubmitEditCategory()
+    // {
+    //     await UnitOfWork.CategoryRepo.UpdateAsync(selectedCategory);
+    //     await UnitOfWork.SaveChanges();
+    //     showEditForm = false;
+    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+    // }
+
+    // private async Task DeleteCategory(int categoryId)
+    // {
+    //     await UnitOfWork.CategoryRepo.DeleteAsync(categoryId);
+    //     await UnitOfWork.SaveChanges();
+    //     showConfirmDelete = false;
+    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+    // }
+
+    // private void ShowAddCategoryForm()
+    // {
+    //     newCategory = new CategoryModel();
+    //     showAddForm = true;
+    // }
+
+    // private async Task SubmitAddCategory()
+    // {
+    //     await UnitOfWork.CategoryRepo.CreateAsync(newCategory);
+    //     await UnitOfWork.SaveChanges();
+    //     showAddForm = false;
+    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+    // }
+
+    // //For Segment
+
+
+    // // Load segments data, similar to categories
+    // // ...
+
+    // private void EditSegment(SegmentModel segment)
+    // {
+    //     selectedSegment = segment;
+    //     showEditSegmentForm = true;
+    // }
+
+    // private async Task SubmitEditSegment()
+    // {
+    //     await UnitOfWork.SegmentRepo.UpdateAsync(selectedSegment);
+    //     await UnitOfWork.SaveChanges();
+    //     showEditSegmentForm = false;
+    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
+    // }
+
+    // private void ConfirmDeleteSegment(int segmentId)
+    // {
+    //     deleteSegmentId = segmentId;
+    //     showConfirmDeleteSegment = true;
+    // }
+
+    // private async Task DeleteSegment(int segmentId)
+    // {
+    //     await UnitOfWork.SegmentRepo.DeleteAsync(segmentId);
+    //     await UnitOfWork.SaveChanges();
+    //     showConfirmDeleteSegment = false;
+    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
+    // }
+
+    // private void ShowAddSegmentForm()
+    // {
+    //     newSegment = new SegmentModel();
+    //     showAddSegmentForm = true;
+    // }
+
+    // private async Task SubmitAddSegment()
+    // {
+    //     await UnitOfWork.SegmentRepo.CreateAsync(newSegment);
+    //     await UnitOfWork.SaveChanges();
+    //     showAddSegmentForm = false;
+    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
+    // }
+
+    // //For SubSegment
+    // // Existing methods for Categories and Segments
+
+    // // Subcategory Methods
+
+
+    // private void EditSubcategory(SubcategoryModel subcategory)
+    // {
+    //     selectedSubcategory = subcategory;
+    //     showEditSubcategoryForm = true;
+    // }
+
+    // private async Task SubmitEditSubcategory()
+    // {
+    //     await UnitOfWork.SubcategoryRepo.UpdateAsync(selectedSubcategory);
+    //     await UnitOfWork.SaveChanges();
+    //     showEditSubcategoryForm = false;
+    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
+    // }
+
+    // private void ConfirmDeleteSubcategory(int subcategoryId)
+    // {
+    //     deleteSubcategoryId = subcategoryId;
+    //     showConfirmDeleteSubcategory = true;
+    // }
+
+    // private async Task DeleteSubcategory(int subcategoryId)
+    // {
+    //     await UnitOfWork.SubcategoryRepo.DeleteAsync(subcategoryId);
+    //     await UnitOfWork.SaveChanges();
+    //     showConfirmDeleteSubcategory = false;
+    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
+    // }
+
+    // private void ShowAddSubcategoryForm()
+    // {
+    //     newSubcategory = new SubcategoryModel();
+    //     showAddSubcategoryForm = true;
+    // }
+    // private async Task SubmitAddSubcategory()
+    // {
+    //     await UnitOfWork.SubcategoryRepo.CreateAsync(newSubcategory);
+    //     await UnitOfWork.SaveChanges();
+    //     showAddSubcategoryForm = false;
+    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
+    // }
+    // // For questionmodel
+    // private void EditQuestion(QuestionModel question)
+    // {
+    //     selectedQuestion = question;
+    //     showEditQuestionForm = true;
+    // }
+
+    // private async Task SubmitEditQuestion()
+    // {
+    //     await UnitOfWork.QuestionRepo.UpdateAsync(selectedQuestion);
+    //     await UnitOfWork.SaveChanges();
+    //     showEditQuestionForm = false;
+    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
+    // }
+
+    // private void ConfirmDeleteQuestion(int questionId)
+    // {
+    //     deleteQuestionId = questionId;
+    //     showConfirmDeleteQuestion = true;
+    // }
+
+    // private async Task DeleteQuestion(int questionId)
+    // {
+    //     await UnitOfWork.QuestionRepo.DeleteAsync(questionId);
+    //     await UnitOfWork.SaveChanges();
+    //     showConfirmDeleteQuestion = false;
+    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
+    // }
+
+    // private void ShowAddQuestionForm()
+    // {
+    //     newQuestion = new QuestionModel();
+    //     showAddQuestionForm = true;
+    // }
+
+    // private async Task SubmitAddQuestion()
+    // {
+    //     await UnitOfWork.QuestionRepo.CreateAsync(newQuestion);
+    //     await UnitOfWork.SaveChanges();
+    //     showAddQuestionForm = false;
+    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
+    // }
+    // // private List categories;
+    // // private CategoryModel newCategory = new CategoryModel();
+    // // private CategoryModel selectedCategory = new CategoryModel();
+    // // private bool showAddForm = false;
+    // // private bool showEditForm = false;
+    // // private bool showConfirmDelete = false;
+    // // private int deleteCategoryId;
+    // // Segment Variables
+    // // private List segments;
+    // // private SegmentModel newSegment = new SegmentModel();
+    // // private SegmentModel selectedSegment = new SegmentModel();
+    // // private bool showAddSegmentForm = false;
+    // // private bool showEditSegmentForm = false;
+    // // private bool showConfirmDeleteSegment = false;
+    // // private int deleteSegmentId;
+    // // ...
+
+    // // Subsegment Variables
+    // // private List subcategories;
+    // // private SubcategoryModel newSubcategory = new SubcategoryModel();
+    // // private SubcategoryModel selectedSubcategory = new SubcategoryModel();
+    // // private bool showAddSubcategoryForm = false;
+    // // private bool showEditSubcategoryForm = false;
+    // // private bool showConfirmDeleteSubcategory = false;
+    // // private int deleteSubcategoryId;
+    // // ...
+
+    // // Question Variables
+    // // private List questions;
+    // // private QuestionModel newQuestion = new QuestionModel();
+    // // private QuestionModel selectedQuestion = new QuestionModel();
+    // // private bool showAddQuestionForm = false;
+    // // private bool showEditQuestionForm = false;
+    // // private bool showConfirmDeleteQuestion = false;
+    // // private int deleteQuestionId;
+    // // ...
+
+
+    // For Caterory
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
+    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync(); 
+    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync(); 
+    // }
+   
+
+
+    // private void ConfirmEditCategory(CategoryModel category)
+    // {
+    //     selectedCategory = category;
+    //     showEditForm = true;
+    // }
+
+    // private void ConfirmDeleteCategory(int categoryId)
+    // {
+    //     deleteCategoryId = categoryId;
+    //     showConfirmDelete = true;
+    // }
+
+    // private async Task SubmitEditCategory()
+    // {
+    //     await UnitOfWork.CategoryRepo.UpdateAsync(selectedCategory);
+    //     await UnitOfWork.SaveChanges();
+    //     showEditForm = false;
+    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+    // }
+
+    // private async Task DeleteCategory(int categoryId)
+    // {
+    //     await UnitOfWork.CategoryRepo.DeleteAsync(categoryId);
+    //     await UnitOfWork.SaveChanges();
+    //     showConfirmDelete = false;
+    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+    // }
+
+    // private void ShowAddCategoryForm()
+    // {
+    //     newCategory = new CategoryModel();
+    //     showAddForm = true;
+    // }
+
+    // private async Task SubmitAddCategory()
+    // {
+    //     await UnitOfWork.CategoryRepo.CreateAsync(newCategory);
+    //     await UnitOfWork.SaveChanges();
+    //     showAddForm = false;
+    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
+    // }
+
+    // //For Segment
+  
+
+    // // Load segments data, similar to categories
+    // // ...
+
+    // private void EditSegment(SegmentModel segment)
+    // {
+    //     selectedSegment = segment;
+    //     showEditSegmentForm = true;
+    // }
+
+    // private async Task SubmitEditSegment()
+    // {
+    //     await UnitOfWork.SegmentRepo.UpdateAsync(selectedSegment);
+    //     await UnitOfWork.SaveChanges();
+    //     showEditSegmentForm = false;
+    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
+    // }
+
+    // private void ConfirmDeleteSegment(int segmentId)
+    // {
+    //     deleteSegmentId = segmentId;
+    //     showConfirmDeleteSegment = true;
+    // }
+
+    // private async Task DeleteSegment(int segmentId)
+    // {
+    //     await UnitOfWork.SegmentRepo.DeleteAsync(segmentId);
+    //     await UnitOfWork.SaveChanges();
+    //     showConfirmDeleteSegment = false;
+    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
+    // }
+
+    // private void ShowAddSegmentForm()
+    // {
+    //     newSegment = new SegmentModel();
+    //     showAddSegmentForm = true;
+    // }
+
+    // private async Task SubmitAddSegment()
+    // {
+    //     await UnitOfWork.SegmentRepo.CreateAsync(newSegment);
+    //     await UnitOfWork.SaveChanges();
+    //     showAddSegmentForm = false;
+    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
+    // }
+
+    // //For SubSegment
+    // // Existing methods for Categories and Segments
+
+    // // Subcategory Methods
+ 
+
+    // private void EditSubcategory(SubcategoryModel subcategory)
+    // {
+    //     selectedSubcategory = subcategory;
+    //     showEditSubcategoryForm = true;
+    // }
+
+    // private async Task SubmitEditSubcategory()
+    // {
+    //     await UnitOfWork.SubcategoryRepo.UpdateAsync(selectedSubcategory);
+    //     await UnitOfWork.SaveChanges();
+    //     showEditSubcategoryForm = false;
+    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
+    // }
+
+    // private void ConfirmDeleteSubcategory(int subcategoryId)
+    // {
+    //     deleteSubcategoryId = subcategoryId;
+    //     showConfirmDeleteSubcategory = true;
+    // }
+
+    // private async Task DeleteSubcategory(int subcategoryId)
+    // {
+    //     await UnitOfWork.SubcategoryRepo.DeleteAsync(subcategoryId);
+    //     await UnitOfWork.SaveChanges();
+    //     showConfirmDeleteSubcategory = false;
+    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
+    // }
+
+    // private void ShowAddSubcategoryForm()
+    // {
+    //     newSubcategory = new SubcategoryModel();
+    //     showAddSubcategoryForm = true;
+    // }
+    // private async Task SubmitAddSubcategory()
+    // {
+    //     await UnitOfWork.SubcategoryRepo.CreateAsync(newSubcategory);
+    //     await UnitOfWork.SaveChanges();
+    //     showAddSubcategoryForm = false;
+    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
+    // }
+    // // For questionmodel
+    // private void EditQuestion(QuestionModel question)
+    // {
+    //     selectedQuestion = question;
+    //     showEditQuestionForm = true;
+    // }
+
+    // private async Task SubmitEditQuestion()
+    // {
+    //     await UnitOfWork.QuestionRepo.UpdateAsync(selectedQuestion);
+    //     await UnitOfWork.SaveChanges();
+    //     showEditQuestionForm = false;
+    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
+    // }
+
+    // private void ConfirmDeleteQuestion(int questionId)
+    // {
+    //     deleteQuestionId = questionId;
+    //     showConfirmDeleteQuestion = true;
+    // }
+
+    // private async Task DeleteQuestion(int questionId)
+    // {
+    //     await UnitOfWork.QuestionRepo.DeleteAsync(questionId);
+    //     await UnitOfWork.SaveChanges();
+    //     showConfirmDeleteQuestion = false;
+    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
+    // }
+
+    // private void ShowAddQuestionForm()
+    // {
+    //     newQuestion = new QuestionModel();
+    //     showAddQuestionForm = true;
+    // }
+
+    // private async Task SubmitAddQuestion()
+    // {
+    //     await UnitOfWork.QuestionRepo.CreateAsync(newQuestion);
+    //     await UnitOfWork.SaveChanges();
+    //     showAddQuestionForm = false;
+    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
+    // }
+
+
