@@ -101,9 +101,9 @@
     {
         PageHandler.CategoryId = CatId;
         PageHandler.firstCategory = false;
-        if(PageHandler.whentToSubcategory)
+        if(PageHandler.WentToSubcategory)
         {
-            PageHandler.SubcategoryId = PageHandler.SubcategoryIdHoledr;
+            PageHandler.SubcategoryId = PageHandler.SubcategoryIdHolder;
         }
 
         isAccess = await segmentService.IsOpenSegment(CatId, SegId);
