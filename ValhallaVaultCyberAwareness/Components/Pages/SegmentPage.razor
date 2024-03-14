@@ -1,6 +1,7 @@
 ﻿@page "/segment/{CatId:int}/{SegId:int}"
 @using System.Security.Claims
 @using Microsoft.AspNetCore.Authorization
+@using ValhallaVaultCyberAwareness.App.PageHandler
 @using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.ViewModel
@@ -25,6 +26,8 @@
 
 @if (segment != null)
 {
+    <ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse></ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse>
+
     <div class="categories2">
         <div class="mar">
 
@@ -96,6 +99,13 @@
 
     protected override async Task OnInitializedAsync()
     {
+        PageHandler.CategoryId = CatId;
+        PageHandler.firstCategory = false;
+        if(PageHandler.WentToSubcategory)
+        {
+            PageHandler.SubcategoryId = PageHandler.SubcategoryIdHolder;
+        }
+
         isAccess = await segmentService.IsOpenSegment(CatId, SegId);
 
         if (!isAccess)
