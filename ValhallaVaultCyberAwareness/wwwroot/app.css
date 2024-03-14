@@ -211,6 +211,41 @@ ol {
     align-items: center;
 }
 
+.navbar2 {
+    height: 100px;
+    width: 100%;
+    border: double black;
+    border-radius: 15px;
+    background-color: #202536;
+    font-size:large;
+
+    display:flex;
+    flex-direction: row;
+    justify-content:start;
+    align-items:center;
+
+    }
+
+.nav-list {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: start;
+    align-items: center;
+}
+
+.nav-list li {
+    display:flex;
+    align-items:center;
+    list-style-type: none;
+    margin-left: 10px;
+}
+
+.nav-list li a {
+    display:flex;
+    align-items:center;
+    text-decoration-line: none;
+}
+
 @media screen and (min-width:414px) and (max-width: 720px) {
 
     .category {

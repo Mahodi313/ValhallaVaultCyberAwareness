@@ -1,0 +1,55 @@
+﻿@using ValhallaVaultCyberAwareness.App.PageHandler
+@inject NavigationManager nManager
+
+@if(cat != null)
+{
+    <div class="row">
+        <div class="navbar2">
+            <div>
+                <a href="@($"/home")" style="text-decoration-line:none; text-align:center"><h3><bold>Vallhalla Vault</bold></h3></a>
+
+            </div>
+                
+                <ul class="nav-list" style="list-style-type:none;">
+                        @if (!firstCat)
+                        {
+                        <li class="@GetNavClass($"/category/{cat}")"><a href="@($"/category/{cat}")">Kategori</a></li>
+                        }
+
+                        @if (seg != null)
+                        {
+                        <li class="@GetNavClass($"/segment/{cat}/{seg}")"><a href="@($"/segment/{cat}/{seg}")">Segment</a></li>
+                        }
+                        @if (subcat != null)
+                        {
+                        <li class="@GetNavClass($"/subcategory/{seg}/{seg}")"><a href="@($"/subcategory/{seg}/{subcat}")">Subkategori</a></li>
+                        }
+                   
+                </ul>
+        </div>
+
+
+    </div>
+}
+
+
+@code {
+    private int? cat { get; set; }
+    private int? seg { get; set; }
+    private int? subcat { get; set; }
+    private bool firstCat { get; set; }
+
+    protected override void OnInitialized()
+    {
+        cat = PageHandler.CategoryId;
+        seg = PageHandler.SegmentId;
+        subcat = PageHandler.SubcategoryId;
+        firstCat = PageHandler.firstCategory;
+    }
+
+    private string GetNavClass(string path)
+    {
+        return nManager.Uri.Contains(path) ? "active" : "";
+    }
+
+}

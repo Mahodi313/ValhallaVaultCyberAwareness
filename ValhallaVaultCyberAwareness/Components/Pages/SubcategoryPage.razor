@@ -1,5 +1,6 @@
 ﻿@page "/subcategory/{SegmentId:int}/{SubcategoryId:int}"
 @using Microsoft.AspNetCore.Authorization
+@using ValhallaVaultCyberAwareness.App.PageHandler
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.Repository
 @inject IRepository<SubcategoryModel> subcategoryRepository
@@ -14,6 +15,9 @@
 }
 else if ((category != null && segment != null) && subcategories != null && subcategory != null)
 {
+    //Navbar
+    <ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse></ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse>
+
     <PageTitle>@segment.Name - @category.Name</PageTitle>
 
     <a href="/segment/@category.Id/@segment.Id" class="btn btn-primary">Return</a>
@@ -68,6 +72,8 @@ else if ((category != null && segment != null) && subcategories != null && subca
 
     protected override async Task OnInitializedAsync()
     {
+        PageHandler.SegmentId = SegmentId;
+
         subcategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
 
         subcategory = await subcategoryRepository.GetByIdAsync(SubcategoryId);
@@ -81,6 +87,9 @@ else if ((category != null && segment != null) && subcategories != null && subca
         }
 
         StateHasChanged();
+
+        PageHandler.WentToSubcategory = true;
+        PageHandler.SubcategoryIdHolder = SubcategoryId;
     }
 
     private string GetPreviousSubcategoryUrl()
@@ -102,4 +111,6 @@ else if ((category != null && segment != null) && subcategories != null && subca
         }
         return $"/subcategory/{SegmentId}/{subcategories[nextIndex].Id}";
     }
+
+    
 }

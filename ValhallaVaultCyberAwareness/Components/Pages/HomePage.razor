@@ -1,6 +1,7 @@
 ﻿@page "/Home"
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
+@using ValhallaVaultCyberAwareness.App.PageHandler
 @using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.Repository
@@ -104,6 +105,7 @@
                 Console.WriteLine($"User responses count: {userResponses.Count}");
             }
         }
+
     }
 
     // I took the already implemented logout function and added it here
@@ -114,6 +116,11 @@
     {
         currentUrl = navigationManager.ToBaseRelativePath(navigationManager.Uri);
         navigationManager.LocationChanged += OnLocationChanged;
+
+        PageHandler.CategoryId = null;
+        PageHandler.SegmentId = null;
+        PageHandler.SubcategoryId = null;
+        PageHandler.SubcategoryIdHolder = null;
     }
 
 
