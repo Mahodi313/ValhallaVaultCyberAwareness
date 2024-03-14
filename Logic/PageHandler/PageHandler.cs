@@ -7,8 +7,8 @@
         public static int? SegmentId { get; set; }
         public static int? SubcategoryId { get; set; }
 
-        public static int? SubcategoryIdHoledr { get; set; }
-        public static bool whentToSubcategory { get; set; }
+        public static int? SubcategoryIdHolder { get; set; }
+        public static bool WentToSubcategory { get; set; }
 
     }
 }
