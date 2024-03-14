@@ -32,20 +32,10 @@ namespace ValhallaVaultCyberAwareness.App.Services
             if (categories.Any())
             {
                 category = (CategoryViewModel)categories.FirstOrDefault(c => c.Id == catId);
-                segments = category.Segments;
+                segments = category.Segments.Where(s => s.CategoryId == catId).ToList();
                 subcategories = category.Segments.SelectMany(s => s.Subcategories).ToList();
 
             }
-
-            foreach (SegmentViewModel seg in segments)
-            {
-                int Comp = CalculateSegmentCompletion(seg);
-                if (Comp == 100) { isAccess = true; validate.Add(seg.Id, true); }
-                else if (isAccess) { isAccess = false; validate.Add(seg.Id, true); }
-                else if (!isAccess) { isAccess = false; validate.Add(seg.Id, false); }
-
-            }
-
 
             //Medhis logik från Homepage
             currentUser = await authService.GetCurrentUserDataAsync();
@@ -58,6 +48,19 @@ namespace ValhallaVaultCyberAwareness.App.Services
                     userResponses = await userResponseService.GetUserResponsesAsync(userId);
                 }
             }
+
+
+            foreach (SegmentViewModel seg in segments)
+            {
+                int Comp = CalculateSegmentCompletion(seg);
+                if (Comp == 100) { isAccess = true; validate.Add(seg.Id, true); }
+                else if (isAccess) { isAccess = false; validate.Add(seg.Id, true); }
+                else if (!isAccess) { isAccess = false; validate.Add(seg.Id, false); }
+
+            }
+
+
+
 
             isAccess = validate[segId];
 
