@@ -12,8 +12,8 @@ using ValhallaVaultCyberAwareness.Data;
 namespace ValhallaVaultCyberAwareness.DAL.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240313181046_initial")]
-    partial class initial
+    [Migration("20240314083835_start")]
+    partial class start
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
