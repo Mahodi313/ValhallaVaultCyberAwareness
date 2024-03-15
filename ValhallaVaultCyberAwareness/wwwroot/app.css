@@ -226,6 +226,21 @@ ol {
 
     }
 
+.nav-cont {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+}
+
+.nav-img{
+    height:80px!important;
+    width: auto;
+    margin-left:300px;
+}
+
+
+
 .nav-list {
     display: flex !important;
     flex-direction: row !important;
@@ -261,9 +276,13 @@ ol {
     .cat-row2 {
         max-width: 80vw;
     }
+
+    .nav-img {
+        margin-left: 10px;
+    }
 }
 
-@media screen and (min-width:720px) and (max-width: 1300px) {
+@media screen and (min-width:721px) and (max-width: 1300px) {
 
     .category {
         height: 80%;
@@ -277,6 +296,10 @@ ol {
 
     .cat-row2 {
         max-width: 60vw;
+    }
+
+    .nav-img {
+        margin-left: 50px;
     }
 }
 

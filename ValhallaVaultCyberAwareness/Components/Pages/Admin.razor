@@ -17,15 +17,15 @@
 
 @if (categories == null)
 {
-    <p>Loading categories...</p>
+    <p>Laddar kategorier...</p>
 }
 else
 {
     <table class="table text-light">
         <thead>
             <tr>
-                <th>Category Name</th>
-                <th>Actions</th>
+                <th>Kategorinamn</th>
+                <th>Åtgärden</th>
             </tr>
         </thead>
         <tbody>
@@ -34,21 +34,21 @@ else
                 <tr>
                     <td class="text-light">@category.Name</td>
                     <td>
-                        <button @onclick="() => ConfirmEditCategory(category)">Edit</button>
-                        <button @onclick="() => ConfirmDeleteCategory(category.Id)">Delete</button>
+                        <button @onclick="() => ConfirmEditCategory(category)">Ändra</button>
+                        <button @onclick="() => ConfirmDeleteCategory(category.Id)">Ta bort</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <button @onclick="ShowAddCategoryForm">Add New Category</button>
+    <button @onclick="ShowAddCategoryForm">Skapa ny kategori</button>
 
     @if (showAddForm)
     {
         <EditForm Model="newCategory" OnValidSubmit="SubmitAddCategory">
             <InputText @bind-Value="newCategory.Name" />
-            <button type="submit">Add Category</button>
+            <button type="submit">Lägg till kategori</button>
         </EditForm>
     }
 
@@ -56,30 +56,30 @@ else
     {
         <EditForm Model="selectedCategory" OnValidSubmit="SubmitEditCategory">
             <InputText @bind-Value="selectedCategory.Name" />
-            <button type="submit">Update Category</button>
+            <button type="submit">Updatera kategori</button>
         </EditForm>
     }
 
     @if (showConfirmDelete)
     {
-        <p>Are you sure you want to delete this category?</p>
-        <button @onclick="() => DeleteCategory(deleteCategoryId)">Confirm Delete</button>
-        <button @onclick="() => showConfirmDelete = false">Cancel</button>
+        <p>Är du säker att du vill ta bort denna kategori?</p>
+        <button @onclick="() => DeleteCategory(deleteCategoryId)">Bekräfta borttagning</button>
+        <button @onclick="() => showConfirmDelete = false">Avbryt</button>
     }
 }
 <h4>Segment Management</h4>
 @if (segments == null)
 {
-    <p>Loading segments...</p>
+    <p>Laddar segment...</p>
 }
 else
 {
         <table class="table text-light">
         <thead>
             <tr>
-                <th>Segment Name</th>
-                <th>Associated Category ID</th>
-                <th>Actions</th>
+                <th>Segmentnamn</th>
+                <th>Associerat kategori ID</th>
+                <th>Åtgärden</th>
             </tr>
         </thead>
         <tbody>
@@ -89,15 +89,15 @@ else
                     <td>@segment.Name</td>
                     <td>@segment.CategoryId</td>
                     <td>
-                        <button @onclick="() => EditSegment(segment)">Edit</button>
-                        <button @onclick="() => ConfirmDeleteSegment(segment.Id)">Delete</button>
+                        <button @onclick="() => EditSegment(segment)">Ändra</button>
+                        <button @onclick="() => ConfirmDeleteSegment(segment.Id)">Ta bort</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <button @onclick="ShowAddSegmentForm">Add New Segment</button>
+    <button @onclick="ShowAddSegmentForm">Skapa nytt segment</button>
 }
 
 @if (showAddSegmentForm)
@@ -105,7 +105,7 @@ else
     <EditForm Model="newSegment" OnValidSubmit="SubmitAddSegment">
         <InputText @bind-Value="newSegment.Name" />
         <InputNumber @bind-Value="newSegment.CategoryId" />
-        <button type="submit">Add Segment</button>
+        <button type="submit">Lägg till segment</button>
     </EditForm>
 }
 
@@ -114,30 +114,30 @@ else
     <EditForm Model="selectedSegment" OnValidSubmit="SubmitEditSegment">
         <InputText @bind-Value="selectedSegment.Name" />
         <InputNumber @bind-Value="selectedSegment.CategoryId" />
-        <button type="submit">Update Segment</button>
+        <button type="submit">Uppdatera segment</button>
     </EditForm>
 }
 
 @if (showConfirmDeleteSegment)
 {
-    <p>Are you sure you want to delete this segment?</p>
-    <button @onclick="() => DeleteSegment(deleteSegmentId)">Confirm Delete</button>
-    <button @onclick="() => showConfirmDeleteSegment = false">Cancel</button>
+    <p>Är du säker att du vill ta bort segmentet?</p>
+    <button @onclick="() => DeleteSegment(deleteSegmentId)">Bekräfta borttagning</button>
+    <button @onclick="() => showConfirmDeleteSegment = false">Avbryt</button>
 }
 
 <h4>Subcategory Management</h4>
 @if (subcategories == null)
 {
-    <p>Loading subcategories...</p>
+    <p>Laddar subkategorier...</p>
 }
 else
 {
         <table class="table text-light">
         <thead>
             <tr>
-                <th>Subcategory Name</th>
-                <th>Associated Segment ID</th>
-                <th>Actions</th>
+                <th>Subkategorinamn</th>
+                <th>Associerat segment ID</th>
+                <th>Åtgärden</th>
             </tr>
         </thead>
         <tbody>
@@ -147,15 +147,15 @@ else
                     <td>@subcategory.Name</td>
                     <td>@subcategory.SegmentId</td>
                     <td>
-                        <button @onclick="() => EditSubcategory(subcategory)">Edit</button>
-                        <button @onclick="() => ConfirmDeleteSubcategory(subcategory.Id)">Delete</button>
+                        <button @onclick="() => EditSubcategory(subcategory)">Ändra</button>
+                        <button @onclick="() => ConfirmDeleteSubcategory(subcategory.Id)">Ta bort</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <button @onclick="ShowAddSubcategoryForm">Add New Subcategory</button>
+    <button @onclick="ShowAddSubcategoryForm">Skapa ny subkategori</button>
 }
 
 @if (showAddSubcategoryForm)
@@ -163,7 +163,7 @@ else
     <EditForm Model="newSubcategory" OnValidSubmit="SubmitAddSubcategory">
         <InputText @bind-Value="newSubcategory.Name" />
         <InputNumber @bind-Value="newSubcategory.SegmentId" />
-        <button type="submit">Add Subcategory</button>
+        <button type="submit">Lägg till subkategori</button>
     </EditForm>
 }
 
@@ -172,29 +172,29 @@ else
     <EditForm Model="selectedSubcategory" OnValidSubmit="SubmitEditSubcategory">
         <InputText @bind-Value="selectedSubcategory.Name" />
         <InputNumber @bind-Value="selectedSubcategory.SegmentId" />
-        <button type="submit">Update Subcategory</button>
+        <button type="submit">Uppdatera subkategori</button>
     </EditForm>
 }
 
 @if (showConfirmDeleteSubcategory)
 {
-    <p>Are you sure you want to delete this subcategory?</p>
-    <button @onclick="() => DeleteSubcategory(deleteSubcategoryId)">Confirm Delete</button>
-    <button @onclick="() => showConfirmDeleteSubcategory = false">Cancel</button>
+    <p>Är du säker att du vill ta bort subkategorin?</p>
+    <button @onclick="() => DeleteSubcategory(deleteSubcategoryId)">Bekräfta borttagning</button>
+    <button @onclick="() => showConfirmDeleteSubcategory = false">Avbryt</button>
 }
 <h4>Question Management</h4>
 @if (questions == null)
 {
-    <p>Loading questions...</p>
+    <p>Laddar frågor...</p>
 }
 else
 {
         <table class="table text-light">
         <thead>
             <tr>
-                <th>Question Title</th>
-                <th>Associated Subcategory ID</th>
-                <th>Actions</th>
+                <th>Frågans titel</th>
+                <th>Associerat subkategori ID</th>
+                <th>Åtgärden</th>
             </tr>
         </thead>
         <tbody>
@@ -204,22 +204,22 @@ else
                     <td>@question.Title</td>
                     <td>@question.SubcategoryId</td>
                     <td>
-                        <button @onclick="() => EditQuestion(question)">Edit</button>
-                        <button @onclick="() => ConfirmDeleteQuestion(question.Id)">Delete</button>
+                        <button @onclick="() => EditQuestion(question)">Ändra</button>
+                        <button @onclick="() => ConfirmDeleteQuestion(question.Id)">Ta bort</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <button @onclick="TriggerShowAddQuestionForm">Add New Question</button>
+    <button @onclick="TriggerShowAddQuestionForm">Skapa ny fråga</button>
 }
 @if (showAddQuestionForm)
 {
     <EditForm Model="newQuestion" OnValidSubmit="SubmitAddQuestion">
         <InputText @bind-Value="newQuestion.Title" />
 
-        <label for="subcategoryId">Subcategory:</label>
+        <label for="subcategoryId">Subkategori ID:</label>
         <select @bind="newQuestion.SubcategoryId">
             @foreach (var subcategory in subcategories)
             {
@@ -232,13 +232,13 @@ else
             <div>
                 <InputText @bind-Value="answer.Answer" />
                 <InputCheckbox @bind-Value="answer.IsCorrectAnswer" />
-                <label>Is Correct Answer</label>
+                <label>Rätt svar</label>
             </div>
         }
 
-        <button type="button" @onclick="SubmitAddQuestion">Add Question</button>
+        <button type="button" @onclick="SubmitAddQuestion">Lägg till fråga</button>
     </EditForm>
-    <button type="button" @onclick="AddAnswerAsync">Add Answer</button>
+    <button type="button" @onclick="AddAnswerAsync">Lägg till svar</button>
 }
 
 @if (showEditQuestionForm)
@@ -246,15 +246,15 @@ else
     <EditForm Model="selectedQuestion" OnValidSubmit="SubmitEditQuestion">
         <InputText @bind-Value="selectedQuestion.Title" />
         <InputNumber @bind-Value="selectedQuestion.SubcategoryId" />
-        <button type="submit">Update Question</button>
+        <button type="submit">Uppdatera fråga</button>
     </EditForm>
 }
 
 @if (showConfirmDeleteQuestion)
 {
-    <p>Are you sure you want to delete this question?</p>
-    <button @onclick="() => DeleteQuestion(deleteQuestionId)">Confirm Delete</button>
-    <button @onclick="() => showConfirmDeleteQuestion = false">Cancel</button>
+    <p>Är du säker att du vill ta bort frågan?</p>
+    <button @onclick="() => DeleteQuestion(deleteQuestionId)">Bekräfta borttagning</button>
+    <button @onclick="() => showConfirmDeleteQuestion = false">Avbryt</button>
 }
 
 @code {

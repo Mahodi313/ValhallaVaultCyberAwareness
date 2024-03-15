@@ -11,7 +11,7 @@
 @inject NavigationManager NavigationManager
 @inject IdentityRedirectManager RedirectManager
 
-<PageTitle>Sign in</PageTitle>
+<PageTitle>Logga in</PageTitle>
 
 <style>
     body {
@@ -20,7 +20,7 @@
     }
 </style>
 
-<h1 class="text-center AccountTitle">Log in</h1>
+<h1 class="text-center AccountTitle">Logga in</h1>
 
 <div class="row justify-content-center">
     <div class="col-md-4">
@@ -32,22 +32,22 @@
                 <ValidationSummary class="text-danger" role="alert" />
                 <div class="form-floating mb-3">
                     <InputText @bind-Value="Input.Username" class="form-control" aria-required="true" />
-                    <label for="username" class="form-label">Username</label>
+                    <label for="username" class="form-label">Användarnamn</label>
                     <ValidationMessage For="() => Input.Username" class="text-danger" />
                 </div>
                 <div class="form-floating mb-3">
                     <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="current-password" aria-required="true"/>
-                    <label for="password" class="form-label">Password</label>
+                    <label for="password" class="form-label">Lösenord</label>
                     <ValidationMessage For="() => Input.Password" class="text-danger" />
                 </div>
                 <div class="checkbox mb-3 AccountRememberMe-box">
                     <label class="form-label">
                         <InputCheckbox @bind-Value="Input.RememberMe" class="darker-border-checkbox form-check-input" />
-                        Remember me
+                        Kom ihåg mig
                     </label>
                 </div>
                 <div>
-                    <button type="submit" class="w-100 btn btn-lg btn-outline-light">Log in</button>
+                    <button type="submit" class="w-100 btn btn-lg btn-outline-light">Logga in</button>
                 </div>
                 <br />
             </EditForm>
