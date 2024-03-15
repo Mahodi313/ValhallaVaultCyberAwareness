@@ -23,9 +23,9 @@
     }
 </style>
 
-<PageTitle>Register</PageTitle>
+<PageTitle>Registrering</PageTitle>
 
-<h1 class="text-center AccountTitle">Register</h1>
+<h1 class="text-center AccountTitle">Skapa ett konto</h1>
 
 <div class="row justify-content-center">
     <div class="col-md-4">
@@ -36,25 +36,25 @@
             <ValidationSummary class="text-danger" role="alert" />
             <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.Username" class="form-control" aria-required="true" placeholder="Username" />
-                <label for="username">Username</label>
+                <label for="username">Användarnamn</label>
                 <ValidationMessage For="() => Input.Username" class="text-danger" />
             </div>
             <div class="form-floating mb-3">
                 <InputText @bind-Value="Input.Email" class="form-control" aria-required="true" placeholder="name@example.com" />
-                <label for="email">Email</label>
+                <label for="email">E-postadress</label>
                 <ValidationMessage For="() => Input.Email" class="text-danger" />
             </div>
             <div class="form-floating mb-3">
                 <InputText type="password" @bind-Value="Input.Password" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label for="password">Password</label>
+                <label for="password">Lösenord</label>
                 <ValidationMessage For="() => Input.Password" class="text-danger" />
             </div>
             <div class="form-floating mb-3">
                 <InputText type="password" @bind-Value="Input.ConfirmPassword" class="form-control" autocomplete="new-password" aria-required="true" placeholder="password" />
-                <label for="confirm-password">Confirm Password</label>
+                <label for="confirm-password">Bekräfta lösenord</label>
                 <ValidationMessage For="() => Input.ConfirmPassword" class="text-danger" />
             </div>
-            <button type="submit" class="w-100 btn btn-lg btn-outline-light">Register</button>
+            <button type="submit" class="w-100 btn btn-lg btn-outline-light">Registrera</button>
         </EditForm>
     </div>
 </div>
