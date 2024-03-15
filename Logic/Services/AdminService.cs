@@ -12,6 +12,10 @@ namespace ValhallaVaultCyberAwareness.App.Services
             _unitOfWork = unitOfWork;
         }
 
+        public async Task<IEnumerable<AnswerModel>> GetAllAnswersAsync()
+        {
+            return await _unitOfWork.AnswerRepo.GetAllAsync();
+        }
         public async Task<IEnumerable<CategoryModel>> GetAllCategoriesAsync()
         {
             return await _unitOfWork.CategoryRepo.GetAllAsync();
@@ -106,6 +110,34 @@ namespace ValhallaVaultCyberAwareness.App.Services
             await _unitOfWork.QuestionRepo.DeleteAsync(questionId);
             await _unitOfWork.SaveChanges();
         }
+
+
+        public async Task AddAnswerAsync(AnswerModel answer)
+        {
+            //await _unitOfWork.AnswerRepo.CreateAsync(answer);
+
+            if (answer.Id == 0)
+            {
+                await _unitOfWork.AnswerRepo.CreateAsync(answer);
+                await _unitOfWork.SaveChanges();
+
+            }
+        }
+
+        public async Task UpdateAnswerAsync(AnswerModel answer)
+        {
+            await _unitOfWork.AnswerRepo.UpdateAsync(answer);
+            await _unitOfWork.SaveChanges();
+        }
+
+        public async Task DeleteAnswerAsync(int answerId)
+        {
+            await _unitOfWork.AnswerRepo.DeleteAsync(answerId);
+            await _unitOfWork.SaveChanges();
+        }
+
+
+
 
 
     }
