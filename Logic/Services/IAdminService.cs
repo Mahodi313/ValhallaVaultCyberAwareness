@@ -4,6 +4,7 @@ namespace ValhallaVaultCyberAwareness.App.Services
 {
     public interface IAdminService
     {
+        Task<IEnumerable<AnswerModel>> GetAllAnswersAsync();
         Task<IEnumerable<CategoryModel>> GetAllCategoriesAsync();
         Task<IEnumerable<SegmentModel>> GetAllSegmentsAsync();
         Task<IEnumerable<SubcategoryModel>> GetAllSubcategoriesAsync();
@@ -31,6 +32,10 @@ namespace ValhallaVaultCyberAwareness.App.Services
         Task UpdateQuestionAsync(QuestionModel question);
         Task DeleteQuestionAsync(int questionId);
 
-        // Similar methods for Segments, Subcategories, and Questions
+        Task AddAnswerAsync(AnswerModel answer);
+        Task UpdateAnswerAsync(AnswerModel answer);
+        Task DeleteAnswerAsync(int answerId);
+
+
     }
 }
