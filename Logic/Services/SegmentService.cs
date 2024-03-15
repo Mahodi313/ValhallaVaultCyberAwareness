@@ -53,7 +53,7 @@ namespace ValhallaVaultCyberAwareness.App.Services
             foreach (SegmentViewModel seg in segments)
             {
                 int Comp = await CalculateSegmentCompletion(seg);
-                if (Comp == 100) { isAccess = true; validate.Add(seg.Id, true); }
+                if (Comp >= 80) { isAccess = true; validate.Add(seg.Id, true); }
                 else if (isAccess) { isAccess = false; validate.Add(seg.Id, true); }
                 else if (!isAccess) { isAccess = false; validate.Add(seg.Id, false); }
 

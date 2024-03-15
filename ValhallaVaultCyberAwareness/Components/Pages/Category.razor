@@ -48,7 +48,7 @@
                     {
 
                         int Comp = segmentCompletions.ContainsKey(seg.Id) ? segmentCompletions[seg.Id] : 0;
-                        @if(Comp == 100){ isDone = true; }
+                        @if(Comp >= 80){ isDone = true; }
                         else{ isDone = false; }
 
                         <div class="cat-card">
@@ -196,7 +196,7 @@
             PageHandler.firstCategory = true;
         }
         else PageHandler.firstCategory = false;
-
+        PageHandler.WentToSubcategory = false;
 
         //Users = await userCont.GetAllUsersAsync();
 
