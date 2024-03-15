@@ -25,7 +25,7 @@ else
         <thead>
             <tr>
                 <th>Kategorinamn</th>
-                <th>Aktioner</th>
+                <th>Åtgärder</th>
             </tr>
         </thead>
         <tbody>
@@ -62,7 +62,7 @@ else
 
     @if (showConfirmDelete)
     {
-        <p>Är du säker på att du vill ta bort denna kategori?</p>
+        <p>Är du säker att du vill ta bort denna kategori?</p>
         <button @onclick="() => DeleteCategory(deleteCategoryId)">Bekräfta borttagning</button>
         <button @onclick="() => showConfirmDelete = false">Avbryt</button>
     }
@@ -79,7 +79,7 @@ else
             <tr>
                 <th>Segmentnamn</th>
                 <th>Associerat kategori ID</th>
-                <th>Aktioner</th>
+                <th>Åtgärden</th>
             </tr>
         </thead>
         <tbody>
@@ -120,7 +120,7 @@ else
 
 @if (showConfirmDeleteSegment)
 {
-    <p>Är du säker på att du vill ta bort segmentet?</p>
+    <p>Är du säker att du vill ta bort segmentet?</p>
     <button @onclick="() => DeleteSegment(deleteSegmentId)">Bekräfta borttagning</button>
     <button @onclick="() => showConfirmDeleteSegment = false">Avbryt</button>
 }
@@ -137,7 +137,7 @@ else
             <tr>
                 <th>Subkategorinamn</th>
                 <th>Associerat segment ID</th>
-                <th>Aktioner</th>
+                <th>Åtgärden</th>
             </tr>
         </thead>
         <tbody>
@@ -178,7 +178,7 @@ else
 
 @if (showConfirmDeleteSubcategory)
 {
-    <p>Är du säker på att du vill ta bort subkategorin?</p>
+    <p>Är du säker att du vill ta bort subkategorin?</p>
     <button @onclick="() => DeleteSubcategory(deleteSubcategoryId)">Bekräfta borttagning</button>
     <button @onclick="() => showConfirmDeleteSubcategory = false">Avbryt</button>
 }
@@ -194,7 +194,7 @@ else
             <tr>
                 <th>Frågans titel</th>
                 <th>Assicierat subkategori ID</th>
-                <th>Aktioner</th>
+                <th>Åtgärden</th>
             </tr>
         </thead>
         <tbody>
@@ -238,12 +238,7 @@ else
 
         <button type="button" @onclick="SubmitAddQuestion">Lägg till fråga</button>
     </EditForm>
-<<<<<<< HEAD
-  @*   <button type="button" @onclick="AddNewAnswer">Add Answer</button> *@
     <button type="button" @onclick="AddAnswerAsync">Lägg till svar</button>
-=======
-    <button type="button" @onclick="AddAnswerAsync">Add Answer</button>
->>>>>>> cce5ad096d39caf05bd9090e3c6e6a90286195a8
 }
 
 @if (showEditQuestionForm)
@@ -257,7 +252,7 @@ else
 
 @if (showConfirmDeleteQuestion)
 {
-    <p>Är du säker på att du vill ta bort frågan?</p>
+    <p>Är du säker att du vill ta bort frågan?</p>
     <button @onclick="() => DeleteQuestion(deleteQuestionId)">Bekräfta borttagning</button>
     <button @onclick="() => showConfirmDeleteQuestion = false">Avbryt</button>
 }
