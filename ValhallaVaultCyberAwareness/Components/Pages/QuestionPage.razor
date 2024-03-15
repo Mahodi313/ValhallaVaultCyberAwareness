@@ -141,7 +141,7 @@
                     }
                 }
                 <div class="position-absolute bottom-0 end-0 p-1">
-                    <a class="btn btn-primary" href="/segment/@segment.CategoryId/@SegmentId">Tillbaka</a>
+                    <a class="btn btn-primary" href="/category/@segment.CategoryId">Tillbaka</a>
                 </div>
             </div>
         }
@@ -204,11 +204,6 @@
         if (!canAccess)
         {
             NavigationManager.NavigateTo("/Home");
-            return;
-        }
-        else if (firstQuestion.Id != currentQuestion.Id)
-        {
-            NavigationManager.NavigateTo($"/question/{SegmentId}/{firstQuestion.Id}");
             return;
         }
 
@@ -323,7 +318,7 @@
             // Kolla så det finns en nästa subkategori!
             if (currentSubcategoryIndex + 1 < subCategories.Count)
             {
-                NavigationManager.NavigateTo($"/question/{SegmentId}/{SubcategoryId + 1}");
+                NavigationManager.NavigateTo($"/question/{SegmentId}/{SubcategoryId + 1}"); // TODO: Det ska inte loopa
             }
             else
             {
