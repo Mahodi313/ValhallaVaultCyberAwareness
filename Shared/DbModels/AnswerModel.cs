@@ -6,8 +6,6 @@ namespace ValhallaVaultCyberAwareness.DAL.DbModels
     {
         [Key]
         public int Id { get; set; }
-
-        //[Required(ErrorMessage = "Answer text is required")]
         public string Answer { get; set; } = null!;
         public bool IsCorrectAnswer { get; set; } = false;
         public string? Explanation { get; set; } = null;

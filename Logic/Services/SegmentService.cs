@@ -64,10 +64,7 @@ namespace ValhallaVaultCyberAwareness.App.Services
                     if (Comp >= 80) { isAccess = true; validate.Add(seg.Id, true); }
                     else if (isAccess) { isAccess = false; validate.Add(seg.Id, true); }
                     else if (!isAccess) { isAccess = false; validate.Add(seg.Id, false); }
-
                 }
-
-
 
                 isAccess = validate[segId];
                 return isAccess;
@@ -77,7 +74,6 @@ namespace ValhallaVaultCyberAwareness.App.Services
                 return false;
             }
         }
-
 
         //Medhis logik från homepage
         private async Task<int> CalculateSegmentCompletion(SegmentViewModel segment)

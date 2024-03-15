@@ -233,16 +233,19 @@
             answers = await answerRepository.GetAnswersByQuestionIdAsync(currentQuestion.Id);
 
             // se ifall användaren har rätt svar på frågan. Om den ha det så visa resultat
-            UserResponseModel existingResponse = await userResponseRepository.FindByUserAndQuestionAsync(userId, currentQuestion.Id);
-            var responseAnswer = await answerRepository.GetByIdAsync((int)(existingResponse.AnswerId));
+            UserResponseModel? existingResponse = await userResponseRepository.FindByUserAndQuestionAsync(userId, currentQuestion.Id);
 
-            if (existingResponse.IsCorrect)
+            if (existingResponse != null)
             {
-                // Checka det valda alternativet som användaren valde
-                SelectAnswer(responseAnswer);
-                isNotUpdated = false;
-                isSubmitted = !isSubmitted;
-                SubmitAnswer();
+                if (existingResponse.IsCorrect)
+                { 
+                    var responseAnswer = await answerRepository.GetByIdAsync((int)(existingResponse.AnswerId));
+
+                    SelectAnswer(responseAnswer);
+                    isNotUpdated = false;
+                    isSubmitted = !isSubmitted;
+                    SubmitAnswer();
+                }
             }
 
             StateHasChanged();

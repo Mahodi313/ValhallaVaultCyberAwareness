@@ -39,9 +39,7 @@
                 <hr />
             </div>
             
-
             <div class="cat-row category">
-
 
                 <div class="cat-row">
 
@@ -87,11 +85,9 @@
                                             
                                         }
                                     }
-                                    
-
+       
                                 </div>
-                                <br />
-                                    
+                                <br />                                 
                                 <div class="cat-row category">
                                     <div class="d-flex flex-column ">
                                         <ol>
@@ -103,11 +99,11 @@
                                                         <div class="text-center" style="margin:5px;">
                                                         <li><h5>@sub.Name</h5></li>
                                                         </div>
-                                                }
+                                                    }
 
                                                 isCleardBefore = true;
                                                 isFirst = false;
-                                            }
+                                                }
 
                                                 else if (isCleardBefore)
                                                 {
@@ -146,37 +142,24 @@
 
                                                         isCleardBefore = false;
                                                     }
-
                                                 }
-
-                                        </ol>
-                                        
+                                        </ol>                                     
                                     </div>
                                 </div>
                             </div>
-
-
-
-
                         </div>
-
                         <br />
                         <br />
                         <br />
-
-
                     }
-
-
                 </div>
-
             </div>
-        </div>
-        
+        </div>      
     }
 </div>
 
 @code {
+
     [Parameter]
     public int Id { get; set; }
 
@@ -191,7 +174,6 @@
     bool isDone { get; set; }
     bool isAccess { get; set; }
 
-
     protected override async Task OnInitializedAsync()
     {
         PageHandler.CategoryId = Id;
@@ -201,8 +183,6 @@
         }
         else PageHandler.firstCategory = false;
         PageHandler.WentToSubcategory = false;
-
-        //Users = await userCont.GetAllUsersAsync();
 
         List<CategoryViewModel> categories = await service.GetAllCategoriesAndMeta();
         if (categories.Any())
@@ -229,11 +209,7 @@
             }
 
             await CalculateSegmentCompletions();
-
         }
-        
-        
-
     }
 
     //Medhis logik från homepage
