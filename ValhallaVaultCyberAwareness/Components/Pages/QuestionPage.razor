@@ -1,6 +1,7 @@
 ﻿@page "/question/{SegmentId:int}/{SubcategoryId:int}"
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
+@using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.Repository
 @inject IRepository<UserResponseModel> userResponseRepository
@@ -8,9 +9,13 @@
 @inject IRepository<SubcategoryModel> subcategoryRepository
 @inject IRepository<QuestionModel> questionRepository
 @inject IRepository<AnswerModel> answerRepository
+@inject ISubcategoryService subcategoryService
+@inject IQuestionService questionService
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
+
+@attribute [Authorize]
 
 <PageTitle>Quiz - segment.Name</PageTitle>
 
@@ -136,7 +141,7 @@
                     }
                 }
                 <div class="position-absolute bottom-0 end-0 p-1">
-                    <a class="btn btn-primary" href="/segment/@segment.CategoryId/@SegmentId">Tillbaka</a>
+                    <a class="btn btn-primary" href="/category/@segment.CategoryId">Tillbaka</a>
                 </div>
             </div>
         }
@@ -158,6 +163,7 @@
     private Dictionary<int, int> selectedAnswers = new();
     private SegmentModel? segment;
     private SubcategoryModel? currentSubCategory;
+    private QuestionModel? firstQuestion;
     private QuestionModel? currentQuestion;
     private AnswerModel? selectedAnswer;
     private string? explanation;
@@ -171,29 +177,42 @@
     private bool isPassed;
 
 
-
     protected override async Task OnInitializedAsync()
     {
+
         segment = await segmentRepository.GetByIdAsync(SegmentId);
 
         // Hämta alla subkategorier för det angivna segmentet.
         subCategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
 
-        currentSubCategory = subCategories.First(s => s.Id == SubcategoryId);
-        currentQuestion = currentSubCategory.Questions[0];
+        try
+        {
+            firstQuestion = subCategories.First().Questions[0];
+            currentSubCategory = subCategories.First(s => s.Id == SubcategoryId);
+            currentQuestion = currentSubCategory.Questions[0];
+        }
+        catch
+        {
+            NavigationManager.NavigateTo("/Home");
+            return;
+        }
+
+        await LoadUser();
+
+        var canAccess = await questionService.CanAccessQuestion(SegmentId, SubcategoryId, currentQuestion.Id, userId);
+
+        if (!canAccess)
+        {
+            NavigationManager.NavigateTo("/Home");
+            return;
+        }
+
 
         await LoadAnswersForCurrentQuestion();
-        await LoadUser();
         currentSubcategoryIndex = subCategories.FindIndex(sc => sc.Id == SubcategoryId);
         isLoaded = !isLoaded;
 
         StateHasChanged();
-    }
-
-    private void UpdateCurrentIndex(int newIndex)
-    {
-        // currentSubCategoryIndex = newIndex;
-        // sessionStorage.SetItem("CurrentSubCategoryIndex", currentSubCategoryIndex);
     }
 
     private async Task LoadAnswersForCurrentQuestion()
@@ -292,13 +311,14 @@
             isSubmitted = false;
             explanation = null;
             await LoadAnswersForCurrentQuestion();
+            StateHasChanged();
         }
         else
         {
             // Kolla så det finns en nästa subkategori!
             if (currentSubcategoryIndex + 1 < subCategories.Count)
             {
-                NavigationManager.NavigateTo($"/question/{SegmentId}/{SubcategoryId + 1}");
+                NavigationManager.NavigateTo($"/question/{SegmentId}/{SubcategoryId + 1}"); // TODO: Det ska inte loopa
             }
             else
             {
