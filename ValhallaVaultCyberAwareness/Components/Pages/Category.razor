@@ -47,8 +47,8 @@
                     @foreach (SegmentViewModel seg in segments)
                     {
 
-                        int Comp = CalculateSegmentCompletion(seg);
-                        @if(Comp == 100){ isDone = true; }
+                        int Comp = segmentCompletions.ContainsKey(seg.Id) ? segmentCompletions[seg.Id] : 0;
+                        @if(Comp >= 80){ isDone = true; }
                         else{ isDone = false; }
 
                         <div class="cat-card">
@@ -58,7 +58,10 @@
                                     <!--Visar en checkbox icon om segmentet är avklarat-->
                                     @if (isDone)
                                     {
-                                        <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
+                                        if(Comp == 100)
+                                        {
+                                            <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
+                                        }
                                         
                                         <a class="btn btn-light" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
                                         
@@ -181,6 +184,7 @@
     CategoryViewModel category { get; set; }
     List<SegmentViewModel> segments { get; set; }
     List<SubcategoryViewModel> subcategories { get; set; }
+    Dictionary<int, int> segmentCompletions { get; set; } = new Dictionary<int, int>();
     private List<UserResponseModel> userResponses = new();
     private ClaimsPrincipal? currentUser;
     bool isDone { get; set; }
@@ -195,7 +199,7 @@
             PageHandler.firstCategory = true;
         }
         else PageHandler.firstCategory = false;
-
+        PageHandler.WentToSubcategory = false;
 
         //Users = await userCont.GetAllUsersAsync();
 
@@ -218,6 +222,8 @@
                 }
             }
 
+            await CalculateSegmentCompletions();
+
         }
         
         
@@ -225,11 +231,17 @@
     }
 
     //Medhis logik från homepage
-    private int CalculateSegmentCompletion(SegmentViewModel segment)
+    private async Task CalculateSegmentCompletions()
     {
-        int precentage = userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
+        foreach (var segment in segments)
+        {
+            segmentCompletions[segment.Id] = await CalculateSegmentCompletion(segment);
+        }
+    }
 
-        return precentage;
+    private async Task<int> CalculateSegmentCompletion(SegmentViewModel segment)
+    {
+        return await userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
     }
 
 }

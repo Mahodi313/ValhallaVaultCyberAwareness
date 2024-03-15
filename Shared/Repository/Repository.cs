@@ -266,18 +266,18 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             return await _context.Segments.Where(s => s.Id == segmentId).Select(s => s.Category).FirstOrDefaultAsync();
         }
 
-        public int GetTotalQuestionsInSegmentAsync(int segmentId)
+        public async Task<int> GetTotalQuestionsInSegmentAsync(int segmentId)
         {
-            var segment = _context.Segments
-                             .Include(s => s.Subcategorys)
-                             .ThenInclude(sc => sc.Questions)
-                             .FirstOrDefault(s => s.Id == segmentId);
+            var segment = await _context.Segments
+                                    .Include(s => s.Subcategorys)
+                                    .ThenInclude(sc => sc.Questions)
+                                    .FirstOrDefaultAsync(s => s.Id == segmentId);
 
             if (segment != null)
             {
                 return segment.Subcategorys
-                    .SelectMany(sc => sc.Questions)
-                    .Count();
+                              .SelectMany(sc => sc.Questions)
+                              .Count();
             }
 
             return 0;

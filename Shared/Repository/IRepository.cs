@@ -19,7 +19,7 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         Task<List<QuestionModel>> GetQuestionsBySubcategoryAsync(int subcategoryId);
         Task<List<AnswerModel>> GetAnswerForQuestionAsync(int questionId);
         Task<List<UserResponseModel>> GetUserResponsesForQuestionAsync(int questionId);
-        int GetTotalQuestionsInSegmentAsync(int segmentId);
+        Task<int> GetTotalQuestionsInSegmentAsync(int segmentId);
         int GetCorrectAnswersCount(int segmentId, List<UserResponseModel> userResponses);
 
         // AnswerRepository

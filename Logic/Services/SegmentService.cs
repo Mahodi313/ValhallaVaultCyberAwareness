@@ -52,8 +52,8 @@ namespace ValhallaVaultCyberAwareness.App.Services
 
             foreach (SegmentViewModel seg in segments)
             {
-                int Comp = CalculateSegmentCompletion(seg);
-                if (Comp == 100) { isAccess = true; validate.Add(seg.Id, true); }
+                int Comp = await CalculateSegmentCompletion(seg);
+                if (Comp >= 80) { isAccess = true; validate.Add(seg.Id, true); }
                 else if (isAccess) { isAccess = false; validate.Add(seg.Id, true); }
                 else if (!isAccess) { isAccess = false; validate.Add(seg.Id, false); }
 
@@ -73,9 +73,9 @@ namespace ValhallaVaultCyberAwareness.App.Services
 
 
         //Medhis logik från homepage
-        private int CalculateSegmentCompletion(SegmentViewModel segment)
+        private async Task<int> CalculateSegmentCompletion(SegmentViewModel segment)
         {
-            int precentage = userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
+            int precentage = await userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
 
             return precentage;
         }
