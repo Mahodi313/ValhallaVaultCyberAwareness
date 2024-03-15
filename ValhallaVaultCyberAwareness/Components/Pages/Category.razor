@@ -47,7 +47,7 @@
                     @foreach (SegmentViewModel seg in segments)
                     {
 
-                        int Comp = CalculateSegmentCompletion(seg);
+                        int Comp = segmentCompletions.ContainsKey(seg.Id) ? segmentCompletions[seg.Id] : 0;
                         @if(Comp == 100){ isDone = true; }
                         else{ isDone = false; }
 
@@ -181,6 +181,7 @@
     CategoryViewModel category { get; set; }
     List<SegmentViewModel> segments { get; set; }
     List<SubcategoryViewModel> subcategories { get; set; }
+    Dictionary<int, int> segmentCompletions { get; set; } = new Dictionary<int, int>();
     private List<UserResponseModel> userResponses = new();
     private ClaimsPrincipal? currentUser;
     bool isDone { get; set; }
@@ -218,6 +219,8 @@
                 }
             }
 
+            await CalculateSegmentCompletions();
+
         }
         
         
@@ -225,11 +228,17 @@
     }
 
     //Medhis logik från homepage
-    private int CalculateSegmentCompletion(SegmentViewModel segment)
+    private async Task CalculateSegmentCompletions()
     {
-        int precentage = userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
+        foreach (var segment in segments)
+        {
+            segmentCompletions[segment.Id] = await CalculateSegmentCompletion(segment);
+        }
+    }
 
-        return precentage;
+    private async Task<int> CalculateSegmentCompletion(SegmentViewModel segment)
+    {
+        return await userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
     }
 
 }

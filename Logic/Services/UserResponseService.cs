@@ -15,9 +15,9 @@ namespace ValhallaVaultCyberAwareness.App.Services
             _questionRepo = questionRepo;
         }
 
-        public int CalculateSegmentCompletionBasedOnUser(SegmentModel segment, List<UserResponseModel> userResponses)
+        public async Task<int> CalculateSegmentCompletionBasedOnUser(SegmentModel segment, List<UserResponseModel> userResponses)
         {
-            int totalQuestions = _questionRepo.GetTotalQuestionsInSegmentAsync(segment.Id);
+            int totalQuestions = await _questionRepo.GetTotalQuestionsInSegmentAsync(segment.Id);
 
             if (totalQuestions == 0)
             {
@@ -32,9 +32,9 @@ namespace ValhallaVaultCyberAwareness.App.Services
         }
 
         //Overloaded med viewmodel-version
-        public int CalculateSegmentCompletionBasedOnUser(SegmentViewModel segment, List<UserResponseModel> userResponses)
+        public async Task<int> CalculateSegmentCompletionBasedOnUser(SegmentViewModel segment, List<UserResponseModel> userResponses)
         {
-            int totalQuestions = _questionRepo.GetTotalQuestionsInSegmentAsync(segment.Id);
+            int totalQuestions = await _questionRepo.GetTotalQuestionsInSegmentAsync(segment.Id);
 
             if (totalQuestions == 0)
             {
