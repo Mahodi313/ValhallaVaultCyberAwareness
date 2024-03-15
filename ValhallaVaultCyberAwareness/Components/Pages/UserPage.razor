@@ -100,38 +100,51 @@
         if (IsUpdateButtonDisabled) return;
         showConfirmation = true;
     }
-
     private async Task UpdateUser()
     {
-        bool error = false;
+        var error = false;
+        var currentUser = await UserManager.GetUserAsync(user);
         if (!await IsCurrentPasswordValid())
         {
             error = true;
-            if (IsUpdateButtonDisabled) return;
-            showConfirmation = true;
         }
-
-        var currentUser = await UserManager.FindByEmailAsync(userUpdateModel.NewEmail);
-        if (currentUser != null)
+        else if (currentUser != null && userUpdateModel.NewEmail != currentUser.Email)
         {
-            var changeEmailResult = await UserManager.SetEmailAsync(currentUser, userUpdateModel.NewEmail);
-            if (changeEmailResult.Succeeded && !string.IsNullOrWhiteSpace(userUpdateModel.NewPassword))
+            // Check if the new email is already in use
+            var existingUser = await UserManager.FindByEmailAsync(userUpdateModel.NewEmail);
+            if (existingUser == null)
             {
-                var changePasswordResult = await UserManager.ChangePasswordAsync(currentUser, userUpdateModel.CurrentPassword, userUpdateModel.NewPassword);
-                if (!changePasswordResult.Succeeded)
-                    error = true;
-                else
+                var changeEmailResult = await UserManager.SetEmailAsync(currentUser, userUpdateModel.NewEmail);
+                if (!changeEmailResult.Succeeded)
                 {
-                    NavigationManager.NavigateTo("/user-updated"); // Redirect to a confirmation page
+                    error = true;
                 }
             }
             else
+            {
                 error = true;
-
-           
+                errorMessage = "Email address is already in use.";
+            }
         }
-        if(error)
-            errorMessage = "Something went wrong. Please chekc if everything is filled in correctly";
+
+        // Process password change if no error and new password is provided
+        if (!error && !string.IsNullOrWhiteSpace(userUpdateModel.NewPassword))
+        {
+            var changePasswordResult = await UserManager.ChangePasswordAsync(currentUser, userUpdateModel.CurrentPassword, userUpdateModel.NewPassword);
+            if (!changePasswordResult.Succeeded)
+            {
+                error = true;
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/user-updated"); // Redirect to a confirmation page
+            }
+        }
+
+        if (error)
+        {
+            errorMessage = string.IsNullOrWhiteSpace(errorMessage) ? "Something went wrong. Please check if everything is filled in correctly" : errorMessage;
+        }
 
         showConfirmation = false;
     }
