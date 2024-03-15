@@ -83,7 +83,7 @@
         var result = await SignInManager.PasswordSignInAsync(Input.Username, Input.Password, Input.RememberMe, lockoutOnFailure: false);
         if (result.Succeeded)
         {
-            Logger.LogInformation("User logged in.");
+            Logger.LogInformation("Användare inloggad.");
             RedirectManager.RedirectTo("/Home");
         }
         else if (result.RequiresTwoFactor)
@@ -99,7 +99,7 @@
         }
         else
         {
-            errorMessage = "Error: Invalid login attempt.";
+            errorMessage = "Error: Ogiltigt inloggningsförsök.";
         }
     }
 
