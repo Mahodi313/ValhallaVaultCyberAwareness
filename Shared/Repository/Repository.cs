@@ -299,6 +299,13 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         {
             return await _context.UserResponses
                 .Where(ur => ur.UserId == userId && ur.Question.Subcategory.SegmentId == segmentId).ToListAsync();
+
+            //return await _context.UserResponses
+            //    .Where(ur => ur.UserId == userId && ur.Question.Subcategory.SegmentId == segmentId)
+            //    .Include(ur => ur.Question)
+            //    .ThenInclude(q => q.Subcategory)
+            //    .ThenInclude(sc => sc.Segment)
+            //    .ToListAsync();
         }
         public async Task<UserResponseModel?> GetUserResponseAsync(string userId, int questionId, int answerId)
         {

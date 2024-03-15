@@ -44,7 +44,8 @@
             {
                 <div class="form-check">
                     <input class="form-check-input @active" id="answer-@answer.Id" type="radio" name="answerGroup-@currentQuestion.Id"
-                           value="@answer.Id" @onclick="() => SelectAnswer(answer)"/>
+                           value="@answer.Id" @onclick="() => SelectAnswer(answer)"
+                           checked="@(selectedAnswers.ContainsKey(currentQuestion.Id) && selectedAnswers[currentQuestion.Id] == answer.Id)" />
                     <label class="form-check-label @active @(isSubmitted ? (answer.IsCorrectAnswer ? "text-success" : "text-danger") : "")" 
                     for="answer-@answer.Id">@answer.Answer</label>
                 </div>
@@ -66,14 +67,22 @@
             {
                 <button class="btn btn-outline-success" @onclick="SubmitAnswer">Skicka in svar</button>
             }
-            else if (isSubmitted && currentSubcategoryIndex < subCategories.Count() - 1)
-            {
-                <button class="btn btn-outline-primary" @onclick="@(async () => await NextQuestion())">Nästa</button>
-            }
             else
             {
-                <button class="btn btn-outline-primary" @onclick="@(async () => await NextQuestion())">Visa resultat</button>
+                // Kontrollera om det är den sista frågan
+                bool isLastQuestion = currentSubCategory.Questions.LastOrDefault() == currentQuestion &&
+                subCategories.LastOrDefault() == currentSubCategory;
+
+                if (!isLastQuestion)
+                {
+                    <button class="btn btn-outline-primary" @onclick="@(async () => await NextQuestion())">Nästa</button>
+                }
+                else
+                {
+                    <button class="btn btn-outline-primary" @onclick="ShowResult">Visa resultat</button>
+                }
             }
+
             <span></span> <!-- Placeholder for alignment -->
 
         </div>
@@ -158,6 +167,7 @@
     private string labelStyle = "";
     private ClaimsPrincipal? user;
     private List<SubcategoryModel>? subCategories;
+    private List<SubcategoryModel>? filteredSubCategories = new();
     private List<QuestionModel>? questions;
     private List<AnswerModel>? answers;
     private Dictionary<int, int> selectedAnswers = new();
@@ -173,13 +183,13 @@
     private double percentageCorrect;
     private bool showResults = false;
     private bool isSubmitted = false;
+    private bool isNotUpdated = false;
     private bool isLoaded = false;
     private bool isPassed;
 
 
     protected override async Task OnInitializedAsync()
     {
-
         segment = await segmentRepository.GetByIdAsync(SegmentId);
 
         // Hämta alla subkategorier för det angivna segmentet.
@@ -210,6 +220,7 @@
 
         await LoadAnswersForCurrentQuestion();
         currentSubcategoryIndex = subCategories.FindIndex(sc => sc.Id == SubcategoryId);
+
         isLoaded = !isLoaded;
 
         StateHasChanged();
@@ -221,6 +232,19 @@
         {
             answers = await answerRepository.GetAnswersByQuestionIdAsync(currentQuestion.Id);
 
+            // se ifall användaren har rätt svar på frågan. Om den ha det så visa resultat
+            UserResponseModel existingResponse = await userResponseRepository.FindByUserAndQuestionAsync(userId, currentQuestion.Id);
+            var responseAnswer = await answerRepository.GetByIdAsync((int)(existingResponse.AnswerId));
+
+            if (existingResponse.IsCorrect)
+            {
+                // Checka det valda alternativet som användaren valde
+                SelectAnswer(responseAnswer);
+                isNotUpdated = false;
+                isSubmitted = !isSubmitted;
+                SubmitAnswer();
+            }
+
             StateHasChanged();
         }
     }
@@ -231,6 +255,7 @@
         if (currentQuestion != null)
         {
             selectedAnswers[currentQuestion.Id] = selectedAnswer.Id;
+            StateHasChanged();
         }
     }
 
@@ -280,7 +305,11 @@
         {
             existingResponse.IsCorrect = selectedAnswer.IsCorrectAnswer;
             existingResponse.AnswerId = selectedAnswer.Id;
-            await userResponseRepository.UpdateAsync(existingResponse);
+            if (isNotUpdated)
+            {
+                await userResponseRepository.UpdateAsync(existingResponse);
+            }
+            isNotUpdated = true;
         }
         else
         {
@@ -299,62 +328,71 @@
 
     private async Task NextQuestion()
     {
-        // Finns det questions kvar? 
-
         int questionIndex = currentSubCategory.Questions.IndexOf(currentQuestion);
-
-        if(currentSubCategory.Questions.Count() > questionIndex + 1)
+        if (questionIndex + 1 < currentSubCategory.Questions.Count)
         {
-            // Det finns en fråga kvar
+            // Gå till nästa fråga inom samma subkategori
             currentQuestion = currentSubCategory.Questions[questionIndex + 1];
-            selectedAnswer = null;
-            isSubmitted = false;
-            explanation = null;
-            await LoadAnswersForCurrentQuestion();
-            StateHasChanged();
+        }
+        else if (currentSubcategoryIndex + 1 < subCategories.Count)
+        {
+            // Gå till första frågan i nästa subkategori
+            currentSubcategoryIndex++;
+            currentSubCategory = subCategories[currentSubcategoryIndex];
+            currentQuestion = currentSubCategory.Questions.FirstOrDefault();
         }
         else
         {
-            // Kolla så det finns en nästa subkategori!
-            if (currentSubcategoryIndex + 1 < subCategories.Count)
-            {
-                NavigationManager.NavigateTo($"/question/{SegmentId}/{SubcategoryId + 1}"); // TODO: Det ska inte loopa
-            }
-            else
-            {
-                ShowResult();
-            }
+            // Alla frågor har besvarats, visa resultat
+            await ShowResult();
+            return;
         }
+
+        // Återställ för nästa fråga
+        selectedAnswer = null;
+        isSubmitted = false;
+        explanation = null;
+        active = "";
+        await LoadAnswersForCurrentQuestion();
+        StateHasChanged();
     }
 
     private async Task ShowResult()
     {
+        // subCategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
+        isLoaded = true;
+
         await CalculateResults();
+
+        // Visa resultaten
+        showResults = true;
+        StateHasChanged();
     }
 
     private async Task CalculateResults()
     {
-        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-        var user = authState.User;
-        var userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+        await LoadUser();
 
-        // Se till att vi har en giltig användar-ID.
+        // // Se till att vi har en giltig användar-ID.
         if (string.IsNullOrEmpty(userId))
         {
             throw new InvalidOperationException("Kunde inte hitta användarens Id.");
         }
 
+        // Ladda om alla subkategorier för att säkerställa att vi har en komplett uppsättning.
+        subCategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
+
         // Hämta alla användarsvar för nuvarande segment.
-        var userResponses = await userResponseRepository.GetByUserIdAndSegmentIdAsync(userId, SegmentId);
+        var userResponses = await userResponseRepository.GetByUserIdAndSegmentIdAsync(userId, SegmentId); // Fel i kod, visar 1 i count
 
         // Räkna det totala antalet frågor och antalet rätta svar.
-        int totalQuestions = subCategories.SelectMany(sc => sc.Questions).Count();
+        int totalQuestions = subCategories.SelectMany(sc => sc.Questions).Count(); // Visar 1
         int correctAnswers = userResponses.Count(ur => ur.IsCorrect);
 
         // Beräkna procentandelen av rätta svar.
         percentageCorrect = (int)(((double)correctAnswers / totalQuestions) * 100);
         isPassed = percentageCorrect >= 80;
-        showResults = !showResults;
+        showResults = true;
 
         // Uppdatera komponenten med nya data.
         StateHasChanged();
