@@ -1,9 +1,11 @@
 ﻿@page "/Admin"
 @using Microsoft.AspNetCore.Authorization
+@using Microsoft.EntityFrameworkCore
 @using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.Repository
 @using ValhallaVaultCyberAwareness.DAL.Uow
 @using ValhallaVaultCyberAwareness.DAL.DbModels
+@using ValhallaVaultCyberAwareness.Data
 @inject IUow UnitOfWork
 @attribute [Authorize]
 @inject NavigationManager navigationManager
@@ -12,6 +14,8 @@
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
 @inject IAdminService adminService
+@inject IJSRuntime JSruntime
+@inject ApplicationDbContext dbContext
 
 <h3>Category Management</h3>
 
@@ -21,6 +25,7 @@
 }
 else
 {
+    LogToConsole();
     <table class="table text-light">
         <thead>
             <tr>
@@ -241,6 +246,20 @@ else
 }
 
 @code {
+    //Log to console - Api call counter
+    private async Task LogToConsole()
+    {
+        var counts = await dbContext.Counts.ToListAsync();
+        foreach(var count in counts)
+        {
+            Console.Write($"{count.Type} - has been called a total number of {count.Count} times!");
+        }
+
+        await JSRuntime.InvokeVoidAsync("blazorConsolLog", message);
+
+
+    }
+
 
     private IEnumerable<CategoryModel> categories;
     private CategoryModel newCategory = new CategoryModel();

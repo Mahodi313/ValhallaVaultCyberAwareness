@@ -17,6 +17,7 @@
 @inject IUserResponseService userResponseService
 
 
+
 @if(category == null)
 {
 <h2>Error.. Page not found</h2>
@@ -186,6 +187,7 @@
     private ClaimsPrincipal? currentUser;
     bool isDone { get; set; }
     bool isAccess { get; set; }
+
 
 
     protected override async Task OnInitializedAsync()

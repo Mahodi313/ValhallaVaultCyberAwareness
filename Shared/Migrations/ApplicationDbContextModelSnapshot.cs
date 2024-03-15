@@ -155,6 +155,26 @@ namespace ValhallaVaultCyberAwareness.DAL.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("ValhallaVaultCyberAwareness.DAL.Data.MiddlewareModel.CountMiddlewareModel", b =>
+                {
+                    b.Property<int>("CountId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("CountId"));
+
+                    b.Property<int>("Count")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("CountId");
+
+                    b.ToTable("Counts");
+                });
+
             modelBuilder.Entity("ValhallaVaultCyberAwareness.DAL.DbModels.AnswerModel", b =>
                 {
                     b.Property<int>("Id")

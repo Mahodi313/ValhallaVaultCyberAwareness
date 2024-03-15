@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ValhallaVaultCyberAwareness.API.Middleware;
 using ValhallaVaultCyberAwareness.App.Services;
 using ValhallaVaultCyberAwareness.Components;
 using ValhallaVaultCyberAwareness.Components.Account;
@@ -158,6 +159,7 @@ app.UseAuthorization();
 app.UseAntiforgery();
 app.MapControllers();
 app.UseCors("AllowAll");
+app.UseCountingMiddleware();
 
 
 await CreateRolesAndUsersAsync(app.Services);

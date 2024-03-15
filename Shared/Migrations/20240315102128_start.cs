@@ -67,6 +67,20 @@ namespace ValhallaVaultCyberAwareness.DAL.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "Counts",
+                columns: table => new
+                {
+                    CountId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Count = table.Column<int>(type: "int", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Counts", x => x.CountId);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "AspNetRoleClaims",
                 columns: table => new
                 {
@@ -692,6 +706,9 @@ namespace ValhallaVaultCyberAwareness.DAL.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "Counts");
 
             migrationBuilder.DropTable(
                 name: "UserResponses");

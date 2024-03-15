@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
+using ValhallaVaultCyberAwareness.DAL.Data.MiddlewareModel;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
 
 namespace ValhallaVaultCyberAwareness.Data
@@ -13,6 +14,7 @@ namespace ValhallaVaultCyberAwareness.Data
         public DbSet<QuestionModel> Questions { get; set; }
         public DbSet<AnswerModel> Answers { get; set; }
         public DbSet<UserResponseModel> UserResponses { get; set; }
+        public DbSet<CountMiddlewareModel> Counts { get; set; }
 
 
 
