@@ -41,7 +41,6 @@ namespace ValhallaVaultCyberAwareness.App.Services
 
         // Implement the same pattern for Segments, Subcategories, and Questions
         // Example for Segments:
-
         public async Task<IEnumerable<SegmentModel>> GetAllSegmentsAsync()
         {
             return await _unitOfWork.SegmentRepo.GetAllAsync();
@@ -114,13 +113,10 @@ namespace ValhallaVaultCyberAwareness.App.Services
 
         public async Task AddAnswerAsync(AnswerModel answer)
         {
-            //await _unitOfWork.AnswerRepo.CreateAsync(answer);
-
             if (answer.Id == 0)
             {
                 await _unitOfWork.AnswerRepo.CreateAsync(answer);
                 await _unitOfWork.SaveChanges();
-
             }
         }
 
@@ -135,11 +131,6 @@ namespace ValhallaVaultCyberAwareness.App.Services
             await _unitOfWork.AnswerRepo.DeleteAsync(answerId);
             await _unitOfWork.SaveChanges();
         }
-
-
-
-
-
     }
 }
 

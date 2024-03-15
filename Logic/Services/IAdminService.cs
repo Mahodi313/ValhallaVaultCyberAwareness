@@ -15,19 +15,16 @@ namespace ValhallaVaultCyberAwareness.App.Services
         Task UpdateCategoryAsync(CategoryModel category);
         Task DeleteCategoryAsync(int categoryId);
         // Segment methods
-
         Task AddSegmentAsync(SegmentModel segment);
         Task UpdateSegmentAsync(SegmentModel segment);
         Task DeleteSegmentAsync(int segmentId);
 
         // Subcategory methods
-
         Task AddSubcategoryAsync(SubcategoryModel subcategory);
         Task UpdateSubcategoryAsync(SubcategoryModel subcategory);
         Task DeleteSubcategoryAsync(int subcategoryId);
 
         // Question methods
-
         Task AddQuestionAsync(QuestionModel question);
         Task UpdateQuestionAsync(QuestionModel question);
         Task DeleteQuestionAsync(int questionId);

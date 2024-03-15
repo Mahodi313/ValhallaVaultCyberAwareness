@@ -40,7 +40,6 @@ namespace ValhallaVaultCyberAwareness.App.Services
                 return false;
             }
 
-            // Användare har tillåtelse att få tillgång till denna fråga
             return true;
         }
     }
