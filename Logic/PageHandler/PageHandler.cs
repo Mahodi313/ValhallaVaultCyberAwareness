@@ -1,5 +1,7 @@
 ﻿namespace ValhallaVaultCyberAwareness.App.PageHandler
 {
+
+    //Static props to help the navbar component navigate
     public static class PageHandler
     {
         public static int? CategoryId { get; set; }

@@ -54,9 +54,9 @@
                             <div class="mar">
                                 <div class="categories">
 
-                                    <!--Visar en checkbox icon om segmentet är avklarat-->
                                     @if (isDone)
                                     {
+                                        <!--Shows a check icon when the segment is done 100%-->
                                         if(Comp == 100)
                                         {
                                             <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
@@ -221,6 +221,7 @@
         }
     }
 
+    //Medhis logik från homepage
     private async Task<int> CalculateSegmentCompletion(SegmentViewModel segment)
     {
         return await userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);

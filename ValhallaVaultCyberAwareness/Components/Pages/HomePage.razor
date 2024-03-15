@@ -29,18 +29,18 @@
 <div class="container-fluid">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <span class="navbar-brand mb-0 h1 text-dark">Valhalla Home</span>
+            <span class="navbar-brand mb-0 h1 text-dark">Valhalla Hem</span>
             <div class="navbar-nav ml-auto">
                 <AuthorizeView Roles="Admin">
                     <Authorized>
-                        <a class="btn btn-outline-dark me-2" href="/Admin">Admin Section</a>
+                        <a class="btn btn-outline-dark me-2" href="/Admin">Admin sida</a>
                     </Authorized>
                 </AuthorizeView>
-                <a class="btn btn-outline-dark ms-2" href="/Userpage">Edit Account</a>
+                <a class="btn btn-outline-dark ms-2" href="/Userpage">Konto inställningar</a>
                 <form class="d-inline-block" action="Account/Logout" method="post">
                     <AntiforgeryToken />
                     <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                    <button type="submit" class="btn btn-outline-dark ms-2">Log out</button>
+                    <button type="submit" class="btn btn-outline-dark ms-2">Logga ut</button>
                 </form>
             </div>
         </div>
@@ -48,7 +48,7 @@
 
     <main class="container">
         <div class="search-container text-center my-4">
-            <input class="form-control search-input" type="text" placeholder="Search categories..." @bind="searchTerm" @oninput="OnSearchInput" />
+            <input class="form-control search-input" type="text" placeholder="Hitta kategorier..." @bind="searchTerm" @oninput="OnSearchInput" />
         </div>
         <div class="row justify-content-center">
             @foreach (var category in categories)
