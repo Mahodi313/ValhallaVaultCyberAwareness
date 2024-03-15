@@ -330,5 +330,13 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             return _context.UserResponses
                 .FirstOrDefault(ur => ur.UserId == userId && ur.QuestionId == questionId && ur.AnswerId == answerId);
         }
+
+        public async Task<SegmentModel?> GetSegmentById(int segmentId)
+        {
+            var segment = await _context.Segments
+                .Include(s => s.Subcategorys)
+                .FirstOrDefaultAsync(s => s.Id == segmentId);
+            return segment;
+        }
     }
 }

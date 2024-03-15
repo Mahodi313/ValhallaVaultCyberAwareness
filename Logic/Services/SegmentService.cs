@@ -60,11 +60,15 @@ namespace ValhallaVaultCyberAwareness.App.Services
             }
 
 
-
-
-            isAccess = validate[segId];
-
-            return isAccess;
+            try
+            {
+                isAccess = validate[segId];
+                return isAccess;
+            }
+            catch
+            {
+                return false;
+            }
         }
 
 

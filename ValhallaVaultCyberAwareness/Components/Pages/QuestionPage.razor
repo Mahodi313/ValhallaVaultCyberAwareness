@@ -1,6 +1,7 @@
 ﻿@page "/question/{SegmentId:int}/{SubcategoryId:int}"
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
+@using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.Repository
 @inject IRepository<UserResponseModel> userResponseRepository
@@ -8,9 +9,12 @@
 @inject IRepository<SubcategoryModel> subcategoryRepository
 @inject IRepository<QuestionModel> questionRepository
 @inject IRepository<AnswerModel> answerRepository
+@inject ISubcategoryService subcategoryService
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @rendermode InteractiveServer
+
+@attribute [Authorize]
 
 <PageTitle>Quiz - segment.Name</PageTitle>
 
@@ -172,8 +176,56 @@
 
 
 
+    /*
+    * Logik för restriction för questions sidan
+    * Så här ser path:en ut: "/question/{SegmentId:int}/{SubcategoryId:int}"
+    *
+    * Syfte: Att förhindra åtkomst via URL
+    *
+    * Varför?:
+    * När man ska ta sig in i ett segment så måste man klara av det föregående segmentet med
+    * 80% rätt eller mer. Man börjar alltså med Del 1, och när det är avklarat kan man
+    * gå vidare till Del 2, osv. Man ska inte kunna börja med Del 2 ifall man inte har gjort klart
+    * Del 1. Därför får man inte ta sig in till en fråga som tillhör ett segment man inte har tillgång till
+    *
+    * Att tänka på:
+    * - Det finns kategorier som innehåller segment.
+    * - Varje segment innehåller flera subkategorier
+    * - varje subkategori innehåller en fråga
+    * - Varje fråga innehåller flera svar
+    *
+    * Logik:
+    * 1. Ifall man söker sig till sidan in via URL ska man se över att frågan finns i subkategorin, som finns i segmentet
+    * 2. Ifall den inte ens finns i segmentet ska man tas till "/Home"
+    *
+    * 3. Ifall subkategorin finns i segmentet finns så ska man gå vidare till nästa steg
+    *
+    * 4. Nu behöver man på något sätt se ifall man har påbörjat det föregående segmentet i kategorin
+    *      - IFALL man inte har gjort det, Då ska man tas till "/Home"
+    *      - Annars kan man gå vidare till nästa steg
+    * 5. Nu behöver man på något sätt se över ifall man har klarat av 80% eller mer av det föregående segmentet.
+    * 6. Ifall man inte har klarat 80% av det föregående segmentet så ska man tas till "/Home"
+    * 7. Ifall man har klarat 80% av det föregående segmentet så kan man gå vidare till nästa steg
+    * 
+    * 8. I det här sista steget skickas användaren automatiskt till första frågan av segmentet
+    *
+     *
+     */
+
+
+
+
     protected override async Task OnInitializedAsync()
     {
+        await LoadUser();
+
+        var canAccess = await subcategoryService.IsOpenSubcategory(SegmentId, SubcategoryId, userId);
+
+        if (!canAccess)
+        {
+            NavigationManager.NavigateTo("/Home");
+            return;
+        }
         segment = await segmentRepository.GetByIdAsync(SegmentId);
 
         // Hämta alla subkategorier för det angivna segmentet.
@@ -183,17 +235,11 @@
         currentQuestion = currentSubCategory.Questions[0];
 
         await LoadAnswersForCurrentQuestion();
-        await LoadUser();
+        // await LoadUser();
         currentSubcategoryIndex = subCategories.FindIndex(sc => sc.Id == SubcategoryId);
         isLoaded = !isLoaded;
 
         StateHasChanged();
-    }
-
-    private void UpdateCurrentIndex(int newIndex)
-    {
-        // currentSubCategoryIndex = newIndex;
-        // sessionStorage.SetItem("CurrentSubCategoryIndex", currentSubCategoryIndex);
     }
 
     private async Task LoadAnswersForCurrentQuestion()

@@ -1,11 +1,18 @@
 ﻿@page "/subcategory/{SegmentId:int}/{SubcategoryId:int}"
 @using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
 @using ValhallaVaultCyberAwareness.App.PageHandler
+@using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.Repository
 @inject IRepository<SubcategoryModel> subcategoryRepository
 @inject IRepository<SegmentModel> segmentRepository
 @inject IRepository<CategoryModel> categoryRepository
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@* Ta Bort? *@
+@inject ISegmentService segmentService 
+@inject ISubcategoryService subcategoryService
+@inject NavigationManager NavigationManager
 
 @attribute [Authorize]
 
@@ -62,6 +69,9 @@ else if ((category != null && segment != null) && subcategories != null && subca
     [Parameter]
     public int SubcategoryId { get; set; }
 
+    private string errorMessage = "";
+    private ClaimsPrincipal? user;
+    private string? userId;
     private List<SubcategoryModel>? subcategories;
     private SubcategoryModel? subcategory;
     private SegmentModel? segment;
@@ -71,6 +81,16 @@ else if ((category != null && segment != null) && subcategories != null && subca
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadUser();
+
+        var canAccess = await subcategoryService.IsOpenSubcategory(SegmentId, SubcategoryId, userId);
+
+        if (!canAccess)
+        {
+            NavigationManager.NavigateTo("/Home");
+            return;
+        }
+
         PageHandler.SegmentId = SegmentId;
 
         subcategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
@@ -89,6 +109,30 @@ else if ((category != null && segment != null) && subcategories != null && subca
 
         PageHandler.WentToSubcategory = true;
         PageHandler.SubcategoryIdHolder = SubcategoryId;
+    }
+
+    private async Task LoadUser()
+    {
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
+
+        if (user.Identity != null)
+        {
+
+            if (!user.Identity.IsAuthenticated)
+            {
+                errorMessage = "Användaren är inte autentiserad.";
+                return;
+            }
+
+            userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+            if (string.IsNullOrEmpty(userId))
+            {
+                errorMessage = "Kunde inte hitta användarens Id.";
+                return;
+            }
+        }
     }
 
     private string GetPreviousSubcategoryUrl()
@@ -111,5 +155,10 @@ else if ((category != null && segment != null) && subcategories != null && subca
         return $"/subcategory/{SegmentId}/{subcategories[nextIndex].Id}";
     }
 
-    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+
+    }
 }
