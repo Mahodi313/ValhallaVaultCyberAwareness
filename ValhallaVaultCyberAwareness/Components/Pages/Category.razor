@@ -15,6 +15,7 @@
 @inject IViewModelService service
 @inject IAuthService authService
 @inject IUserResponseService userResponseService
+@inject NavigationManager NavigationManager
 
 
 @if(category == null)
@@ -187,6 +188,11 @@
         if (categories.Any())
         {
             category = (CategoryViewModel)categories.FirstOrDefault(c => c.Id == Id);
+            if (category == null)
+            {
+                NavigationManager.NavigateTo("/Home");
+                return;
+            }
             segments = category.Segments.Where(s => s.CategoryId == category.Id).ToList();
             subcategories = category.Segments.SelectMany(s => s.Subcategories).ToList();
 

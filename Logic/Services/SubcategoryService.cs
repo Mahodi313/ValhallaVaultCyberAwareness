@@ -18,36 +18,45 @@ namespace ValhallaVaultCyberAwareness.App.Services
 
         public async Task<bool> IsOpenSubcategory(int segmentId, int subcategoryId, string userId)
         {
-            var subcategory = await _SubcategoryRepository.GetByIdAsync(subcategoryId);
-            if (subcategory == null || subcategory.SegmentId != segmentId)
+            try
             {
-                return false;
-            }
 
-            var segment = await _SegmentRepository.GetByIdAsync(segmentId);
-            var firstSegmentId = await GetFirstSegmentIdForCategory(segment.CategoryId);
-            if (segmentId == firstSegmentId)
-            {
-                return true;
-            }
 
-            int? previousSegmentId = await GetPreviousSegmentId(segmentId, segment.CategoryId);
-
-            if (previousSegmentId != null)
-            {
-                var completionRate = await CalculateCompletionRate(previousSegmentId.Value, userId);
-                if (completionRate < 80)
+                var subcategory = await _SubcategoryRepository.GetByIdAsync(subcategoryId);
+                if (subcategory == null || subcategory.SegmentId != segmentId)
                 {
                     return false;
+                }
+
+                var segment = await _SegmentRepository.GetByIdAsync(segmentId);
+                var firstSegmentId = await GetFirstSegmentIdForCategory(segment.CategoryId);
+                if (segmentId == firstSegmentId)
+                {
+                    return true;
+                }
+
+                int? previousSegmentId = await GetPreviousSegmentId(segmentId, segment.CategoryId);
+
+                if (previousSegmentId != null)
+                {
+                    var completionRate = await CalculateCompletionRate(previousSegmentId.Value, userId);
+                    if (completionRate < 80)
+                    {
+                        return false;
+                    }
+                    else
+                    {
+                        return true;
+                    }
                 }
                 else
                 {
                     return true;
                 }
             }
-            else
+            catch
             {
-                return true;
+                return false;
             }
         }
 

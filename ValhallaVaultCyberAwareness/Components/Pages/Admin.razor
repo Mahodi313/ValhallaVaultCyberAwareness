@@ -13,7 +13,8 @@
 @attribute [Authorize(Roles = "Admin")]
 @inject IAdminService adminService
 
-<h3>Category Management</h3>
+
+<h3>Kategorihantering</h3>
 
 @if (categories == null)
 {
@@ -42,7 +43,7 @@ else
         </tbody>
     </table>
 
-    <button @onclick="ShowAddCategoryForm">Skapa ny kategori</button>
+    <button @onclick="ShowAddCategoryForm">Skapa nytt kategori</button>
 
     @if (showAddForm)
     {
@@ -67,7 +68,7 @@ else
         <button @onclick="() => showConfirmDelete = false">Avbryt</button>
     }
 }
-<h4>Segment Management</h4>
+<h4>Segmenthantering</h4>
 @if (segments == null)
 {
     <p>Laddar segment...</p>
@@ -125,7 +126,7 @@ else
     <button @onclick="() => showConfirmDeleteSegment = false">Avbryt</button>
 }
 
-<h4>Subcategory Management</h4>
+<h4>Subkategorihantering</h4>
 @if (subcategories == null)
 {
     <p>Laddar subkategorier...</p>
@@ -182,7 +183,7 @@ else
     <button @onclick="() => DeleteSubcategory(deleteSubcategoryId)">Bekräfta borttagning</button>
     <button @onclick="() => showConfirmDeleteSubcategory = false">Avbryt</button>
 }
-<h4>Question Management</h4>
+<h4>Frågehantering</h4>
 @if (questions == null)
 {
     <p>Laddar frågor...</p>
