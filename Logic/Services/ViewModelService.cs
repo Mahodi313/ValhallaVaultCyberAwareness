@@ -55,10 +55,6 @@ namespace ValhallaVaultCyberAwareness.App.Services
 
                 }).ToList();
 
-
-
-
-
                 return ViewCategoriesToReturn;
 
             }

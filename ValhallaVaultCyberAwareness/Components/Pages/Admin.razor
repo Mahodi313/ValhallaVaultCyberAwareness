@@ -238,10 +238,8 @@ else
 
         <button type="button" @onclick="SubmitAddQuestion">Add Question</button>
     </EditForm>
-  @*   <button type="button" @onclick="AddNewAnswer">Add Answer</button> *@
     <button type="button" @onclick="AddAnswerAsync">Add Answer</button>
 }
-
 
 @if (showEditQuestionForm)
 {
@@ -252,30 +250,6 @@ else
     </EditForm>
 }
 
-@* @if (showAddQuestionForm || showEditQuestionForm)
-{
-    <EditForm Model="@((showAddQuestionForm) ? newQuestion : selectedQuestion)" OnValidSubmit="@((showAddQuestionForm) ? SubmitAddQuestion : SubmitEditQuestion)">
-        <InputText @bind-Value="@((showAddQuestionForm) ? newQuestion.Title : selectedQuestion.Title)" />
-        <InputNumber @bind-Value="@((showAddQuestionForm) ? newQuestion.SubcategoryId : selectedQuestion.SubcategoryId)" />
-
-        @for (int i = 0; i < ((showAddQuestionForm) ? newQuestion.Answers.Count : selectedQuestion.Answers.Count); i++)
-        {
-            <div>
-                <InputText @bind-Value="@((showAddQuestionForm) ? newQuestion.Answers[i].Answer : selectedQuestion.Answers[i].Answer)" />
-                <InputCheckbox @bind-Value="@((showAddQuestionForm) ? newQuestion.Answers[i].IsCorrectAnswer : selectedQuestion.Answers[i].IsCorrectAnswer)" />
-                <!-- Additional fields as required -->
-            </div>
-        }
-
-        @if (((showAddQuestionForm) ? newQuestion.Answers.Count : selectedQuestion.Answers.Count) < 3)
-        {
-            <button @onclick="AddNewAnswer">Add Answer</button>
-        }
-
-        <button type="submit">@((showAddQuestionForm) ? "Add Question" : "Update Question")</button>
-    </EditForm>
-} *@
-
 @if (showConfirmDeleteQuestion)
 {
     <p>Are you sure you want to delete this question?</p>
@@ -283,12 +257,8 @@ else
     <button @onclick="() => showConfirmDeleteQuestion = false">Cancel</button>
 }
 
-
-
 @code {
-
-    
-    
+  
     private IEnumerable<AnswerModel> answers; 
 
     private IEnumerable<CategoryModel> categories;
@@ -335,7 +305,6 @@ else
         questions = await adminService.GetAllQuestionsAsync();
     }
 
-
     //CATEGORY
     private async Task SubmitAddCategory()
     {
@@ -370,7 +339,6 @@ else
         newCategory = new CategoryModel();
         showAddForm = true;
     }
-
 
     //SEGMENT
     private async Task SubmitAddSegment()
@@ -409,7 +377,6 @@ else
     }
 
     //SUBCATEGORY
-
     private async Task SubmitAddSubcategory()
     {
         await adminService.AddSubcategoryAsync(newSubcategory);
@@ -514,18 +481,6 @@ else
         deleteQuestionId = questionId;
         showConfirmDeleteQuestion = true;
     }
-    // private void AddNewAnswer()
-    // {
-    //     var answerModel = new AnswerModel();
-    //     if (showAddQuestionForm)
-    //     {
-    //         newQuestion.Answers.Add(answerModel);
-    //     }
-    //     else if (showEditQuestionForm)
-    //     {
-    //         selectedQuestion.Answers.Add(answerModel);
-    //     }
-    // }
 
     private void AddAnswerAsync()
     {

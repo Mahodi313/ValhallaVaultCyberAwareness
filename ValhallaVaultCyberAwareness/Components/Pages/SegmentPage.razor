@@ -13,8 +13,6 @@
 @inject IUserResponseService userResponseService
 @inject NavigationManager NavigationManager
 @inject ISegmentService segmentService
-@* @rendermode InteractiveServer 
- *@
    
 @if (segment == null)
 {
@@ -44,8 +42,6 @@
 
                     <hr />
 
-                   
-
                 </div>
                 <div class="col-7 d-flex flex-column justify-content-around">
 
@@ -56,29 +52,13 @@
                         </div>
                     }
 
-
-
                 </div>
             </div>
-        </div>
-        
-
-
-
+        </div>      
     </div>
     <br />
     <br />
 }
-
-
-<!-- Information about the segment -->
-
-<!-- View of the subcategories included in the segment -->
-
-<!-- Beeing able to choose a subcategory -->
-
-<!-- Study material about the segment -->
-
 
 @code {
 
@@ -95,8 +75,6 @@
     private ClaimsPrincipal? currentUser;
     bool isDone { get; set; }
 
-
-
     protected override async Task OnInitializedAsync()
     {
         PageHandler.CategoryId = CatId;
@@ -108,7 +86,6 @@
 
         }
         
-
         isAccess = await segmentService.IsOpenSegment(CatId, SegId);
 
         if (!isAccess)
@@ -127,13 +104,8 @@
         }
     }
 
-    
-
     protected override void OnInitialized()
     {
-        base.OnInitialized();
-
-        
+        base.OnInitialized();      
     }
-    
 }
