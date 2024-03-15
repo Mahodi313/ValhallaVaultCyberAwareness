@@ -63,7 +63,7 @@
                             <div class="card-body">
                                 @foreach (var segment in category.Segments)
                                 {
-                                    int segmentCompletion = CalculateSegmentCompletion(segment);
+                                    int segmentCompletion = segmentCompletions.ContainsKey(segment.Id) ? segmentCompletions[segment.Id] : 0;
                                     <div class="segment-info mb-2">
                                         <p class="segment-name">@segment.Name</p>
                                         <div class="progress">
@@ -86,6 +86,7 @@
     private List<CategoryModel> categories = new();
     private List<UserResponseModel> userResponses = new();
     private string searchTerm = "";
+    private Dictionary<int, int> segmentCompletions = new Dictionary<int, int>();
     private string? currentUrl;
     private ClaimsPrincipal? currentUser;
 
@@ -106,6 +107,18 @@
             }
         }
 
+        await CalculateSegmentCompletions();
+    }
+
+    private async Task CalculateSegmentCompletions()
+    {
+        foreach (var category in categories)
+        {
+            foreach (var segment in category.Segments)
+            {
+                segmentCompletions[segment.Id] = await CalculateSegmentCompletion(segment);
+            }
+        }
     }
 
     // I took the already implemented logout function and added it here
@@ -136,9 +149,9 @@
         return loadedCategories;
     }
 
-    private int CalculateSegmentCompletion(SegmentModel segment)
+    private async Task<int> CalculateSegmentCompletion(SegmentModel segment)
     {
-        int precentage = userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
+        int precentage = await userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
 
         return precentage;
     }
