@@ -25,7 +25,6 @@
 }
 else
 {
-    LogToConsole();
     <table class="table text-light">
         <thead>
             <tr>
@@ -247,18 +246,20 @@ else
 
 @code {
     //Log to console - Api call counter
-    private async Task LogToConsole()
-    {
-        var counts = await dbContext.Counts.ToListAsync();
-        foreach(var count in counts)
-        {
-            Console.Write($"{count.Type} - has been called a total number of {count.Count} times!");
-        }
+    // private async Task LogToConsole()
+    // {
+    //     await JSRuntime.InvokeVoidAsync(console.Log, message);
 
-        await JSRuntime.InvokeVoidAsync("blazorConsolLog", message);
+    // }
 
-
-    }
+    // private async Task<string> InfoToLog()
+    // {
+    //     var counts = await dbContext.Counts.ToListAsync();
+    //     foreach (var count in counts)
+    //     {
+    //         Console.Write($"{count.Type} - has been called a total number of {count.Count} times!");
+    //     }
+    // }
 
 
     private IEnumerable<CategoryModel> categories;
@@ -276,7 +277,7 @@ else
     private bool showEditSegmentForm = false;
     private bool showConfirmDeleteSegment = false;
     private int deleteSegmentId;
-    
+
 
     // Subsegment Variables
     private IEnumerable<SubcategoryModel> subcategories;
@@ -286,7 +287,7 @@ else
     private bool showEditSubcategoryForm = false;
     private bool showConfirmDeleteSubcategory = false;
     private int deleteSubcategoryId;
-    
+
 
     // Question Variables
     private IEnumerable<QuestionModel> questions;
@@ -303,6 +304,8 @@ else
         segments = await adminService.GetAllSegmentsAsync();
         subcategories = await adminService.GetAllSubcategoriesAsync();
         questions = await adminService.GetAllQuestionsAsync();
+
+        //LogToConsole();
     }
 
 
