@@ -27,10 +27,15 @@
     }
 </style>
 
+<PageTitle>Valhalla Home</PageTitle>
+
 <div class="container-fluid">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <span class="navbar-brand mb-0 h1 text-dark">Valhalla Hem</span>
+            <span class="navbar-brand mb-0 h1 text-dark d-flex align-items-center">
+                <img src="Images/logoImg.png" alt="Your Logo" height="50" class="mr-2">
+                <span class="ms-2 fw-bold">Valhalla Hem</span>
+            </span>
             <div class="navbar-nav ml-auto">
                 <AuthorizeView Roles="Admin">
                     <Authorized>
