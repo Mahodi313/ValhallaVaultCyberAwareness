@@ -123,6 +123,10 @@ h1:focus {
     border-radius:15px;
 }
 
+.navbar-brand img {
+    border-radius: 35%;
+}
+
 
 /*category page*/
 .categories {
