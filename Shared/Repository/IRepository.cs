@@ -12,23 +12,15 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         public Task<List<T>> GetAllAsync(params Expression<Func<T, object>>[] includes);
         //public Task<Dictionary<string, object>> GetAllMetaAsync<T>(T entity) where T : class;
         public Task<T> GetByIdAsync(int id);
-        public Task<T> GetByIdAsync(string id);
         public Task UpdateAsync(T entity);
 
         // QuestionRepository
-        Task<List<QuestionModel>> GetQuestionsBySubcategoryAsync(int subcategoryId);
         Task<List<AnswerModel>> GetAnswerForQuestionAsync(int questionId);
-        Task<List<UserResponseModel>> GetUserResponsesForQuestionAsync(int questionId);
         Task<int> GetTotalQuestionsInSegmentAsync(int segmentId);
         int GetCorrectAnswersCount(int segmentId, List<UserResponseModel> userResponses);
 
         // AnswerRepository
         Task<List<AnswerModel>> GetAnswersByQuestionIdAsync(int questionId);
-        Task<List<AnswerModel>> GetCorrectAnswersByQuestionIdAsync(int questionId);
-
-        // SubcategoryRepository
-        Task<List<SubcategoryModel>> GetSubcategoryBySegmentAsync(int segmentId);
-        Task<SegmentModel?> GetSegmentById(int segmentId);
 
         //Category Repository
         Task<List<CategoryModel>> GetCategoryIncludeSegmentAsync();
@@ -39,7 +31,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         Task<List<SubcategoryModel>> GetSubcategoriesBySegmentAsync(int segmentId);
         Task<UserResponseModel> FindByUserAndQuestionAsync(string userId, int questionId);
         Task<IEnumerable<UserResponseModel>> GetByUserIdAndSegmentIdAsync(string userId, int segmentId);
-        Task<UserResponseModel?> GetUserResponseAsync(string userId, int questionId, int answerId);
         UserResponseModel? GetUserResponse(string userId, int questionId, int answerId);
     }
 }

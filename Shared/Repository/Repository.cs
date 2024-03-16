@@ -77,16 +77,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             return entity;
         }
 
-        public async Task<T> GetByIdAsync(string id)
-        {
-            var entity = await _dbSet.FindAsync(id);
-            if (entity == null)
-            {
-                return null;
-            }
-            return entity;
-        }
-
         /// <summary>
         /// Asynchronously updates an existing <see cref="T"/> entity in the database with the provided question details.
         /// </summary>
@@ -147,27 +137,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
 
         }
 
-        /// <summary>
-        /// Asynchronously retrieves all questions entities for a specified subcategory ID.
-        /// </summary>
-        /// <param name="subcategoryId">The ID of the subcategory for which questions are to be retrieved.</param>
-        /// <returns>A list of <see cref="QuestionModel"/> objects that belong to the specified subcategory.</returns>
-        public async Task<List<QuestionModel>> GetQuestionsBySubcategoryAsync(int subcategoryId)
-        {
-            var question = await _context.Questions.Where(q => q.SubcategoryId == subcategoryId).ToListAsync();
-            return question;
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves user responses for a specific question.
-        /// </summary>
-        /// <param name="questionId">The ID of the question for which user responses are to be retrieved.</param>
-        /// <returns>A list of <see cref="UserResponseModel"/> objects associated with the specified question.</returns>
-        public async Task<List<UserResponseModel>> GetUserResponsesForQuestionAsync(int questionId)
-        {
-            return await _context.UserResponses.Where(ur => ur.QuestionId == questionId).ToListAsync();
-        }
-
 
 
         /// <summary>
@@ -178,21 +147,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         public async Task<List<AnswerModel>> GetAnswersByQuestionIdAsync(int questionId)
         {
             return await _context.Answers.Where(a => a.QuestionId == questionId).ToListAsync();
-        }
-
-        /// <summary>
-        /// Asynchronously retrieves all correct answer entities for a specified question ID.
-        /// </summary>
-        /// <param name="questionId">The ID of the question.</param>
-        /// <returns>A list of correct answer entities associated with the question ID.</returns>
-        public async Task<List<AnswerModel>> GetCorrectAnswersByQuestionIdAsync(int questionId)
-        {
-            return await _context.Answers.Where(a => a.QuestionId == questionId && a.IsCorrectAnswer).ToListAsync();
-        }
-
-        public async Task<List<SubcategoryModel>> GetSubcategoryBySegmentAsync(int segmentId)
-        {
-            return await _context.Subcategories.Where(su => su.SegmentId == segmentId).ToListAsync();
         }
 
         public async Task<List<UserResponseModel>> GetResponsesOfUser(string userid)
@@ -244,18 +198,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         {
             return await _context.UserResponses
                 .Where(ur => ur.UserId == userId && ur.Question.Subcategory.SegmentId == segmentId).ToListAsync();
-
-            //return await _context.UserResponses
-            //    .Where(ur => ur.UserId == userId && ur.Question.Subcategory.SegmentId == segmentId)
-            //    .Include(ur => ur.Question)
-            //    .ThenInclude(q => q.Subcategory)
-            //    .ThenInclude(sc => sc.Segment)
-            //    .ToListAsync();
-        }
-        public async Task<UserResponseModel?> GetUserResponseAsync(string userId, int questionId, int answerId)
-        {
-            return await _context.UserResponses
-                .FirstOrDefaultAsync(ur => ur.UserId == userId && ur.QuestionId == questionId && ur.AnswerId == answerId);
         }
 
         public int GetCorrectAnswersCount(int segmentId, List<UserResponseModel> userResponses)
@@ -281,14 +223,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         {
             return _context.UserResponses
                 .FirstOrDefault(ur => ur.UserId == userId && ur.QuestionId == questionId && ur.AnswerId == answerId);
-        }
-
-        public async Task<SegmentModel?> GetSegmentById(int segmentId)
-        {
-            var segment = await _context.Segments
-                .Include(s => s.Subcategorys)
-                .FirstOrDefaultAsync(s => s.Id == segmentId);
-            return segment;
         }
     }
 }
