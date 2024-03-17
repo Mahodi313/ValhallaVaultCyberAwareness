@@ -7,9 +7,7 @@
 @inject IRepository<UserResponseModel> userResponseRepository
 @inject IRepository<SegmentModel> segmentRepository
 @inject IRepository<SubcategoryModel> subcategoryRepository
-@inject IRepository<QuestionModel> questionRepository
 @inject IRepository<AnswerModel> answerRepository
-@inject ISubcategoryService subcategoryService
 @inject IQuestionService questionService
 @inject NavigationManager NavigationManager
 @inject AuthenticationStateProvider AuthenticationStateProvider
@@ -17,17 +15,18 @@
 
 @attribute [Authorize]
 
-<PageTitle>Quiz - segment.Name</PageTitle>
 
 <div class="container bg-white text-dark rounded shadow-sm p-4 my-4">
     @if (!isLoaded)
     {
+        <PageTitle>Quiz - Valhalla</PageTitle>
         <div class="text-center">
             <p><em>Laddar frågor...</em></p>
         </div>
     }
     else if (!showResults)
     {
+        <PageTitle>Quiz - @segment.Name</PageTitle>
         @if (subCategories != null && currentSubCategory != null)
         {
             <h2 class="text-center mb-3">@currentSubCategory.Name</h2>
@@ -95,6 +94,7 @@
     }
     else
     {
+        <PageTitle>Resultat - @segment.Name</PageTitle>
         @if (showResults && segment != null)
         {
             <div class="container bg-white text-dark rounded shadow-sm p-4 my-4 position-relative">
@@ -166,9 +166,7 @@
     private string active = "";
     private string labelStyle = "";
     private ClaimsPrincipal? user;
-    private List<SubcategoryModel>? subCategories;
-    private List<SubcategoryModel>? filteredSubCategories = new();
-    private List<QuestionModel>? questions;
+    private List<SubcategoryModel>? subCategories; 
     private List<AnswerModel>? answers;
     private Dictionary<int, int> selectedAnswers = new();
     private SegmentModel? segment;
@@ -217,12 +215,10 @@
             return;
         }
 
-
         await LoadAnswersForCurrentQuestion();
         currentSubcategoryIndex = subCategories.FindIndex(sc => sc.Id == SubcategoryId);
 
         isLoaded = !isLoaded;
-
         StateHasChanged();
     }
 
@@ -264,7 +260,6 @@
 
     private async Task LoadUser()
     {
-
         var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         user = authState.User;
 
@@ -288,7 +283,6 @@
 
     private async void SubmitAnswer()
     {
-
         if (selectedAnswer == null)
         {
             errorMessage = "Vänligen välj ett svar.";
@@ -317,16 +311,14 @@
         else
         {
             var userResponse = new UserResponseModel
-                {
-                    UserId = userId,
-                    QuestionId = currentQuestion.Id,
-                    IsCorrect = selectedAnswer.IsCorrectAnswer,
-                    AnswerId = selectedAnswer.Id
-                };
-
+            {
+                UserId = userId,
+                QuestionId = currentQuestion.Id,
+                IsCorrect = selectedAnswer.IsCorrectAnswer,
+                AnswerId = selectedAnswer.Id
+            };
             await userResponseRepository.CreateAsync(userResponse);
         }
-
     }
 
     private async Task NextQuestion()
@@ -362,7 +354,6 @@
 
     private async Task ShowResult()
     {
-        // subCategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
         isLoaded = true;
 
         await CalculateResults();
@@ -375,12 +366,6 @@
     private async Task CalculateResults()
     {
         await LoadUser();
-
-        // // Se till att vi har en giltig användar-ID.
-        if (string.IsNullOrEmpty(userId))
-        {
-            throw new InvalidOperationException("Kunde inte hitta användarens Id.");
-        }
 
         // Ladda om alla subkategorier för att säkerställa att vi har en komplett uppsättning.
         subCategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);

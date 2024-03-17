@@ -16,16 +16,14 @@
    
 @if (segment == null)
 {
-    <h2>Error.. Page not found</h2>
+    <ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse></ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse>
+    <PageTitle>Valhalla Segment</PageTitle>
+    <h2>Fel.. Sidan kunde inte hittas</h2>
 }
-
-<br />
-<br />
-
-@if (segment != null)
+else if (segment != null)
 {
     <ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse></ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse>
-
+    <PageTitle>@segment.Name - @category.Name</PageTitle>
     <div class="categories2">
         <div class="mar">
 
