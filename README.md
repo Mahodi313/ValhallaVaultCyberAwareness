@@ -52,17 +52,8 @@ Under ett tidigt skede valde vi först att implementera ett lager, men sedan val
 ## Insikter för en framtida systemutvecklare
 Valhalla Vault-projektet har varit en resa fylld av lärorika ögonblick och insikter som jag kommer bära med mig in i framtiden som systemutvecklare. Här är några insikter:
 
-### Var modig med att prova ny teknik & Struktur är nyckeln till framgång:
-Införandet av en trelagersarkitektur i början kändes överväldigande, men strukturen det skapade gjorde vårt arbete mer hanterbart och organiserat. Det lägger en stabil grund som gör det enklare att skala och underhålla applikationen.
-
-### Teamarbete och kommunikation är ovärderligt:
-Att dela upp arbete och ansvar i ett team är en sak, men den löpande kommunikationen och samarbetet är det som verkligen driver projektet framåt. Att hålla alla uppdaterade och engagerade i processen underlättar utmaningar som uppstår.
-
-### Förvänta dig utmaningar och lär av dem:
-Inget projekt är utan sina hinder, och det är okej. Varje problem som uppstår är en chans att lära sig något nytt. Buggen som gjorde att vissa segment låser sig ifall man går tillbaka till föregående fråga? Den lärde mig extremt mycket om debugging och har utvecklat mina kunskaper.
-
-### Ta hand om dig själv:
-Utvecklarlivet kan vara hektiskt, och det är lätt att gå vilse i kod och deadlines. Att ta regelbundna pauser och se till att ha en balans i livet är avgörande för både personlig välbefinnande och arbetskvalitet.
-
-### Bygg med användaren i åtanke:
-Slutligen, alltid ha slutanvändaren i åtanke. En app kan ha en väldigt avancerad kod, men om den inte är användarvänlig och skapar värde för användaren så missar den sitt syfte.
+- Var modig & Struktur: Införandet av en trelagersarkitektur i början kändes överväldigande, men strukturen det skapade gjorde vårt arbete mer hanterbart och organiserat. Det lägger en stabil grund som gör det enklare att skala och underhålla applikationen.
+- Teamarbete & kommunikation: Att dela upp arbete och ansvar i ett team är en sak, men den löpande kommunikationen och samarbetet är det som verkligen driver projektet framåt. Att hålla alla uppdaterade och engagerade i processen underlättar utmaningar som uppstår.
+- Förvänta dig utmaningar och lär av dem: Inget projekt är utan sina hinder, och det är okej. Varje problem som uppstår är en chans att lära sig något nytt. Buggen som gjorde att vissa segment låser sig ifall man går tillbaka till föregående fråga? Den lärde mig extremt mycket om debugging och har utvecklat mina kunskaper.
+- Ta hand om dig själv: Utvecklarlivet kan vara hektiskt, och det är lätt att gå vilse i kod och deadlines. Att ta regelbundna pauser och se till att ha en balans i livet är avgörande för både personlig välbefinnande och arbetskvalitet.
+- Bygg med användaren i åtanke: Slutligen, alltid ha slutanvändaren i åtanke. En app kan ha en väldigt avancerad kod, men om den inte är användarvänlig och skapar värde för användaren så missar den sitt syfte.
