@@ -2,6 +2,7 @@
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.AspNetCore.Mvc
 @using System.Security.Claims
+@using ValhallaVaultCyberAwareness.App.PageHandler
 @using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.API
@@ -14,11 +15,14 @@
 @inject IViewModelService service
 @inject IAuthService authService
 @inject IUserResponseService userResponseService
+@inject NavigationManager NavigationManager
 
+<ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse></ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse>
 
 @if(category == null)
 {
-<h2>Error.. Page not found</h2>
+    <PageTitle>Valhalla Kategori</PageTitle>
+    <h2>Fel.. Sidan kunde inte hittas</h2>
 }
 
 
@@ -26,7 +30,9 @@
     
     @if (category != null)
     {
+        <PageTitle>Kategori - @category.Name</PageTitle>
         <div class="">
+
             <div class="category">
                 <div class="cat-row2 ">
                     <h1 class="mar text-center">@category.Name</h1>
@@ -35,27 +41,28 @@
                 <hr />
             </div>
             
-
             <div class="cat-row category">
-
 
                 <div class="cat-row">
 
                     @foreach (SegmentViewModel seg in segments)
                     {
 
-                        int Comp = CalculateSegmentCompletion(seg);
-                        @if(Comp == 100){ isDone = true; }
+                        int Comp = segmentCompletions.ContainsKey(seg.Id) ? segmentCompletions[seg.Id] : 0;
+                        @if(Comp >= 80){ isDone = true; }
                         else{ isDone = false; }
 
                         <div class="cat-card">
                             <div class="mar">
                                 <div class="categories">
 
-                                    <!--Visar en checkbox icon om segmentet är avklarat-->
                                     @if (isDone)
                                     {
-                                        <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
+                                        <!--Shows a check icon when the segment is done 100%-->
+                                        if(Comp == 100)
+                                        {
+                                            <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
+                                        }
                                         
                                         <a class="btn btn-light" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
                                         
@@ -80,11 +87,9 @@
                                             
                                         }
                                     }
-                                    
-
+       
                                 </div>
-                                <br />
-                                    
+                                <br />                                 
                                 <div class="cat-row category">
                                     <div class="d-flex flex-column ">
                                         <ol>
@@ -98,7 +103,8 @@
                                                         </div>
                                                     }
 
-                                                    isCleardBefore = true;
+                                                isCleardBefore = true;
+                                                isFirst = false;
                                                 }
 
                                                 else if (isCleardBefore)
@@ -138,37 +144,24 @@
 
                                                         isCleardBefore = false;
                                                     }
-
                                                 }
-
-                                        </ol>
-                                        
+                                        </ol>                                     
                                     </div>
                                 </div>
                             </div>
-
-
-
-
                         </div>
-
                         <br />
                         <br />
                         <br />
-
-
                     }
-
-
                 </div>
-
             </div>
-        </div>
-        
+        </div>      
     }
 </div>
 
 @code {
+
     [Parameter]
     public int Id { get; set; }
 
@@ -177,20 +170,31 @@
     CategoryViewModel category { get; set; }
     List<SegmentViewModel> segments { get; set; }
     List<SubcategoryViewModel> subcategories { get; set; }
+    Dictionary<int, int> segmentCompletions { get; set; } = new Dictionary<int, int>();
     private List<UserResponseModel> userResponses = new();
     private ClaimsPrincipal? currentUser;
     bool isDone { get; set; }
     bool isAccess { get; set; }
 
-
     protected override async Task OnInitializedAsync()
     {
-        //Users = await userCont.GetAllUsersAsync();
+        PageHandler.CategoryId = Id;
+        if(PageHandler.SegmentId == null)
+        {
+            PageHandler.firstCategory = true;
+        }
+        else PageHandler.firstCategory = false;
+        PageHandler.WentToSubcategory = false;
 
         List<CategoryViewModel> categories = await service.GetAllCategoriesAndMeta();
         if (categories.Any())
         {
             category = (CategoryViewModel)categories.FirstOrDefault(c => c.Id == Id);
+            if (category == null)
+            {
+                NavigationManager.NavigateTo("/Home");
+                return;
+            }
             segments = category.Segments.Where(s => s.CategoryId == category.Id).ToList();
             subcategories = category.Segments.SelectMany(s => s.Subcategories).ToList();
 
@@ -206,18 +210,23 @@
                 }
             }
 
+            await CalculateSegmentCompletions();
         }
-        
-        
-
     }
 
     //Medhis logik från homepage
-    private int CalculateSegmentCompletion(SegmentViewModel segment)
+    private async Task CalculateSegmentCompletions()
     {
-        int precentage = userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
+        foreach (var segment in segments)
+        {
+            segmentCompletions[segment.Id] = await CalculateSegmentCompletion(segment);
+        }
+    }
 
-        return precentage;
+    //Medhis logik från homepage
+    private async Task<int> CalculateSegmentCompletion(SegmentViewModel segment)
+    {
+        return await userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
     }
 
 }

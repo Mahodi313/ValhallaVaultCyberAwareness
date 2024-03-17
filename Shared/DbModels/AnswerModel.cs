@@ -7,9 +7,11 @@ namespace ValhallaVaultCyberAwareness.DAL.DbModels
         [Key]
         public int Id { get; set; }
         public string Answer { get; set; } = null!;
-        public bool IsCorrectAnswer { get; set; }
-        public string? Explanation { get; set; }
+        public bool IsCorrectAnswer { get; set; } = false;
+        public string? Explanation { get; set; } = null;
         public int QuestionId { get; set; }
         public QuestionModel Question { get; set; } = null!;
+
+
     }
 }

@@ -27,48 +27,58 @@ namespace ValhallaVaultCyberAwareness.App.Services
         }
         public async Task<bool> IsOpenSegment(int catId, int segId)
         {
-            categories = await service.GetAllCategoriesAndMeta();
-
-            if (categories.Any())
+            try
             {
-                category = (CategoryViewModel)categories.FirstOrDefault(c => c.Id == catId);
-                segments = category.Segments;
-                subcategories = category.Segments.SelectMany(s => s.Subcategories).ToList();
+                categories = await service.GetAllCategoriesAndMeta();
 
-            }
-
-            foreach (SegmentViewModel seg in segments)
-            {
-                int Comp = CalculateSegmentCompletion(seg);
-                if (Comp == 100) { isAccess = true; validate.Add(seg.Id, true); }
-                else if (isAccess) { isAccess = false; validate.Add(seg.Id, true); }
-                else if (!isAccess) { isAccess = false; validate.Add(seg.Id, false); }
-
-            }
-
-
-            //Medhis logik från Homepage
-            currentUser = await authService.GetCurrentUserDataAsync();
-            if (currentUser.Identity.IsAuthenticated)
-            {
-                var userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-
-                if (userId != null)
+                if (categories.Any())
                 {
-                    userResponses = await userResponseService.GetUserResponsesAsync(userId);
+                    category = (CategoryViewModel)categories.FirstOrDefault(c => c.Id == catId);
+
+                    if (category == null)
+                    {
+                        return false;
+                    }
+
+                    segments = category.Segments.Where(s => s.CategoryId == catId).ToList();
+                    subcategories = category.Segments.SelectMany(s => s.Subcategories).ToList();
+
                 }
+
+                //Medhis logik från Homepage
+                currentUser = await authService.GetCurrentUserDataAsync();
+                if (currentUser.Identity.IsAuthenticated)
+                {
+                    var userId = currentUser.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+
+                    if (userId != null)
+                    {
+                        userResponses = await userResponseService.GetUserResponsesAsync(userId);
+                    }
+                }
+
+
+                foreach (SegmentViewModel seg in segments)
+                {
+                    int Comp = await CalculateSegmentCompletion(seg);
+                    if (Comp >= 80) { isAccess = true; validate.Add(seg.Id, true); }
+                    else if (isAccess) { isAccess = false; validate.Add(seg.Id, true); }
+                    else if (!isAccess) { isAccess = false; validate.Add(seg.Id, false); }
+                }
+
+                isAccess = validate[segId];
+                return isAccess;
             }
-
-            isAccess = validate[segId];
-
-            return isAccess;
+            catch
+            {
+                return false;
+            }
         }
 
-
         //Medhis logik från homepage
-        private int CalculateSegmentCompletion(SegmentViewModel segment)
+        private async Task<int> CalculateSegmentCompletion(SegmentViewModel segment)
         {
-            int precentage = userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
+            int precentage = await userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
 
             return precentage;
         }

@@ -1,6 +1,7 @@
 ﻿@page "/Home"
 @using Microsoft.AspNetCore.Authorization
 @using System.Security.Claims
+@using ValhallaVaultCyberAwareness.App.PageHandler
 @using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.Repository
@@ -12,6 +13,7 @@
 @inject IAuthService authService
 @inject IUserResponseService userResponseService
 @rendermode InteractiveServer
+
 
 <style>
     body {
@@ -25,21 +27,26 @@
     }
 </style>
 
+<PageTitle>Valhalla Home</PageTitle>
+
 <div class="container-fluid">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <div class="container">
-            <span class="navbar-brand mb-0 h1 text-dark">Valhalla Home</span>
+            <span class="navbar-brand mb-0 h1 text-dark d-flex align-items-center">
+                <img src="Images/logoImg.png" alt="Your Logo" height="50" class="mr-2">
+                <span class="ms-2 fw-bold">Valhalla Hem</span>
+            </span>
             <div class="navbar-nav ml-auto">
                 <AuthorizeView Roles="Admin">
                     <Authorized>
-                        <a class="btn btn-outline-dark me-2" href="/Admin">Admin Section</a>
+                        <a class="btn btn-outline-dark me-2" href="/Admin">Admin sida</a>
                     </Authorized>
                 </AuthorizeView>
-                <a class="btn btn-outline-dark ms-2" href="/Userpage">Edit Account</a>
+                <a class="btn btn-outline-dark ms-2" href="/Userpage">Konto inställningar</a>
                 <form class="d-inline-block" action="Account/Logout" method="post">
                     <AntiforgeryToken />
                     <input type="hidden" name="ReturnUrl" value="@currentUrl" />
-                    <button type="submit" class="btn btn-outline-dark ms-2">Log out</button>
+                    <button type="submit" class="btn btn-outline-dark ms-2">Logga ut</button>
                 </form>
             </div>
         </div>
@@ -47,7 +54,7 @@
 
     <main class="container">
         <div class="search-container text-center my-4">
-            <input class="form-control search-input" type="text" placeholder="Search categories..." @bind="searchTerm" @oninput="OnSearchInput" />
+            <input class="form-control search-input" type="text" placeholder="Hitta kategorier..." @bind="searchTerm" @oninput="OnSearchInput" />
         </div>
         <div class="row justify-content-center">
             @foreach (var category in categories)
@@ -62,7 +69,7 @@
                             <div class="card-body">
                                 @foreach (var segment in category.Segments)
                                 {
-                                    int segmentCompletion = CalculateSegmentCompletion(segment);
+                                    int segmentCompletion = segmentCompletions.ContainsKey(segment.Id) ? segmentCompletions[segment.Id] : 0;
                                     <div class="segment-info mb-2">
                                         <p class="segment-name">@segment.Name</p>
                                         <div class="progress">
@@ -85,6 +92,7 @@
     private List<CategoryModel> categories = new();
     private List<UserResponseModel> userResponses = new();
     private string searchTerm = "";
+    private Dictionary<int, int> segmentCompletions = new Dictionary<int, int>();
     private string? currentUrl;
     private ClaimsPrincipal? currentUser;
 
@@ -104,6 +112,19 @@
                 Console.WriteLine($"User responses count: {userResponses.Count}");
             }
         }
+
+        await CalculateSegmentCompletions();
+    }
+
+    private async Task CalculateSegmentCompletions()
+    {
+        foreach (var category in categories)
+        {
+            foreach (var segment in category.Segments)
+            {
+                segmentCompletions[segment.Id] = await CalculateSegmentCompletion(segment);
+            }
+        }
     }
 
     // I took the already implemented logout function and added it here
@@ -114,6 +135,11 @@
     {
         currentUrl = navigationManager.ToBaseRelativePath(navigationManager.Uri);
         navigationManager.LocationChanged += OnLocationChanged;
+
+        PageHandler.CategoryId = null;
+        PageHandler.SegmentId = null;
+        PageHandler.SubcategoryId = null;
+        PageHandler.SubcategoryIdHolder = null;
     }
 
 
@@ -129,9 +155,9 @@
         return loadedCategories;
     }
 
-    private int CalculateSegmentCompletion(SegmentModel segment)
+    private async Task<int> CalculateSegmentCompletion(SegmentModel segment)
     {
-        int precentage = userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
+        int precentage = await userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);
 
         return precentage;
     }

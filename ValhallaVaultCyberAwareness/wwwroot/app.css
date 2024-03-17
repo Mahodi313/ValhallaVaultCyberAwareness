@@ -123,6 +123,10 @@ h1:focus {
     border-radius:15px;
 }
 
+.navbar-brand img {
+    border-radius: 35%;
+}
+
 
 /*category page*/
 .categories {
@@ -187,8 +191,8 @@ h1:focus {
 }
 
 .img-check {
-    width: 30px;
-    height: 30px;
+    width: 70px;
+    height: 70px;
 }
 
 .mar {
@@ -211,6 +215,56 @@ ol {
     align-items: center;
 }
 
+.navbar2 {
+    height: 100px;
+    width: 100%;
+    border: double black;
+    border-radius: 15px;
+    background-color: #202536;
+    font-size:large;
+
+    display:flex;
+    flex-direction: row;
+    justify-content:start;
+    align-items:center;
+
+    }
+
+.nav-cont {
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+}
+
+.nav-img{
+    height:80px!important;
+    width: auto;
+    margin-left:600px;
+}
+
+
+
+.nav-list {
+    display: flex !important;
+    flex-direction: row !important;
+    justify-content: start;
+    align-items: center;
+}
+
+.nav-list li {
+    display:flex;
+    align-items:center;
+    list-style-type: none;
+    margin-left: 10px;
+}
+
+.nav-list li a {
+    display:flex;
+    align-items:center;
+    text-decoration-line: none;
+}
+
 @media screen and (min-width:414px) and (max-width: 720px) {
 
     .category {
@@ -226,9 +280,13 @@ ol {
     .cat-row2 {
         max-width: 80vw;
     }
+
+    .nav-img {
+        margin-left: 10px;
+    }
 }
 
-@media screen and (min-width:720px) and (max-width: 1300px) {
+@media screen and (min-width:721px) and (max-width: 1300px) {
 
     .category {
         height: 80%;
@@ -242,6 +300,10 @@ ol {
 
     .cat-row2 {
         max-width: 60vw;
+    }
+
+    .nav-img {
+        margin-left: 50px;
     }
 }
 

@@ -1,29 +1,39 @@
 ﻿@page "/subcategory/{SegmentId:int}/{SubcategoryId:int}"
 @using Microsoft.AspNetCore.Authorization
+@using System.Security.Claims
+@using ValhallaVaultCyberAwareness.App.PageHandler
+@using ValhallaVaultCyberAwareness.App.Services
 @using ValhallaVaultCyberAwareness.DAL.DbModels
 @using ValhallaVaultCyberAwareness.DAL.Repository
 @inject IRepository<SubcategoryModel> subcategoryRepository
 @inject IRepository<SegmentModel> segmentRepository
 @inject IRepository<CategoryModel> categoryRepository
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject ISegmentService segmentService 
+@inject ISubcategoryService subcategoryService
+@inject NavigationManager NavigationManager
 
 @attribute [Authorize]
 
 @if (category == null && segment == null)
 {
-    <PageTitle>Segment - Category</PageTitle>
+    <ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse></ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse>
+    <PageTitle>Valhalla Subkategori</PageTitle>
+    <h2>Fel.. Sidan kunde inte hittas</h2>
 }
 else if ((category != null && segment != null) && subcategories != null && subcategory != null)
 {
+    //Navbar
+    <ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse></ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse>
+
     <PageTitle>@segment.Name - @category.Name</PageTitle>
 
-    <a href="/segment/@category.Id/@segment.Id" class="btn btn-primary">Return</a>
 
     <div class="valhalla-row">
         <div class="valhalla-div">
             <h1 class="valhalla-title">@subcategory.Name</h1>
             <h4>@category.Name - @segment.Name</h4>
-            @* Här ska SubcategoryId vara första ID av subkategorin *@
-            <a class="btn btn-primary valhalla-btn margin-top" href="/question/@SegmentId/@firstSubCategoryId">Start Quiz</a>
+            <a class="btn btn-primary valhalla-btn margin-top" href="/question/@SegmentId/@firstSubCategoryId">Starta testet</a>
             <br />
             <label class="margin-top valhalla-title">Information om subkategorin:</label>
             <div class="col align-content-center valhalla-description-div">
@@ -59,6 +69,9 @@ else if ((category != null && segment != null) && subcategories != null && subca
     [Parameter]
     public int SubcategoryId { get; set; }
 
+    private string errorMessage = "";
+    private ClaimsPrincipal? user;
+    private string? userId;
     private List<SubcategoryModel>? subcategories;
     private SubcategoryModel? subcategory;
     private SegmentModel? segment;
@@ -68,6 +81,18 @@ else if ((category != null && segment != null) && subcategories != null && subca
 
     protected override async Task OnInitializedAsync()
     {
+        await LoadUser();
+
+        var canAccess = await subcategoryService.IsOpenSubcategory(SegmentId, SubcategoryId, userId);
+
+        if (!canAccess)
+        {
+            NavigationManager.NavigateTo("/Home");
+            return;
+        }
+
+        PageHandler.SegmentId = SegmentId;
+
         subcategories = await subcategoryRepository.GetSubcategoriesBySegmentAsync(SegmentId);
 
         subcategory = await subcategoryRepository.GetByIdAsync(SubcategoryId);
@@ -81,6 +106,34 @@ else if ((category != null && segment != null) && subcategories != null && subca
         }
 
         StateHasChanged();
+
+        PageHandler.WentToSubcategory = true;
+        PageHandler.SubcategoryIdHolder = SubcategoryId;
+        PageHandler.SegmentId = SegmentId;
+    }
+
+    private async Task LoadUser()
+    {
+
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
+
+        if (user.Identity != null)
+        {
+
+            if (!user.Identity.IsAuthenticated)
+            {
+                errorMessage = "Användaren är inte autentiserad.";
+                return;
+            }
+
+            userId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "";
+            if (string.IsNullOrEmpty(userId))
+            {
+                errorMessage = "Kunde inte hitta användarens Id.";
+                return;
+            }
+        }
     }
 
     private string GetPreviousSubcategoryUrl()
@@ -101,5 +154,12 @@ else if ((category != null && segment != null) && subcategories != null && subca
             nextIndex = 0;
         }
         return $"/subcategory/{SegmentId}/{subcategories[nextIndex].Id}";
+    }
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+
+
     }
 }
