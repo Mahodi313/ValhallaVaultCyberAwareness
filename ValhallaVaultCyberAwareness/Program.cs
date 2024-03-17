@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Components.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using ValhallaVaultCyberAwareness.App.Middlewares;
 using ValhallaVaultCyberAwareness.App.Services;
 using ValhallaVaultCyberAwareness.Components;
 using ValhallaVaultCyberAwareness.Components.Account;
@@ -156,6 +157,10 @@ app.MapRazorComponents<AppStart>()
 app.MapAdditionalIdentityEndpoints();
 
 app.UseRouting();
+
+// Register logging middleware, By Rida Abdal
+app.UseMiddleware<RequestLoggingMiddleware>();
+
 app.UseAuthorization();
 app.UseAntiforgery();
 app.MapControllers();
