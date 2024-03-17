@@ -235,6 +235,9 @@ else
                 <InputText @bind-Value="answer.Answer" />
                 <InputCheckbox @bind-Value="answer.IsCorrectAnswer" />
                 <label>Rätt svar</label>
+
+                <label for="explanation">Förklaring:</label>
+                <InputTextArea @bind-Value="answer.Explanation" id="explanation" class="form-control" />
             </div>
         }
 
