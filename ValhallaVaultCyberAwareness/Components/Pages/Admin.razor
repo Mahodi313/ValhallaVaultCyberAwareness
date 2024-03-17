@@ -1,7 +1,9 @@
 ﻿@page "/Admin"
 @using Microsoft.AspNetCore.Authorization
 @using Microsoft.EntityFrameworkCore
+@using ValhallaVaultCyberAwareness.API.Middleware
 @using ValhallaVaultCyberAwareness.App.Services
+@using ValhallaVaultCyberAwareness.DAL.Data.MiddlewareModel
 @using ValhallaVaultCyberAwareness.DAL.Repository
 @using ValhallaVaultCyberAwareness.DAL.Uow
 @using ValhallaVaultCyberAwareness.DAL.DbModels
@@ -14,22 +16,36 @@
 @rendermode InteractiveServer
 @attribute [Authorize(Roles = "Admin")]
 @inject IAdminService adminService
-@inject IJSRuntime JSruntime
 @inject ApplicationDbContext dbContext
 
-<h3>Category Management</h3>
+
+
+<h3>Kategorihantering</h3>
 
 @if (categories == null)
 {
-    <p>Loading categories...</p>
+    <p>Laddar kategorier...</p>
 }
 else
 {
+    <div>
+        <button @onclick="VisableApiLog">Visa Logg för Api categori anrop</button>
+        @if (isLogVisible)
+        {
+            <ul>
+                @foreach(var log in DisplayCountingMiddleware.MiddlewareLog)
+                {
+                    <li>@log</li>
+                }
+            </ul>
+        }
+    </div>
+    <br />
     <table class="table text-light">
         <thead>
             <tr>
-                <th>Category Name</th>
-                <th>Actions</th>
+                <th>Kategorinamn</th>
+                <th>Åtgärden</th>
             </tr>
         </thead>
         <tbody>
@@ -38,21 +54,21 @@ else
                 <tr>
                     <td class="text-light">@category.Name</td>
                     <td>
-                        <button @onclick="() => ConfirmEditCategory(category)">Edit</button>
-                        <button @onclick="() => ConfirmDeleteCategory(category.Id)">Delete</button>
+                        <button @onclick="() => ConfirmEditCategory(category)">Ändra</button>
+                        <button @onclick="() => ConfirmDeleteCategory(category.Id)">Ta bort</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <button @onclick="ShowAddCategoryForm">Add New Category</button>
+    <button @onclick="ShowAddCategoryForm">Skapa nytt kategori</button>
 
     @if (showAddForm)
     {
         <EditForm Model="newCategory" OnValidSubmit="SubmitAddCategory">
             <InputText @bind-Value="newCategory.Name" />
-            <button type="submit">Add Category</button>
+            <button type="submit">Lägg till kategori</button>
         </EditForm>
     }
 
@@ -60,30 +76,30 @@ else
     {
         <EditForm Model="selectedCategory" OnValidSubmit="SubmitEditCategory">
             <InputText @bind-Value="selectedCategory.Name" />
-            <button type="submit">Update Category</button>
+            <button type="submit">Updatera kategori</button>
         </EditForm>
     }
 
     @if (showConfirmDelete)
     {
-        <p>Are you sure you want to delete this category?</p>
-        <button @onclick="() => DeleteCategory(deleteCategoryId)">Confirm Delete</button>
-        <button @onclick="() => showConfirmDelete = false">Cancel</button>
+        <p>Är du säker att du vill ta bort denna kategori?</p>
+        <button @onclick="() => DeleteCategory(deleteCategoryId)">Bekräfta borttagning</button>
+        <button @onclick="() => showConfirmDelete = false">Avbryt</button>
     }
 }
-<h4>Segment Management</h4>
+<h4>Segmenthantering</h4>
 @if (segments == null)
 {
-    <p>Loading segments...</p>
+    <p>Laddar segment...</p>
 }
 else
 {
         <table class="table text-light">
         <thead>
             <tr>
-                <th>Segment Name</th>
-                <th>Associated Category ID</th>
-                <th>Actions</th>
+                <th>Segmentnamn</th>
+                <th>Associerat kategori ID</th>
+                <th>Åtgärden</th>
             </tr>
         </thead>
         <tbody>
@@ -93,15 +109,15 @@ else
                     <td>@segment.Name</td>
                     <td>@segment.CategoryId</td>
                     <td>
-                        <button @onclick="() => EditSegment(segment)">Edit</button>
-                        <button @onclick="() => ConfirmDeleteSegment(segment.Id)">Delete</button>
+                        <button @onclick="() => EditSegment(segment)">Ändra</button>
+                        <button @onclick="() => ConfirmDeleteSegment(segment.Id)">Ta bort</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <button @onclick="ShowAddSegmentForm">Add New Segment</button>
+    <button @onclick="ShowAddSegmentForm">Skapa nytt segment</button>
 }
 
 @if (showAddSegmentForm)
@@ -109,7 +125,7 @@ else
     <EditForm Model="newSegment" OnValidSubmit="SubmitAddSegment">
         <InputText @bind-Value="newSegment.Name" />
         <InputNumber @bind-Value="newSegment.CategoryId" />
-        <button type="submit">Add Segment</button>
+        <button type="submit">Lägg till segment</button>
     </EditForm>
 }
 
@@ -118,30 +134,30 @@ else
     <EditForm Model="selectedSegment" OnValidSubmit="SubmitEditSegment">
         <InputText @bind-Value="selectedSegment.Name" />
         <InputNumber @bind-Value="selectedSegment.CategoryId" />
-        <button type="submit">Update Segment</button>
+        <button type="submit">Uppdatera segment</button>
     </EditForm>
 }
 
 @if (showConfirmDeleteSegment)
 {
-    <p>Are you sure you want to delete this segment?</p>
-    <button @onclick="() => DeleteSegment(deleteSegmentId)">Confirm Delete</button>
-    <button @onclick="() => showConfirmDeleteSegment = false">Cancel</button>
+    <p>Är du säker att du vill ta bort segmentet?</p>
+    <button @onclick="() => DeleteSegment(deleteSegmentId)">Bekräfta borttagning</button>
+    <button @onclick="() => showConfirmDeleteSegment = false">Avbryt</button>
 }
 
-<h4>Subcategory Management</h4>
+<h4>Subkategorihantering</h4>
 @if (subcategories == null)
 {
-    <p>Loading subcategories...</p>
+    <p>Laddar subkategorier...</p>
 }
 else
 {
         <table class="table text-light">
         <thead>
             <tr>
-                <th>Subcategory Name</th>
-                <th>Associated Segment ID</th>
-                <th>Actions</th>
+                <th>Subkategorinamn</th>
+                <th>Associerat segment ID</th>
+                <th>Åtgärden</th>
             </tr>
         </thead>
         <tbody>
@@ -151,15 +167,15 @@ else
                     <td>@subcategory.Name</td>
                     <td>@subcategory.SegmentId</td>
                     <td>
-                        <button @onclick="() => EditSubcategory(subcategory)">Edit</button>
-                        <button @onclick="() => ConfirmDeleteSubcategory(subcategory.Id)">Delete</button>
+                        <button @onclick="() => EditSubcategory(subcategory)">Ändra</button>
+                        <button @onclick="() => ConfirmDeleteSubcategory(subcategory.Id)">Ta bort</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <button @onclick="ShowAddSubcategoryForm">Add New Subcategory</button>
+    <button @onclick="ShowAddSubcategoryForm">Skapa ny subkategori</button>
 }
 
 @if (showAddSubcategoryForm)
@@ -167,7 +183,7 @@ else
     <EditForm Model="newSubcategory" OnValidSubmit="SubmitAddSubcategory">
         <InputText @bind-Value="newSubcategory.Name" />
         <InputNumber @bind-Value="newSubcategory.SegmentId" />
-        <button type="submit">Add Subcategory</button>
+        <button type="submit">Lägg till subkategori</button>
     </EditForm>
 }
 
@@ -176,29 +192,29 @@ else
     <EditForm Model="selectedSubcategory" OnValidSubmit="SubmitEditSubcategory">
         <InputText @bind-Value="selectedSubcategory.Name" />
         <InputNumber @bind-Value="selectedSubcategory.SegmentId" />
-        <button type="submit">Update Subcategory</button>
+        <button type="submit">Uppdatera subkategori</button>
     </EditForm>
 }
 
 @if (showConfirmDeleteSubcategory)
 {
-    <p>Are you sure you want to delete this subcategory?</p>
-    <button @onclick="() => DeleteSubcategory(deleteSubcategoryId)">Confirm Delete</button>
-    <button @onclick="() => showConfirmDeleteSubcategory = false">Cancel</button>
+    <p>Är du säker att du vill ta bort subkategorin?</p>
+    <button @onclick="() => DeleteSubcategory(deleteSubcategoryId)">Bekräfta borttagning</button>
+    <button @onclick="() => showConfirmDeleteSubcategory = false">Avbryt</button>
 }
-<h4>Question Management</h4>
+<h4>Frågehantering</h4>
 @if (questions == null)
 {
-    <p>Loading questions...</p>
+    <p>Laddar frågor...</p>
 }
 else
 {
         <table class="table text-light">
         <thead>
             <tr>
-                <th>Question Title</th>
-                <th>Associated Subcategory ID</th>
-                <th>Actions</th>
+                <th>Frågans titel</th>
+                <th>Associerat subkategori ID</th>
+                <th>Åtgärden</th>
             </tr>
         </thead>
         <tbody>
@@ -208,24 +224,41 @@ else
                     <td>@question.Title</td>
                     <td>@question.SubcategoryId</td>
                     <td>
-                        <button @onclick="() => EditQuestion(question)">Edit</button>
-                        <button @onclick="() => ConfirmDeleteQuestion(question.Id)">Delete</button>
+                        <button @onclick="() => EditQuestion(question)">Ändra</button>
+                        <button @onclick="() => ConfirmDeleteQuestion(question.Id)">Ta bort</button>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 
-    <button @onclick="TriggerShowAddQuestionForm">Add New Question</button>
+    <button @onclick="TriggerShowAddQuestionForm">Skapa ny fråga</button>
 }
-
 @if (showAddQuestionForm)
 {
     <EditForm Model="newQuestion" OnValidSubmit="SubmitAddQuestion">
         <InputText @bind-Value="newQuestion.Title" />
-        <InputNumber @bind-Value="newQuestion.SubcategoryId" />
-        <button type="submit">Add Question</button>
+
+        <label for="subcategoryId">Subkategori ID:</label>
+        <select @bind="newQuestion.SubcategoryId">
+            @foreach (var subcategory in subcategories)
+            {
+                <option value="@subcategory.Id">@subcategory.Name</option>
+            }
+        </select>
+
+        @foreach (var answer in newQuestion.Answers)
+        {
+            <div>
+                <InputText @bind-Value="answer.Answer" />
+                <InputCheckbox @bind-Value="answer.IsCorrectAnswer" />
+                <label>Rätt svar</label>
+            </div>
+        }
+
+        <button type="button" @onclick="SubmitAddQuestion">Lägg till fråga</button>
     </EditForm>
+    <button type="button" @onclick="AddAnswerAsync">Lägg till svar</button>
 }
 
 @if (showEditQuestionForm)
@@ -233,34 +266,26 @@ else
     <EditForm Model="selectedQuestion" OnValidSubmit="SubmitEditQuestion">
         <InputText @bind-Value="selectedQuestion.Title" />
         <InputNumber @bind-Value="selectedQuestion.SubcategoryId" />
-        <button type="submit">Update Question</button>
+        <button type="submit">Uppdatera fråga</button>
     </EditForm>
 }
 
 @if (showConfirmDeleteQuestion)
 {
-    <p>Are you sure you want to delete this question?</p>
-    <button @onclick="() => DeleteQuestion(deleteQuestionId)">Confirm Delete</button>
-    <button @onclick="() => showConfirmDeleteQuestion = false">Cancel</button>
+    <p>Är du säker att du vill ta bort frågan?</p>
+    <button @onclick="() => DeleteQuestion(deleteQuestionId)">Bekräfta borttagning</button>
+    <button @onclick="() => showConfirmDeleteQuestion = false">Avbryt</button>
 }
 
 @code {
-    //Log to console - Api call counter
-    // private async Task LogToConsole()
-    // {
-    //     await JSRuntime.InvokeVoidAsync(console.Log, message);
+    private bool isLogVisible = false;
 
-    // }
+    private void VisableApiLog()
+    {
+        isLogVisible = true;
+    }
 
-    // private async Task<string> InfoToLog()
-    // {
-    //     var counts = await dbContext.Counts.ToListAsync();
-    //     foreach (var count in counts)
-    //     {
-    //         Console.Write($"{count.Type} - has been called a total number of {count.Count} times!");
-    //     }
-    // }
-
+    private IEnumerable<AnswerModel> answers; 
 
     private IEnumerable<CategoryModel> categories;
     private CategoryModel newCategory = new CategoryModel();
@@ -304,10 +329,12 @@ else
         segments = await adminService.GetAllSegmentsAsync();
         subcategories = await adminService.GetAllSubcategoriesAsync();
         questions = await adminService.GetAllQuestionsAsync();
-
-        //LogToConsole();
     }
 
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+
+    }
 
     //CATEGORY
     private async Task SubmitAddCategory()
@@ -343,7 +370,6 @@ else
         newCategory = new CategoryModel();
         showAddForm = true;
     }
-
 
     //SEGMENT
     private async Task SubmitAddSegment()
@@ -382,7 +408,6 @@ else
     }
 
     //SUBCATEGORY
-
     private async Task SubmitAddSubcategory()
     {
         await adminService.AddSubcategoryAsync(newSubcategory);
@@ -421,17 +446,46 @@ else
     }
 
     //QUESTIONS 
-
     private async Task SubmitAddQuestion()
     {
         await adminService.AddQuestionAsync(newQuestion);
         questions = await adminService.GetAllQuestionsAsync();
+        // Assuming newQuestion.Id is now set, proceed to add answers
+        if (newQuestion.Id != 0 && newQuestion.Answers.Any())
+        {
+            await SubmitAnswersForQuestion(newQuestion);
+        }
         showAddQuestionForm = false;
     }
 
+    private async Task SubmitAnswersForQuestion(QuestionModel question)
+    {
+        foreach (var answer in question.Answers)
+        {
+            if (string.IsNullOrEmpty(answer.Answer)) continue; // Skip empty answers
+
+            answer.QuestionId = question.Id;
+            await adminService.AddAnswerAsync(answer);
+        }
+    }
     private async Task SubmitEditQuestion()
     {
         await adminService.UpdateQuestionAsync(selectedQuestion);
+
+        // Assuming you have a way to track new vs existing answers
+        foreach (var answer in selectedQuestion.Answers)
+        {
+            if (answer.Id > 0) // If it's an existing answer, update it
+            {
+                await adminService.UpdateAnswerAsync(answer);
+            }
+            else // If it's a new answer, add it
+            {
+                answer.QuestionId = selectedQuestion.Id; // Link the answer to the question
+                await adminService.AddAnswerAsync(answer);
+            }
+        }
+
         questions = await adminService.GetAllQuestionsAsync();
         showEditQuestionForm = false;
     }
@@ -445,6 +499,7 @@ else
     private void TriggerShowAddQuestionForm()
     {
         newQuestion = new QuestionModel();
+
         showAddQuestionForm = true;
     }
     private void EditQuestion(QuestionModel question)
@@ -457,424 +512,14 @@ else
         deleteQuestionId = questionId;
         showConfirmDeleteQuestion = true;
     }
+
+    private void AddAnswerAsync()
+    {
+        var answerModel = new AnswerModel();
+        newQuestion.Answers.Add(answerModel);
+    }
+    
 }
 
-
-
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
-    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
-    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
-    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
-    // }
-
-
-
-    // private void ConfirmEditCategory(CategoryModel category)
-    // {
-    //     selectedCategory = category;
-    //     showEditForm = true;
-    // }
-
-    // private void ConfirmDeleteCategory(int categoryId)
-    // {
-    //     deleteCategoryId = categoryId;
-    //     showConfirmDelete = true;
-    // }
-
-    // private async Task SubmitEditCategory()
-    // {
-    //     await UnitOfWork.CategoryRepo.UpdateAsync(selectedCategory);
-    //     await UnitOfWork.SaveChanges();
-    //     showEditForm = false;
-    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
-    // }
-
-    // private async Task DeleteCategory(int categoryId)
-    // {
-    //     await UnitOfWork.CategoryRepo.DeleteAsync(categoryId);
-    //     await UnitOfWork.SaveChanges();
-    //     showConfirmDelete = false;
-    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
-    // }
-
-    // private void ShowAddCategoryForm()
-    // {
-    //     newCategory = new CategoryModel();
-    //     showAddForm = true;
-    // }
-
-    // private async Task SubmitAddCategory()
-    // {
-    //     await UnitOfWork.CategoryRepo.CreateAsync(newCategory);
-    //     await UnitOfWork.SaveChanges();
-    //     showAddForm = false;
-    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
-    // }
-
-    // //For Segment
-
-
-    // // Load segments data, similar to categories
-    // // ...
-
-    // private void EditSegment(SegmentModel segment)
-    // {
-    //     selectedSegment = segment;
-    //     showEditSegmentForm = true;
-    // }
-
-    // private async Task SubmitEditSegment()
-    // {
-    //     await UnitOfWork.SegmentRepo.UpdateAsync(selectedSegment);
-    //     await UnitOfWork.SaveChanges();
-    //     showEditSegmentForm = false;
-    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
-    // }
-
-    // private void ConfirmDeleteSegment(int segmentId)
-    // {
-    //     deleteSegmentId = segmentId;
-    //     showConfirmDeleteSegment = true;
-    // }
-
-    // private async Task DeleteSegment(int segmentId)
-    // {
-    //     await UnitOfWork.SegmentRepo.DeleteAsync(segmentId);
-    //     await UnitOfWork.SaveChanges();
-    //     showConfirmDeleteSegment = false;
-    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
-    // }
-
-    // private void ShowAddSegmentForm()
-    // {
-    //     newSegment = new SegmentModel();
-    //     showAddSegmentForm = true;
-    // }
-
-    // private async Task SubmitAddSegment()
-    // {
-    //     await UnitOfWork.SegmentRepo.CreateAsync(newSegment);
-    //     await UnitOfWork.SaveChanges();
-    //     showAddSegmentForm = false;
-    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
-    // }
-
-    // //For SubSegment
-    // // Existing methods for Categories and Segments
-
-    // // Subcategory Methods
-
-
-    // private void EditSubcategory(SubcategoryModel subcategory)
-    // {
-    //     selectedSubcategory = subcategory;
-    //     showEditSubcategoryForm = true;
-    // }
-
-    // private async Task SubmitEditSubcategory()
-    // {
-    //     await UnitOfWork.SubcategoryRepo.UpdateAsync(selectedSubcategory);
-    //     await UnitOfWork.SaveChanges();
-    //     showEditSubcategoryForm = false;
-    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
-    // }
-
-    // private void ConfirmDeleteSubcategory(int subcategoryId)
-    // {
-    //     deleteSubcategoryId = subcategoryId;
-    //     showConfirmDeleteSubcategory = true;
-    // }
-
-    // private async Task DeleteSubcategory(int subcategoryId)
-    // {
-    //     await UnitOfWork.SubcategoryRepo.DeleteAsync(subcategoryId);
-    //     await UnitOfWork.SaveChanges();
-    //     showConfirmDeleteSubcategory = false;
-    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
-    // }
-
-    // private void ShowAddSubcategoryForm()
-    // {
-    //     newSubcategory = new SubcategoryModel();
-    //     showAddSubcategoryForm = true;
-    // }
-    // private async Task SubmitAddSubcategory()
-    // {
-    //     await UnitOfWork.SubcategoryRepo.CreateAsync(newSubcategory);
-    //     await UnitOfWork.SaveChanges();
-    //     showAddSubcategoryForm = false;
-    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
-    // }
-    // // For questionmodel
-    // private void EditQuestion(QuestionModel question)
-    // {
-    //     selectedQuestion = question;
-    //     showEditQuestionForm = true;
-    // }
-
-    // private async Task SubmitEditQuestion()
-    // {
-    //     await UnitOfWork.QuestionRepo.UpdateAsync(selectedQuestion);
-    //     await UnitOfWork.SaveChanges();
-    //     showEditQuestionForm = false;
-    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
-    // }
-
-    // private void ConfirmDeleteQuestion(int questionId)
-    // {
-    //     deleteQuestionId = questionId;
-    //     showConfirmDeleteQuestion = true;
-    // }
-
-    // private async Task DeleteQuestion(int questionId)
-    // {
-    //     await UnitOfWork.QuestionRepo.DeleteAsync(questionId);
-    //     await UnitOfWork.SaveChanges();
-    //     showConfirmDeleteQuestion = false;
-    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
-    // }
-
-    // private void ShowAddQuestionForm()
-    // {
-    //     newQuestion = new QuestionModel();
-    //     showAddQuestionForm = true;
-    // }
-
-    // private async Task SubmitAddQuestion()
-    // {
-    //     await UnitOfWork.QuestionRepo.CreateAsync(newQuestion);
-    //     await UnitOfWork.SaveChanges();
-    //     showAddQuestionForm = false;
-    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
-    // }
-    // // private List categories;
-    // // private CategoryModel newCategory = new CategoryModel();
-    // // private CategoryModel selectedCategory = new CategoryModel();
-    // // private bool showAddForm = false;
-    // // private bool showEditForm = false;
-    // // private bool showConfirmDelete = false;
-    // // private int deleteCategoryId;
-    // // Segment Variables
-    // // private List segments;
-    // // private SegmentModel newSegment = new SegmentModel();
-    // // private SegmentModel selectedSegment = new SegmentModel();
-    // // private bool showAddSegmentForm = false;
-    // // private bool showEditSegmentForm = false;
-    // // private bool showConfirmDeleteSegment = false;
-    // // private int deleteSegmentId;
-    // // ...
-
-    // // Subsegment Variables
-    // // private List subcategories;
-    // // private SubcategoryModel newSubcategory = new SubcategoryModel();
-    // // private SubcategoryModel selectedSubcategory = new SubcategoryModel();
-    // // private bool showAddSubcategoryForm = false;
-    // // private bool showEditSubcategoryForm = false;
-    // // private bool showConfirmDeleteSubcategory = false;
-    // // private int deleteSubcategoryId;
-    // // ...
-
-    // // Question Variables
-    // // private List questions;
-    // // private QuestionModel newQuestion = new QuestionModel();
-    // // private QuestionModel selectedQuestion = new QuestionModel();
-    // // private bool showAddQuestionForm = false;
-    // // private bool showEditQuestionForm = false;
-    // // private bool showConfirmDeleteQuestion = false;
-    // // private int deleteQuestionId;
-    // // ...
-
-
-    // For Caterory
-    // protected override async Task OnInitializedAsync()
-    // {
-    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
-    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
-    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync(); 
-    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync(); 
-    // }
-   
-
-
-    // private void ConfirmEditCategory(CategoryModel category)
-    // {
-    //     selectedCategory = category;
-    //     showEditForm = true;
-    // }
-
-    // private void ConfirmDeleteCategory(int categoryId)
-    // {
-    //     deleteCategoryId = categoryId;
-    //     showConfirmDelete = true;
-    // }
-
-    // private async Task SubmitEditCategory()
-    // {
-    //     await UnitOfWork.CategoryRepo.UpdateAsync(selectedCategory);
-    //     await UnitOfWork.SaveChanges();
-    //     showEditForm = false;
-    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
-    // }
-
-    // private async Task DeleteCategory(int categoryId)
-    // {
-    //     await UnitOfWork.CategoryRepo.DeleteAsync(categoryId);
-    //     await UnitOfWork.SaveChanges();
-    //     showConfirmDelete = false;
-    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
-    // }
-
-    // private void ShowAddCategoryForm()
-    // {
-    //     newCategory = new CategoryModel();
-    //     showAddForm = true;
-    // }
-
-    // private async Task SubmitAddCategory()
-    // {
-    //     await UnitOfWork.CategoryRepo.CreateAsync(newCategory);
-    //     await UnitOfWork.SaveChanges();
-    //     showAddForm = false;
-    //     categories = await UnitOfWork.CategoryRepo.GetAllAsync();
-    // }
-
-    // //For Segment
-  
-
-    // // Load segments data, similar to categories
-    // // ...
-
-    // private void EditSegment(SegmentModel segment)
-    // {
-    //     selectedSegment = segment;
-    //     showEditSegmentForm = true;
-    // }
-
-    // private async Task SubmitEditSegment()
-    // {
-    //     await UnitOfWork.SegmentRepo.UpdateAsync(selectedSegment);
-    //     await UnitOfWork.SaveChanges();
-    //     showEditSegmentForm = false;
-    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
-    // }
-
-    // private void ConfirmDeleteSegment(int segmentId)
-    // {
-    //     deleteSegmentId = segmentId;
-    //     showConfirmDeleteSegment = true;
-    // }
-
-    // private async Task DeleteSegment(int segmentId)
-    // {
-    //     await UnitOfWork.SegmentRepo.DeleteAsync(segmentId);
-    //     await UnitOfWork.SaveChanges();
-    //     showConfirmDeleteSegment = false;
-    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
-    // }
-
-    // private void ShowAddSegmentForm()
-    // {
-    //     newSegment = new SegmentModel();
-    //     showAddSegmentForm = true;
-    // }
-
-    // private async Task SubmitAddSegment()
-    // {
-    //     await UnitOfWork.SegmentRepo.CreateAsync(newSegment);
-    //     await UnitOfWork.SaveChanges();
-    //     showAddSegmentForm = false;
-    //     segments = await UnitOfWork.SegmentRepo.GetAllAsync();
-    // }
-
-    // //For SubSegment
-    // // Existing methods for Categories and Segments
-
-    // // Subcategory Methods
- 
-
-    // private void EditSubcategory(SubcategoryModel subcategory)
-    // {
-    //     selectedSubcategory = subcategory;
-    //     showEditSubcategoryForm = true;
-    // }
-
-    // private async Task SubmitEditSubcategory()
-    // {
-    //     await UnitOfWork.SubcategoryRepo.UpdateAsync(selectedSubcategory);
-    //     await UnitOfWork.SaveChanges();
-    //     showEditSubcategoryForm = false;
-    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
-    // }
-
-    // private void ConfirmDeleteSubcategory(int subcategoryId)
-    // {
-    //     deleteSubcategoryId = subcategoryId;
-    //     showConfirmDeleteSubcategory = true;
-    // }
-
-    // private async Task DeleteSubcategory(int subcategoryId)
-    // {
-    //     await UnitOfWork.SubcategoryRepo.DeleteAsync(subcategoryId);
-    //     await UnitOfWork.SaveChanges();
-    //     showConfirmDeleteSubcategory = false;
-    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
-    // }
-
-    // private void ShowAddSubcategoryForm()
-    // {
-    //     newSubcategory = new SubcategoryModel();
-    //     showAddSubcategoryForm = true;
-    // }
-    // private async Task SubmitAddSubcategory()
-    // {
-    //     await UnitOfWork.SubcategoryRepo.CreateAsync(newSubcategory);
-    //     await UnitOfWork.SaveChanges();
-    //     showAddSubcategoryForm = false;
-    //     subcategories = await UnitOfWork.SubcategoryRepo.GetAllAsync();
-    // }
-    // // For questionmodel
-    // private void EditQuestion(QuestionModel question)
-    // {
-    //     selectedQuestion = question;
-    //     showEditQuestionForm = true;
-    // }
-
-    // private async Task SubmitEditQuestion()
-    // {
-    //     await UnitOfWork.QuestionRepo.UpdateAsync(selectedQuestion);
-    //     await UnitOfWork.SaveChanges();
-    //     showEditQuestionForm = false;
-    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
-    // }
-
-    // private void ConfirmDeleteQuestion(int questionId)
-    // {
-    //     deleteQuestionId = questionId;
-    //     showConfirmDeleteQuestion = true;
-    // }
-
-    // private async Task DeleteQuestion(int questionId)
-    // {
-    //     await UnitOfWork.QuestionRepo.DeleteAsync(questionId);
-    //     await UnitOfWork.SaveChanges();
-    //     showConfirmDeleteQuestion = false;
-    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
-    // }
-
-    // private void ShowAddQuestionForm()
-    // {
-    //     newQuestion = new QuestionModel();
-    //     showAddQuestionForm = true;
-    // }
-
-    // private async Task SubmitAddQuestion()
-    // {
-    //     await UnitOfWork.QuestionRepo.CreateAsync(newQuestion);
-    //     await UnitOfWork.SaveChanges();
-    //     showAddQuestionForm = false;
-    //     questions = await UnitOfWork.QuestionRepo.GetAllAsync();
-    // }
 
 

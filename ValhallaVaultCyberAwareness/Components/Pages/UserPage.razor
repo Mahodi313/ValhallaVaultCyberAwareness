@@ -10,7 +10,7 @@
 @attribute [Authorize]
 @rendermode InteractiveServer
 
-<h3>User Page</h3>
+<h3>Konto Inställningar</h3>
 
 @if (user.Identity.IsAuthenticated)
 {
@@ -25,32 +25,32 @@
         }
 
         <div class="form-group">
-            <label>New Email</label>
+            <label>Ny E-postadress</label>
             <InputText @oninput="OnInputChange" @bind-Value="userUpdateModel.NewEmail" class="form-control" />
         </div>
         <div class="form-group">
-            <label>Current Password</label>
+            <label>Nuvarande Lösenord</label>
             <InputText @oninput="OnInputChange" @bind-Value="userUpdateModel.CurrentPassword" class="form-control" type="password" />
         </div>
         <div class="form-group">
-            <label>New Password</label>
+            <label>Nytt Lösenord</label>
             <InputText @oninput="OnInputChange" @bind-Value="userUpdateModel.NewPassword" class="form-control" type="password" />
         </div>
         <div class="form-group">
-            <label>Confirm New Password</label>
+            <label>Bekräfta nytt lösenord</label>
             <InputText @oninput="OnInputChange" @bind-Value="userUpdateModel.ConfirmPassword" class="form-control" type="password" />
         </div>
-        <button type="submit" class="btn btn-primary" disabled="@IsUpdateButtonDisabled">Update Information</button>
-        <button class="btn btn-secondary" @onclick="GoBackToHome">Go Back to Home</button>
+        <button type="submit" class="btn btn-primary" disabled="@IsUpdateButtonDisabled">Uppdatera information</button>
+        <button class="btn btn-secondary" @onclick="GoBackToHome">Gå till Hem</button>
     </EditForm>
 }
 
 @if (showConfirmation)
 {
     <div class="confirmation-dialog">
-        <p>Are you sure you want to update your email and password?</p>
-        <button class="btn btn-success" @onclick="UpdateUser">Confirm</button>
-        <button class="btn btn-danger" @onclick="() => showConfirmation = false">Cancel</button>
+        <p>Är du helt säker på att du vill ändra din e-post och/ eller ditt lösenord?</p>
+        <button class="btn btn-success" @onclick="UpdateUser">Helt säker</button>
+        <button class="btn btn-danger" @onclick="() => showConfirmation = false">Avbryt</button>
     </div>
 }
 
@@ -100,38 +100,51 @@
         if (IsUpdateButtonDisabled) return;
         showConfirmation = true;
     }
-
     private async Task UpdateUser()
     {
-        bool error = false;
+        var error = false;
+        var currentUser = await UserManager.GetUserAsync(user);
         if (!await IsCurrentPasswordValid())
         {
             error = true;
-            if (IsUpdateButtonDisabled) return;
-            showConfirmation = true;
         }
-
-        var currentUser = await UserManager.FindByEmailAsync(userUpdateModel.NewEmail);
-        if (currentUser != null)
+        else if (currentUser != null && userUpdateModel.NewEmail != currentUser.Email)
         {
-            var changeEmailResult = await UserManager.SetEmailAsync(currentUser, userUpdateModel.NewEmail);
-            if (changeEmailResult.Succeeded && !string.IsNullOrWhiteSpace(userUpdateModel.NewPassword))
+            // Check if the new email is already in use
+            var existingUser = await UserManager.FindByEmailAsync(userUpdateModel.NewEmail);
+            if (existingUser == null)
             {
-                var changePasswordResult = await UserManager.ChangePasswordAsync(currentUser, userUpdateModel.CurrentPassword, userUpdateModel.NewPassword);
-                if (!changePasswordResult.Succeeded)
-                    error = true;
-                else
+                var changeEmailResult = await UserManager.SetEmailAsync(currentUser, userUpdateModel.NewEmail);
+                if (!changeEmailResult.Succeeded)
                 {
-                    NavigationManager.NavigateTo("/user-updated"); // Redirect to a confirmation page
+                    error = true;
                 }
             }
             else
+            {
                 error = true;
-
-           
+                errorMessage = "Email address is already in use.";
+            }
         }
-        if(error)
-            errorMessage = "Something went wrong. Please chekc if everything is filled in correctly";
+
+        // Process password change if no error and new password is provided
+        if (!error && !string.IsNullOrWhiteSpace(userUpdateModel.NewPassword))
+        {
+            var changePasswordResult = await UserManager.ChangePasswordAsync(currentUser, userUpdateModel.CurrentPassword, userUpdateModel.NewPassword);
+            if (!changePasswordResult.Succeeded)
+            {
+                error = true;
+            }
+            else
+            {
+                NavigationManager.NavigateTo("/user-updated"); // Redirect to a confirmation page
+            }
+        }
+
+        if (error)
+        {
+            errorMessage = string.IsNullOrWhiteSpace(errorMessage) ? "Something went wrong. Please check if everything is filled in correctly" : errorMessage;
+        }
 
         showConfirmation = false;
     }

@@ -45,48 +45,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             return entityToDelete;
         }
 
-        /// <summary>
-        /// Asynchronously retrieves all <see cref="T"/> entities from the database.
-        /// </summary>
-        /// <returns>A list of all <see cref="T"/> objects.</returns>
-        /*public async Task<Dictionary<string, object>> GetAllMetaAsync<T>(T entity) where T : class
-        {
-            var metadata = new Dictionary<string, object>();
-
-            var properties = entity.GetType().GetProperties();
-
-            foreach (var prop in properties)
-            {
-                var propName = prop.Name;
-                var propValue = prop.GetValue(entity);
-
-                if (prop.PropertyType.IsGenericType && prop.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
-                {
-                    var nestledModels = new List<Dictionary<string, object>>();
-                    var list = prop.GetValue(entity) as IEnumerable<object>;
-
-                    if (list != null)
-                    {
-                        foreach (var nestled in list)
-                        {
-                            var nestledMetaData = await GetAllMetaAsync(nestled);
-                            nestledModels.Add(nestledMetaData);
-
-                        }
-                    }
-                    metadata[propName] = propValue;
-
-
-                }
-
-            }
-
-            return metadata;
-
-
-
-        }*/
-
         public async Task<List<T>> GetAllAsync(params Expression<Func<T, object>>[] includes)
         {
             var query = _dbSet.AsQueryable();
@@ -168,10 +126,6 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             }
         }
 
-
-
-
-
         /// <summary>
         /// Asynchronously retrieves a question entity by its ID.
         /// </summary>
@@ -236,18 +190,9 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
             return await _context.Answers.Where(a => a.QuestionId == questionId && a.IsCorrectAnswer).ToListAsync();
         }
 
-
-
-        // TODO: Implementera logik
-
         public async Task<List<SubcategoryModel>> GetSubcategoryBySegmentAsync(int segmentId)
         {
             return await _context.Subcategories.Where(su => su.SegmentId == segmentId).ToListAsync();
-        }
-
-        public Task<List<QuestionModel>> GetQuestionForSubcategoryAsync(int subcategoryId)
-        {
-            throw new NotImplementedException();
         }
 
         public async Task<List<UserResponseModel>> GetResponsesOfUser(string userid)
@@ -299,6 +244,13 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         {
             return await _context.UserResponses
                 .Where(ur => ur.UserId == userId && ur.Question.Subcategory.SegmentId == segmentId).ToListAsync();
+
+            //return await _context.UserResponses
+            //    .Where(ur => ur.UserId == userId && ur.Question.Subcategory.SegmentId == segmentId)
+            //    .Include(ur => ur.Question)
+            //    .ThenInclude(q => q.Subcategory)
+            //    .ThenInclude(sc => sc.Segment)
+            //    .ToListAsync();
         }
         public async Task<UserResponseModel?> GetUserResponseAsync(string userId, int questionId, int answerId)
         {
@@ -329,6 +281,14 @@ namespace ValhallaVaultCyberAwareness.DAL.Repository
         {
             return _context.UserResponses
                 .FirstOrDefault(ur => ur.UserId == userId && ur.QuestionId == questionId && ur.AnswerId == answerId);
+        }
+
+        public async Task<SegmentModel?> GetSegmentById(int segmentId)
+        {
+            var segment = await _context.Segments
+                .Include(s => s.Subcategorys)
+                .FirstOrDefaultAsync(s => s.Id == segmentId);
+            return segment;
         }
     }
 }

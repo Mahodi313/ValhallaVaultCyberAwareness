@@ -5,7 +5,8 @@
 {
     <div class="row">
         <div class="navbar2">
-            <div>
+            <div class="nav-cont">
+                <img class="nav-img" src="/Images/frilagd.png" />
                 <a href="@($"/home")" style="text-decoration-line:none; text-align:center"><h3><bold>Vallhalla Vault</bold></h3></a>
 
             </div>
@@ -13,16 +14,29 @@
                 <ul class="nav-list" style="list-style-type:none;">
                         @if (!firstCat)
                         {
-                        <li class="@GetNavClass($"/category/{cat}")"><a href="@($"/category/{cat}")">Kategori</a></li>
+                            <li class="@GetNavClass($"/category/{cat}")"><a href="@($"/category/{cat}")">Kategori</a></li>
+                        }
+                        else
+                        {
+                            <li class="@GetNavClass($"/category/{cat}")"><a class="disabled-link" href="#">Kategori</a></li>
                         }
 
                         @if (seg != null)
                         {
-                        <li class="@GetNavClass($"/segment/{cat}/{seg}")"><a href="@($"/segment/{cat}/{seg}")">Segment</a></li>
+                            <li class="@GetNavClass($"/segment/{cat}/{seg}")"><a href="@($"/segment/{cat}/{seg}")">Segment</a></li>
                         }
+                        else
+                        {
+                            <li class="@GetNavClass($"/segment/{cat}/{seg}")"><a class="disabled-link" href="#">Segment</a></li>
+                        }
+
                         @if (subcat != null)
                         {
-                        <li class="@GetNavClass($"/subcategory/{seg}/{seg}")"><a href="@($"/subcategory/{seg}/{subcat}")">Subkategori</a></li>
+                            <li class="@GetNavClass($"/subcategory/{seg}/{seg}")"><a href="@($"/subcategory/{seg}/{subcat}")">Subkategori</a></li>
+                        }
+                        else
+                        {
+                            <li class="@GetNavClass($"/subcategory/{seg}/{seg}")"><a class="disabled-link" href="#">Subkategori</a></li>
                         }
                    
                 </ul>
@@ -46,6 +60,7 @@
         subcat = PageHandler.SubcategoryId;
         firstCat = PageHandler.firstCategory;
     }
+
 
     private string GetNavClass(string path)
     {

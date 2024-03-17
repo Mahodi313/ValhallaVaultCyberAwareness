@@ -15,6 +15,7 @@
 @inject IViewModelService service
 @inject IAuthService authService
 @inject IUserResponseService userResponseService
+@inject NavigationManager NavigationManager
 
 
 
@@ -39,9 +40,7 @@
                 <hr />
             </div>
             
-
             <div class="cat-row category">
-
 
                 <div class="cat-row">
 
@@ -49,17 +48,20 @@
                     {
 
                         int Comp = segmentCompletions.ContainsKey(seg.Id) ? segmentCompletions[seg.Id] : 0;
-                        @if(Comp == 100){ isDone = true; }
+                        @if(Comp >= 80){ isDone = true; }
                         else{ isDone = false; }
 
                         <div class="cat-card">
                             <div class="mar">
                                 <div class="categories">
 
-                                    <!--Visar en checkbox icon om segmentet är avklarat-->
                                     @if (isDone)
                                     {
-                                        <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
+                                        <!--Shows a check icon when the segment is done 100%-->
+                                        if(Comp == 100)
+                                        {
+                                            <img class="img-check mar" src="/Images/check.png" style="visibility: visible;" />
+                                        }
                                         
                                         <a class="btn btn-light" href="@($"segment/{Id}/{seg.Id}")"><h3>@seg.Name</h3></a>
                                         
@@ -84,11 +86,9 @@
                                             
                                         }
                                     }
-                                    
-
+       
                                 </div>
-                                <br />
-                                    
+                                <br />                                 
                                 <div class="cat-row category">
                                     <div class="d-flex flex-column ">
                                         <ol>
@@ -100,11 +100,11 @@
                                                         <div class="text-center" style="margin:5px;">
                                                         <li><h5>@sub.Name</h5></li>
                                                         </div>
-                                                }
+                                                    }
 
                                                 isCleardBefore = true;
                                                 isFirst = false;
-                                            }
+                                                }
 
                                                 else if (isCleardBefore)
                                                 {
@@ -143,37 +143,24 @@
 
                                                         isCleardBefore = false;
                                                     }
-
                                                 }
-
-                                        </ol>
-                                        
+                                        </ol>                                     
                                     </div>
                                 </div>
                             </div>
-
-
-
-
                         </div>
-
                         <br />
                         <br />
                         <br />
-
-
                     }
-
-
                 </div>
-
             </div>
-        </div>
-        
+        </div>      
     }
 </div>
 
 @code {
+
     [Parameter]
     public int Id { get; set; }
 
@@ -189,7 +176,6 @@
     bool isAccess { get; set; }
 
 
-
     protected override async Task OnInitializedAsync()
     {
         PageHandler.CategoryId = Id;
@@ -198,14 +184,17 @@
             PageHandler.firstCategory = true;
         }
         else PageHandler.firstCategory = false;
-
-
-        //Users = await userCont.GetAllUsersAsync();
+        PageHandler.WentToSubcategory = false;
 
         List<CategoryViewModel> categories = await service.GetAllCategoriesAndMeta();
         if (categories.Any())
         {
             category = (CategoryViewModel)categories.FirstOrDefault(c => c.Id == Id);
+            if (category == null)
+            {
+                NavigationManager.NavigateTo("/Home");
+                return;
+            }
             segments = category.Segments.Where(s => s.CategoryId == category.Id).ToList();
             subcategories = category.Segments.SelectMany(s => s.Subcategories).ToList();
 
@@ -222,11 +211,7 @@
             }
 
             await CalculateSegmentCompletions();
-
         }
-        
-        
-
     }
 
     //Medhis logik från homepage
@@ -238,6 +223,7 @@
         }
     }
 
+    //Medhis logik från homepage
     private async Task<int> CalculateSegmentCompletion(SegmentViewModel segment)
     {
         return await userResponseService.CalculateSegmentCompletionBasedOnUser(segment, userResponses);

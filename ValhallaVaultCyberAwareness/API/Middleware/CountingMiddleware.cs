@@ -1,4 +1,5 @@
-﻿using ValhallaVaultCyberAwareness.DAL.Data.MiddlewareModel;
+﻿using Microsoft.EntityFrameworkCore;
+using ValhallaVaultCyberAwareness.DAL.Data.MiddlewareModel;
 using ValhallaVaultCyberAwareness.Data;
 
 namespace ValhallaVaultCyberAwareness.API.Middleware
@@ -8,7 +9,6 @@ namespace ValhallaVaultCyberAwareness.API.Middleware
     {
         private readonly RequestDelegate _next;
 
-
         public CountingMiddleware(RequestDelegate next)
         {
             _next = next;
@@ -17,68 +17,95 @@ namespace ValhallaVaultCyberAwareness.API.Middleware
         public async Task Invoke(HttpContext httpContext, ApplicationDbContext dbContext)
         {
 
-            if (httpContext.Request.Path.StartsWithSegments("/api/Category/GetAllCategoriesAndMetadata"))
+            try
             {
-                CountMiddlewareModel? count = dbContext.Counts.FirstOrDefault(c => c.Type == "GetAllCategoriesAndMetadata");
-                if (count == null)
+
+                if (httpContext.Request.Path.StartsWithSegments("/api/Category/GetAllCategoriesAndMetadata"))
                 {
-                    count = new CountMiddlewareModel { Count = 1, Type = "GetAllCategoriesAndMetadata" };
-                    dbContext.Counts.AddAsync(count);
+                    CountMiddlewareModel? count = dbContext.Counts.FirstOrDefault(c => c.Type == "GetAllCategoriesAndMetadata");
+                    if (count == null)
+                    {
+                        count = new CountMiddlewareModel { Count = 1, Type = "GetAllCategoriesAndMetadata" };
+                        await dbContext.Counts.AddAsync(count);
+                        DisplayCountingMiddleware.MiddlewareLog.Add($"{count.Type} - has been called a total number of {count.Count} times!");
+
+                    }
+                    else
+                    {
+                        count.Count++;
+                        DisplayCountingMiddleware.MiddlewareLog.Add($"{count.Type} - has been called a total number of {count.Count} times!");
+                    }
+                    await dbContext.SaveChangesAsync();
+                }
+
+                if (httpContext.Request.Path.StartsWithSegments("/api/Category/GetAllCategories"))
+                {
+                    CountMiddlewareModel? count = dbContext.Counts.FirstOrDefault(c => c.Type == "GetAllCategories");
+                    if (count == null)
+                    {
+                        count = new CountMiddlewareModel { Count = 1, Type = "GetAllCategories" };
+                        await dbContext.Counts.AddAsync(count);
+
+                        DisplayCountingMiddleware.MiddlewareLog.Add($"{count.Type} - has been called a total number of {count.Count} times!");
+                    }
+                    else
+                    {
+                        count.Count++;
+
+                        DisplayCountingMiddleware.MiddlewareLog.Add($"{count.Type} - has been called a total number of {count.Count} times!");
+                    }
+
+                    await dbContext.SaveChangesAsync();
+                }
+
+                if (httpContext.Request.Path.StartsWithSegments("/api/Category/GetCategoryById"))
+                {
+                    CountMiddlewareModel? count = dbContext.Counts.FirstOrDefault(c => c.Type == "GetCategoryById");
+                    if (count == null)
+                    {
+                        count = new CountMiddlewareModel { Count = 1, Type = "GetCategoryById" };
+                        await dbContext.Counts.AddAsync(count);
+
+                        DisplayCountingMiddleware.MiddlewareLog.Add($"{count.Type} - has been called a total number of {count.Count} times!");
+                    }
+                    else
+                    {
+                        count.Count++;
+
+                        DisplayCountingMiddleware.MiddlewareLog.Add($"{count.Type} - has been called a total number of {count.Count} times!");
+                    }
+
+                    await dbContext.SaveChangesAsync();
+
+
 
                 }
-                else
-                {
-                    count.Count++;
-                    Console.WriteLine($"GetAllCategoriesAndMetadata - has been called a total number of {count.Count} times!");
-                }
-
-                await dbContext.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                Console.Write(ex.ToString());
             }
 
-            if (httpContext.Request.Path.StartsWithSegments("/api/Category/GetAllCategories"))
+            try
             {
-                CountMiddlewareModel? count = dbContext.Counts.FirstOrDefault(c => c.Type == "GetAllCategories");
-                if (count == null)
+                var counts = await dbContext.Counts.ToListAsync();
+                DisplayCountingMiddleware.MiddlewareLog.Clear();
+                foreach (var count1 in counts)
                 {
-                    count = new CountMiddlewareModel { Count = 1, Type = "GetAllCategories" };
-                    dbContext.Counts.AddAsync(count);
-
-                    Console.WriteLine($"GetAllCategories - has been called a total number of {count.Count} times!");
+                    DisplayCountingMiddleware.MiddlewareLog.Add($"{count1.Type} - has been called a total number of {count1.Count} times!");
                 }
-                else
-                {
-                    count.Count++;
-
-                    Console.WriteLine($"GetAllCategories - has been called a total number of {count.Count} times!");
-                }
-
-                await dbContext.SaveChangesAsync();
             }
-
-            if (httpContext.Request.Path.StartsWithSegments("/api/Category/GetCategoryById"))
+            catch (Exception ex)
             {
-                CountMiddlewareModel? count = dbContext.Counts.FirstOrDefault(c => c.Type == "GetCategoryById");
-                if (count == null)
-                {
-                    count = new CountMiddlewareModel { Count = 1, Type = "GetCategoryById" };
-                    dbContext.Counts.Add(count);
+                Console.Write(ex.ToString());
 
-                    Console.WriteLine($"GetCategoryById - has been called a total number of {count.Count} times!");
-                }
-                else
-                {
-                    count.Count++;
-
-                    Console.WriteLine($"GetCategoryById - has been called a total number of {count.Count} times!");
-                }
-
-                await dbContext.SaveChangesAsync();
             }
-
 
             await _next(httpContext);
         }
     }
+
+
 
     // Extension method used to add the middleware to the HTTP request pipeline.
     public static class CountingMiddlewareExtensions

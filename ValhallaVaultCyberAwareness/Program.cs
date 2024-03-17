@@ -30,6 +30,9 @@ builder.Services.AddScoped<IRepository<UserResponseModel>, Repository<UserRespon
 builder.Services.AddScoped<IUow, Uow>();
 builder.Services.AddScoped<IViewModelService, ViewModelService>();
 builder.Services.AddScoped<ISegmentService, SegmentService>();
+builder.Services.AddScoped<ISubcategoryService, SubcategoryService>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
+
 
 builder.Services.AddScoped<IUserResponseService, UserResponseService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
