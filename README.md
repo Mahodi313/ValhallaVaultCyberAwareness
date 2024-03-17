@@ -1,15 +1,15 @@
-Reflekterande Projektanalys: Vallhalla Vault Cyber Awareness
+# Reflekterande Projektanalys: Vallhalla Vault Cyber Awareness
 
-Inledning:
+## Inledning:
 
-Projektöversikt:
+## Projektöversikt:
 
-Projektets Arkitektur & Uppbyggnad:
+## Projektets Arkitektur & Uppbyggnad:
 
-Valda Tekniska Lösningar:
+## Valda Tekniska Lösningar:
 
-Utmaningar & Lärdomar:
+## Utmaningar & Lärdomar:
 
-Vissa beslut som togs och hur det påverkade projektets utfall
+## Vissa beslut som togs och hur det påverkade projektets utfall
 
-Insikter för en framtida systemutvecklare
+## Insikter för en framtida systemutvecklare
