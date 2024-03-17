@@ -17,19 +17,21 @@
 @inject IUserResponseService userResponseService
 @inject NavigationManager NavigationManager
 
+<ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse></ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse>
 
 
 @if(category == null)
 {
-<h2>Error.. Page not found</h2>
+    <PageTitle>Valhalla Kategori</PageTitle>
+    <h2>Fel.. Sidan kunde inte hittas</h2>
 }
 
-<ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse></ValhallaVaultCyberAwareness.Components.Pages.SharedComponents.NavbarCourse>
 
 <div class="col categories mar">
     
     @if (category != null)
     {
+        <PageTitle>Kategori - @category.Name</PageTitle>
         <div class="">
 
             <div class="category">
