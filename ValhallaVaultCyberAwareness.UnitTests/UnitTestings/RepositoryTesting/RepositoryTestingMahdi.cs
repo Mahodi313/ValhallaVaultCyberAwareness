@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using ValhallaVaultCyberAwareness.Components.Pages;
 using ValhallaVaultCyberAwareness.DAL.DbModels;
 using ValhallaVaultCyberAwareness.DAL.Repository;
+using ValhallaVaultCyberAwareness.DAL.Uow;
 using ValhallaVaultCyberAwareness.Data;
 
 namespace ValhallaVaultCyberAwareness.UnitTests.UnitTestings.RepositoryTesting
@@ -17,16 +18,22 @@ namespace ValhallaVaultCyberAwareness.UnitTests.UnitTestings.RepositoryTesting
     public class RepositoryTestingMahdi
     {
 
+        private readonly DbContextOptions<ApplicationDbContext> _options;
+
+        public RepositoryTestingMahdi()
+        {
+            _options = new DbContextOptionsBuilder<ApplicationDbContext>()
+                .UseInMemoryDatabase(databaseName: Guid.NewGuid().ToString())
+                .Options;
+        }
+
         #region UpdateTestings
 
         [Fact]
         public async Task TestUpdateCategory()
         {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestUpdateCategoryModel")
-                .Options;
 
-            using var context = new ApplicationDbContext(options);
+            using var context = new ApplicationDbContext(_options);
 
             var category = new CategoryModel { Id = 1, Name = "InitialCategory", Info = "InitialInfo" };
             context.Categories.Add(category);
@@ -46,11 +53,8 @@ namespace ValhallaVaultCyberAwareness.UnitTests.UnitTestings.RepositoryTesting
         [Fact]
         public async Task TestUpdateSegment()
         {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestUpdateSegmentModel")
-                .Options;
 
-            using var context = new ApplicationDbContext(options);
+            using var context = new ApplicationDbContext(_options);
 
             var segment = new SegmentModel { Id = 1, Name = "InitialSegment", Info = "InitialInfo" };
             context.Segments.Add(segment);
@@ -70,11 +74,8 @@ namespace ValhallaVaultCyberAwareness.UnitTests.UnitTestings.RepositoryTesting
         [Fact]
         public async Task TestUpdateSubCategory()
         {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestUpdateSubCategoryModel")
-                .Options;
 
-            using var context = new ApplicationDbContext(options);
+            using var context = new ApplicationDbContext(_options);
 
             var subCategory = new SubcategoryModel { Id = 1, Name = "InitialSubCategory", Info = "InitialInfo", SegmentId = 1 };
             context.Subcategories.Add(subCategory);
@@ -94,11 +95,8 @@ namespace ValhallaVaultCyberAwareness.UnitTests.UnitTestings.RepositoryTesting
         [Fact]
         public async Task TestUpdateQuestion()
         {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestUpdateQuestionModel")
-                .Options;
 
-            using var context = new ApplicationDbContext(options);
+            using var context = new ApplicationDbContext(_options);
 
             var question = new QuestionModel { Id = 1, Title = "InitialQuestion", SubcategoryId = 1 };
             context.Questions.Add(question);
@@ -118,11 +116,8 @@ namespace ValhallaVaultCyberAwareness.UnitTests.UnitTestings.RepositoryTesting
         [Fact]
         public async Task TestUpdateAnswer()
         {
-            var options = new DbContextOptionsBuilder<ApplicationDbContext>()
-                .UseInMemoryDatabase(databaseName: "TestUpdateAnswerModel")
-                .Options;
 
-            using var context = new ApplicationDbContext(options);
+            using var context = new ApplicationDbContext(_options);
 
             var answer = new AnswerModel { Id = 1, Answer = "InitialAnswer", IsCorrectAnswer = false, Explanation = "No", QuestionId = 1 };
             context.Answers.Add(answer);
@@ -145,8 +140,27 @@ namespace ValhallaVaultCyberAwareness.UnitTests.UnitTestings.RepositoryTesting
 
         #endregion
 
+        // Category with segment included test
+        [Fact]
+        public async Task TestGetCategoryWithSegment()
+        {
+            using var context = new ApplicationDbContext(_options);
 
+            // Seed data for the test
+            var category = new CategoryModel { Id = 1, Name = "TestCategory", Info = "Category Test"};
+            var segment = new SegmentModel { Id = 1, Name = "Del 1", Info = "This is a test", CategoryId = 1 };
 
+            context.Categories.Add(category);
+            context.Segments.Add(segment);
 
+            await context.SaveChangesAsync();
+
+            var repo = new Repository<CategoryModel>(context);
+
+            var categoryWithSegments = await repo.GetCategoryIncludeSegmentAsync();
+
+            Assert.NotEmpty(categoryWithSegments); 
+            Assert.Single(categoryWithSegments); // How many categories we get
+        }
     }
 }
